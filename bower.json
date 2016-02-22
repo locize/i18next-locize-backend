@@ -1,12 +1,12 @@
 {
   "name": "i18next-locize-backend",
-  "version": "0.0.1",
-  "main": "./bin/index.js",
+  "main": "./i18nextLocizeBackend.min.js",
   "dependencies": {},
   "ignore": [
     "test/",
     "lib/",
     "src/",
+    "bin/",
     "coverage/",
     ".babelrc",
     ".gitignore",
