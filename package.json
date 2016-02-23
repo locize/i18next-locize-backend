@@ -2,7 +2,7 @@
   "name": "i18next-locize-backend",
   "version": "0.0.1",
   "description": "backend layer for i18next using locize service ",
-  "main": "./lib",
+  "main": "./lib/index.js",
   "keywords": [
     "i18next",
     "i18next-backend"
@@ -38,7 +38,7 @@
     "coveralls": "npm run coverage && coveralls < coverage/lcov.info",
     "transpile": "babel src -d lib",
     "browserify": "browserify ./src/index.js --outfile ./bin/index.js -g uglifyify -t babelify -s i18nextLocizeBackend",
-    "copy": "cp ./bin/index.js ./i18nextLocizeBackend.min.js",
+    "copy": "cp ./bin/index.js ./i18next-locize-backend.min.js",
     "build": "npm run transpile && npm run browserify && npm run copy",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
