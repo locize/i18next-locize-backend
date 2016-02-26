@@ -1,5 +1,3 @@
-import * as utils from './utils';
-
 // https://gist.github.com/Xeoncross/7663273
 function ajax(url, options, callback, data, cache) {
   // Must encode data
@@ -77,7 +75,7 @@ class Backend {
 
   init(services, options = {}) {
     this.services = services;
-    this.options = utils.defaults(options, this.options || {}, getDefaults());
+    this.options = {...getDefaults(), ...this.options, ...options};
   }
 
   readMulti(languages, namespaces, callback) {

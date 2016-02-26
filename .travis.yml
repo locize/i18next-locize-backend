@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - "4.1"
 before_script:
-  - npm install -g gulp
   - npm install -g mocha
+  - npm install -g karma
   - npm install -g babel-cli
-after_script: npm run coveralls
