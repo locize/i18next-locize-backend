@@ -47,7 +47,7 @@
   },
   "scripts": {
     "tdd": "karma start",
-    "test": "karma start --singleRun",
+    "test": "karma start --singleRun --reporters spec,coverage,coveralls",
     "coverage": "babel-node node_modules/.bin/isparta cover _mocha",
     "coveralls": "npm run coverage && coveralls < coverage/lcov.info",
     "transpile": "babel src -d lib",
