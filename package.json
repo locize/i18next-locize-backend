@@ -1,6 +1,6 @@
 {
   "name": "i18next-locize-backend",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "backend layer for i18next using locize service ",
   "main": "./lib/index.js",
   "keywords": [
