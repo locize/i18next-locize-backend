@@ -34,6 +34,7 @@ i18next
 - As with all modules you can either pass the constructor function (class) to the i18next.use or a concrete instance.
 - If you don't use a module loader it will be added to `window.i18nextLocizeBackend`
 
+
 ## Backend Options
 
 ```js
