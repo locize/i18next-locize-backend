@@ -1,3 +1,0 @@
-{ // this is json5, comments is stripped
-  key: "passing"  // keys can be without ""
-}

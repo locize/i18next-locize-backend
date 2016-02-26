@@ -1,3 +1,5 @@
+import * as utils from './utils';
+
 // https://gist.github.com/Xeoncross/7663273
 function ajax(url, options, callback, data, cache) {
   // Must encode data
@@ -60,9 +62,8 @@ function getDefaults() {
   return {
     loadPath: '/locales/{{lng}}/{{ns}}.json',
     addPath: 'locales/add/{{lng}}/{{ns}}',
-    allowMultiLoading: false,
-    parse: JSON.parse,
-    crossDomain: false
+    crossDomain: true,
+    version: 'latest'
   };
 }
 
@@ -76,16 +77,13 @@ class Backend {
   init(services, options = {}) {
     this.services = services;
     this.options = {...getDefaults(), ...this.options, ...options};
-  }
 
-  readMulti(languages, namespaces, callback) {
-    let url = this.services.interpolator.interpolate(this.options.loadPath, { lng: languages.join('+'), ns: namespaces.join('+') });
-
-    this.loadUrl(url, callback);
+    this.queuedWrites = {};
+    this.debouncedWrite = utils.debounce(this.write, 10000);
   }
 
   read(language, namespace, callback) {
-    let url = this.services.interpolator.interpolate(this.options.loadPath, { lng: language, ns: namespace });
+    let url = this.services.interpolator.interpolate(this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
 
     this.loadUrl(url, callback);
   }
@@ -98,7 +96,7 @@ class Backend {
 
       let ret, err;
       try {
-        ret = this.options.parse(data);
+        ret = JSON.parse(data);
       } catch (e) {
         err = 'failed parsing ' + url + ' to json';
       }
@@ -107,20 +105,49 @@ class Backend {
     });
   }
 
-  create(languages, namespace, key, fallbackValue) {
+  create(languages, namespace, key, fallbackValue, callback) {
+    if (!callback) callback = () => {};
     if (typeof languages === 'string') languages = [languages];
 
-    let payload = {};
-    payload[key] = fallbackValue || '';
-
     languages.forEach(lng => {
-      let url = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace });
+      this.queue.apply(this, arguments);
+    });
+  }
 
-      ajax(url, this.options, function(data, xhr) {
+  write(lng, namespace) {
+    let lock = utils.getPath(this.queuedWrites, ['locks', lng, namespace]);
+    if (lock) return;
+
+    let url = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+
+    let missings = utils.getPath(this.queuedWrites, [lng, namespace]);
+    utils.setPath(this.queuedWrites, [lng, namespace], []);
+
+    if (missings.length) {
+      // lock
+      utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
+
+      ajax(url, this.options, (data, xhr) => {
         //const statusCode = xhr.status.toString();
         // TODO: if statusCode === 4xx do log
+
+        // unlock
+        utils.setPath(this.queuedWrites, ['locks', lng, namespace], false);
+
+        missings.forEach((missing) => {
+          if (missing.callback) missing.callback();
+        });
+
+        // rerun
+        this.debouncedWrite(lng, namespace);
       }, payload);
-    });
+    }
+  }
+
+  queue(lng, namespace, key, fallbackValue, callback) {
+    utils.pushPath(this.queuedWrites, [lng, namespace], {key: key, fallbackValue: fallbackValue || '', callback: callback});
+
+    this.debouncedWrite(lng, namespace);
   }
 }
 
