@@ -52,7 +52,7 @@
     "transpile": "babel src -d lib",
     "browserify": "browserify ./src/index.js --outfile ./bin/index.js -g uglifyify -t babelify -s i18nextLocizeBackend",
     "copy": "cp ./bin/index.js ./i18next-locize-backend.min.js",
-    "build": "npm run transpile && npm run browserify && npm run copy",
+    "build": "npm run transpile && npm run browserify && npm run copy && git commit -a -m 'updated build output'",
     "version": "npm run build",
     "postversion": "git push && git push --tags"
   },
