@@ -26,7 +26,7 @@
     "browserify-istanbul": "0.2.1",
     "chai": "3.5.0",
     "coveralls": "2.11.6",
-    "eslint": "1.10.3",
+    "eslint": "2.3.0",
     "i18next": "2.0.26",
     "isparta": "4.0.0",
     "karma": "0.13.19",
