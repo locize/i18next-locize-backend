@@ -62,6 +62,7 @@ function getDefaults() {
   return {
     loadPath: '/locales/{{lng}}/{{ns}}.json',
     addPath: 'locales/add/{{lng}}/{{ns}}',
+    referenceLng: 'en',
     crossDomain: true,
     version: 'latest'
   };
@@ -110,7 +111,7 @@ class Backend {
     if (typeof languages === 'string') languages = [languages];
 
     languages.forEach(lng => {
-      this.queue.apply(this, arguments);
+      if (lng === this.options.referenceLng) this.queue.apply(this, arguments);
     });
   }
 
