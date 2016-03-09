@@ -27,7 +27,7 @@
     "chai": "3.5.0",
     "coveralls": "2.11.6",
     "eslint": "1.10.3",
-    "i18next": "2.0.26",
+    "i18next": "2.3.0",
     "isparta": "4.0.0",
     "karma": "0.13.19",
     "karma-browserify": "4.4.2",
