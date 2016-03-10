@@ -114,7 +114,7 @@ class Backend {
     if (typeof languages === 'string') languages = [languages];
 
     languages.forEach(lng => {
-      if (lng === this.options.referenceLng) this.queue.apply(this, arguments);
+      if (lng === this.options.referenceLng) this.queue.call(this, this.options.referenceLng, namespace, key, fallbackValue, callback);
     });
   }
 
@@ -130,6 +130,11 @@ class Backend {
     if (missings.length) {
       // lock
       utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
+
+      const payload = {};
+      missings.forEach(item => {
+        payload[item.key] = item.fallbackValue || '';
+      });
 
       ajax(url, { ...{ authorize: true }, ...this.options }, (data, xhr) => {
         //const statusCode = xhr.status.toString();

@@ -139,6 +139,9 @@
       if (!options.crossDomain) {
         x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       }
+      if (options.authorize && options.apiKey) {
+        x.setRequestHeader('Authorization', options.apiKey);
+      }
       x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
       x.onreadystatechange = function () {
         x.readyState > 3 && callback && callback(x.responseText, x);
@@ -240,14 +243,13 @@
     }, {
       key: 'create',
       value: function create(languages, namespace, key, fallbackValue, callback) {
-        var _this = this,
-            _arguments = arguments;
+        var _this = this;
 
         if (!callback) callback = function callback() {};
         if (typeof languages === 'string') languages = [languages];
 
         languages.forEach(function (lng) {
-          if (lng === _this.options.referenceLng) _this.queue.apply(_this, _arguments);
+          if (lng === _this.options.referenceLng) _this.queue.call(_this, _this.options.referenceLng, namespace, key, fallbackValue, callback);
         });
       }
     }, {
@@ -264,23 +266,30 @@
         setPath(this.queuedWrites, [lng, namespace], []);
 
         if (missings.length) {
-          // lock
-          setPath(this.queuedWrites, ['locks', lng, namespace], true);
+          (function () {
+            // lock
+            setPath(_this2.queuedWrites, ['locks', lng, namespace], true);
 
-          ajax(url, this.options, function (data, xhr) {
-            //const statusCode = xhr.status.toString();
-            // TODO: if statusCode === 4xx do log
-
-            // unlock
-            setPath(_this2.queuedWrites, ['locks', lng, namespace], false);
-
-            missings.forEach(function (missing) {
-              if (missing.callback) missing.callback();
+            var payload = {};
+            missings.forEach(function (item) {
+              payload[item.key] = item.fallbackValue || '';
             });
 
-            // rerun
-            _this2.debouncedWrite(lng, namespace);
-          }, payload);
+            ajax(url, babelHelpers.extends({ authorize: true }, _this2.options), function (data, xhr) {
+              //const statusCode = xhr.status.toString();
+              // TODO: if statusCode === 4xx do log
+
+              // unlock
+              setPath(_this2.queuedWrites, ['locks', lng, namespace], false);
+
+              missings.forEach(function (missing) {
+                if (missing.callback) missing.callback();
+              });
+
+              // rerun
+              _this2.debouncedWrite(lng, namespace);
+            }, payload);
+          })();
         }
       }
     }, {
