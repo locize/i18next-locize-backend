@@ -24,7 +24,7 @@ function ajax(url, options, callback, data, cache) {
     x.onreadystatechange = function() {
       x.readyState > 3 && callback && callback(x.responseText, x);
     };
-    x.send(data);
+    x.send(JSON.stringify(data));
   } catch (e) {
     window.console && console.log(e);
   }
