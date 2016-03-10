@@ -3,13 +3,13 @@ import * as utils from './utils';
 // https://gist.github.com/Xeoncross/7663273
 function ajax(url, options, callback, data, cache) {
   // Must encode data
-  if(data && typeof data === 'object') {
-    var y = '', e = encodeURIComponent;
-    for (var m in data) {
-      y += '&' + e(m) + '=' + e(data[m]);
-    }
-    data = y.slice(1) + (!cache ? '&_t=' + new Date : '');
-  }
+  // if(data && typeof data === 'object') {
+  //   var y = '', e = encodeURIComponent;
+  //   for (var m in data) {
+  //     y += '&' + e(m) + '=' + e(data[m]);
+  //   }
+  //   data = y.slice(1) + (!cache ? '&_t=' + new Date : '');
+  // }
 
   try {
     var x = new (XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
@@ -20,7 +20,7 @@ function ajax(url, options, callback, data, cache) {
     if (options.authorize && options.apiKey) {
       x.setRequestHeader('Authorization', options.apiKey);
     }
-    x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    x.setRequestHeader('Content-type', 'application/json');
     x.onreadystatechange = function() {
       x.readyState > 3 && callback && callback(x.responseText, x);
     };
