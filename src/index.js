@@ -17,6 +17,9 @@ function ajax(url, options, callback, data, cache) {
     if (!options.crossDomain) {
       x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     }
+    if (options.authorize && options.apiKey) {
+      x.setRequestHeader('Authorization', options.apiKey);
+    }
     x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
     x.onreadystatechange = function() {
       x.readyState > 3 && callback && callback(x.responseText, x);
@@ -128,7 +131,7 @@ class Backend {
       // lock
       utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
 
-      ajax(url, this.options, (data, xhr) => {
+      ajax(url, { ...{ authorize: true }, ...this.options }, (data, xhr) => {
         //const statusCode = xhr.status.toString();
         // TODO: if statusCode === 4xx do log
 
