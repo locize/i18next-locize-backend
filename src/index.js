@@ -63,8 +63,8 @@ function ajax(url, options, callback, data, cache) {
 
 function getDefaults() {
   return {
-    loadPath: '/locales/{{lng}}/{{ns}}.json',
-    addPath: 'locales/add/{{lng}}/{{ns}}',
+    loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
     version: 'latest'
@@ -80,7 +80,7 @@ class Backend {
 
   init(services, options = {}) {
     this.services = services;
-    this.options = {...getDefaults(), ...this.options, ...options};
+    this.options = { ...getDefaults(), ...this.options, ...options };
 
     this.queuedWrites = {};
     this.debouncedWrite = utils.debounce(this.write, 10000);

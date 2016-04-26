@@ -179,8 +179,8 @@
 
   function getDefaults() {
     return {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
-      addPath: 'locales/add/{{lng}}/{{ns}}',
+      loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
       referenceLng: 'en',
       crossDomain: true,
       version: 'latest'
