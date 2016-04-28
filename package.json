@@ -61,7 +61,7 @@
     "test": "karma start karma.conf.js --singleRun",
     "tdd": "karma start karma.conf.js",
     "clean": "rimraf dist && mkdirp dist",
-    "copy": "cp ./dist/umd/i18next-locize-backend.min.js ./i18next-locize-backend.min.js && cp ./dist/umd/i18next-locize-backend.js ./i18next-locize-backend.js",
+    "copy": "cp ./dist/umd/i18nextLocizeBackend.min.js ./i18nextLocizeBackend.min.js && cp ./dist/umd/i18nextLocizeBackend.js ./i18nextLocizeBackend.js",
     "build:es": "BABEL_ENV=jsnext babel src --out-dir dist/es",
     "build:cjs": "babel src --out-dir dist/commonjs",
     "build:umd": "rollup -c rollup.config.js --format umd && rollup -c rollup.config.js --format umd --uglify",

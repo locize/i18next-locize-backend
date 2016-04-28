@@ -1,7 +1,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define('i18next-locize-backend', factory) :
-  (global.i18next-locize-backend = factory());
+  typeof define === 'function' && define.amd ? define('i18nextLocizeBackend', factory) :
+  (global.i18nextLocizeBackend = factory());
 }(this, function () { 'use strict';
 
   var babelHelpers = {};
