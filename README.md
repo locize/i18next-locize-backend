@@ -10,7 +10,7 @@ This is a simple i18next backend to be used for locize service. It will load res
 
 # Getting started
 
-Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), bower or [downloaded](https://raw.githubusercontent.com/locize/i18next-locize-backend/master/i18next-locize-backend.min.js) from this repo.
+Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), bower or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18next-locize-backend.min.js) from this repo.
 
 ```
 # npm package
