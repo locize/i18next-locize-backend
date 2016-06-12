@@ -4,7 +4,7 @@
 [![Bower](https://img.shields.io/bower/v/i18next-locize-backend.svg)]()
 [![David](https://img.shields.io/david/locize/i18next-locize-backend.svg?style=flat-square)](https://david-dm.org/locize/i18next-locize-backend)
 
-This is an i18next backend to be used for locize service. It will load resources from locize server using xhr.
+This is an i18next backend to be used for [locize](http://locize.com) service. It will load resources from locize server using xhr.
 
 # Getting started
 
