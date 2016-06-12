@@ -64,6 +64,7 @@ function ajax(url, options, callback, data, cache) {
 function getDefaults() {
   return {
     loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
     addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
@@ -86,6 +87,12 @@ class Backend {
     this.debouncedWrite = utils.debounce(this.write, 10000);
   }
 
+  getLanguages(callback) {
+    let url = this.services.interpolator.interpolate(this.options.getLanguagesPath, { projectId: this.options.projectId });
+
+    this.loadUrl(url, callback);
+  }
+
   read(language, namespace, callback) {
     let url = this.services.interpolator.interpolate(this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
 
@@ -94,9 +101,8 @@ class Backend {
 
   loadUrl(url, callback) {
     ajax(url, this.options, (data, xhr) => {
-      const statusCode = xhr.status.toString();
-      if (statusCode.indexOf('5') === 0) return callback('failed loading ' + url, true /* retry */);
-      if (statusCode.indexOf('4') === 0) return callback('failed loading ' + url, false /* no retry */);
+      if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true /* retry */);
+      if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false /* no retry */);
 
       let ret, err;
       try {
