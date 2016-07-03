@@ -30,7 +30,7 @@
     "coveralls": "2.11.8",
     "eslint": "2.2.0",
     "eslint-config-airbnb": "6.0.2",
-    "i18next": "2.3.0",
+    "i18next": "2.3.4",
     "isparta": "^4.0.0",
     "istanbul": "gotwarlost/istanbul#source-map",
     "karma": "0.13.22",
