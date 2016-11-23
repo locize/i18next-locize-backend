@@ -1,6 +1,6 @@
 import babel from 'rollup-plugin-babel';
 import uglify from 'rollup-plugin-uglify';
-import npm from 'rollup-plugin-npm';
+import nodeResolve from 'rollup-plugin-node-resolve';
 import { argv } from 'yargs';
 
 const format = argv.format || argv.f || 'iife';
@@ -8,7 +8,7 @@ const compress = argv.uglify;
 
 const babelOptions = {
   exclude: 'node_modules/**',
-  presets: ['es2015-rollup', 'stage-0'],
+  presets: [['es2015', { modules: false }], 'stage-0'],
   babelrc: false
 };
 
@@ -23,9 +23,9 @@ export default {
   format,
   plugins: [
     babel(babelOptions),
-    npm({ jsnext: true })
+    nodeResolve({ jsnext: true })
   ].concat(compress ? uglify() : []),
   moduleName: 'i18nextLocizeBackend',
-  moduleId: 'i18nextLocizeBackend',
+  //moduleId: 'i18nextLocizeBackend',
   dest
 };
