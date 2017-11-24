@@ -26,6 +26,7 @@ function getDefaults() {
     loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
     addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
     version: 'latest'
@@ -75,12 +76,25 @@ class Backend {
     });
   }
 
-  create(languages, namespace, key, fallbackValue, callback) {
+  create(languages, namespace, key, fallbackValue, callback, options) {
     if (!callback) callback = () => {};
     if (typeof languages === 'string') languages = [languages];
 
     languages.forEach(lng => {
-      if (lng === this.options.referenceLng) this.queue.call(this, this.options.referenceLng, namespace, key, fallbackValue, callback);
+      if (lng === this.options.referenceLng) this.queue.call(this, this.options.referenceLng, namespace, key, fallbackValue, callback, options);
+    });
+  }
+
+  update(languages, namespace, key, fallbackValue, callback, options) {
+    if (!callback) callback = () => {};
+    if (!options) options = {};
+    if (typeof languages === 'string') languages = [languages];
+
+    // mark as update
+    options.isUpdate = true;
+
+    languages.forEach(lng => {
+      if (lng === this.options.referenceLng) this.queue.call(this, this.options.referenceLng, namespace, key, fallbackValue, callback, options);
     });
   }
 
@@ -88,7 +102,8 @@ class Backend {
     let lock = utils.getPath(this.queuedWrites, ['locks', lng, namespace]);
     if (lock) return;
 
-    let url = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+    let missingUrl = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+    let updatesUrl = this.services.interpolator.interpolate(this.options.updatePath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
 
     let missings = utils.getPath(this.queuedWrites, [lng, namespace]);
     utils.setPath(this.queuedWrites, [lng, namespace], []);
@@ -97,30 +112,65 @@ class Backend {
       // lock
       utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
 
-      const payload = {};
+      let hasMissing= false;
+      let hasUpdates = false;
+      const payloadMissing = {};
+      const payloadUpdate = {};
+
       missings.forEach(item => {
-        payload[item.key] = item.fallbackValue || '';
+        if (item.options && item.options.isUpdate) {
+          if (!hasUpdates) hasUpdates = true;
+          payloadUpdate[item.key] = item.fallbackValue || '';
+        } else {
+          if (!hasMissing) hasMissing = true;
+          payloadMissing[item.key] = item.fallbackValue || '';
+        }
       });
 
-      ajax(url, { ...{ authorize: true }, ...this.options }, (data, xhr) => {
-        //const statusCode = xhr.status.toString();
-        // TODO: if statusCode === 4xx do log
+      let todo = 0;
+      if (hasMissing) todo++;
+      if (hasUpdates) todo++;
+      const doneOne = () => {
+        todo--;
 
-        // unlock
-        utils.setPath(this.queuedWrites, ['locks', lng, namespace], false);
+        if (!todo) {
+          // unlock
+          utils.setPath(this.queuedWrites, ['locks', lng, namespace], false);
 
-        missings.forEach((missing) => {
-          if (missing.callback) missing.callback();
-        });
+          missings.forEach((missing) => {
+            if (missing.callback) missing.callback();
+          });
 
-        // rerun
-        this.debouncedWrite(lng, namespace);
-      }, payload);
+          // rerun
+          this.debouncedWrite(lng, namespace);
+        }
+      }
+
+      if (!todo) doneOne();
+
+      if (hasMissing) {
+        ajax(missingUrl, { ...{ authorize: true }, ...this.options }, (data, xhr) => {
+          //const statusCode = xhr.status.toString();
+          // TODO: if statusCode === 4xx do log
+
+          doneOne();
+        }, payloadMissing);
+      }
+
+      if (hasUpdates) {
+        ajax(updatesUrl, { ...{ authorize: true }, ...this.options }, (data, xhr) => {
+          //const statusCode = xhr.status.toString();
+          // TODO: if statusCode === 4xx do log
+
+          doneOne();
+        }, payloadUpdate);
+      }
+
     }
   }
 
-  queue(lng, namespace, key, fallbackValue, callback) {
-    utils.pushPath(this.queuedWrites, [lng, namespace], {key: key, fallbackValue: fallbackValue || '', callback: callback});
+  queue(lng, namespace, key, fallbackValue, callback, options) {
+    utils.pushPath(this.queuedWrites, [lng, namespace], {key: key, fallbackValue: fallbackValue || '', callback: callback, options});
 
     this.debouncedWrite(lng, namespace);
   }

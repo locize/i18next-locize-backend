@@ -100,6 +100,7 @@ function getDefaults() {
     loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
     addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
     version: 'latest'
@@ -162,60 +163,109 @@ var Backend = function () {
     }
   }, {
     key: 'create',
-    value: function create(languages, namespace, key, fallbackValue, callback) {
+    value: function create(languages, namespace, key, fallbackValue, callback, options) {
       var _this = this;
 
       if (!callback) callback = function callback() {};
       if (typeof languages === 'string') languages = [languages];
 
       languages.forEach(function (lng) {
-        if (lng === _this.options.referenceLng) _this.queue.call(_this, _this.options.referenceLng, namespace, key, fallbackValue, callback);
+        if (lng === _this.options.referenceLng) _this.queue.call(_this, _this.options.referenceLng, namespace, key, fallbackValue, callback, options);
+      });
+    }
+  }, {
+    key: 'update',
+    value: function update(languages, namespace, key, fallbackValue, callback, options) {
+      var _this2 = this;
+
+      if (!callback) callback = function callback() {};
+      if (!options) options = {};
+      if (typeof languages === 'string') languages = [languages];
+
+      // mark as update
+      options.isUpdate = true;
+
+      languages.forEach(function (lng) {
+        if (lng === _this2.options.referenceLng) _this2.queue.call(_this2, _this2.options.referenceLng, namespace, key, fallbackValue, callback, options);
       });
     }
   }, {
     key: 'write',
     value: function write(lng, namespace) {
-      var _this2 = this;
+      var _this3 = this;
 
       var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
       if (lock) return;
 
-      var url = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+      var missingUrl = this.services.interpolator.interpolate(this.options.addPath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+      var updatesUrl = this.services.interpolator.interpolate(this.options.updatePath, { lng: lng, ns: namespace, projectId: this.options.projectId, version: this.options.version });
 
       var missings = getPath(this.queuedWrites, [lng, namespace]);
       setPath(this.queuedWrites, [lng, namespace], []);
 
       if (missings.length) {
-        (function () {
-          // lock
-          setPath(_this2.queuedWrites, ['locks', lng, namespace], true);
+        // lock
+        setPath(this.queuedWrites, ['locks', lng, namespace], true);
 
-          var payload = {};
-          missings.forEach(function (item) {
-            payload[item.key] = item.fallbackValue || '';
-          });
+        var hasMissing = false;
+        var hasUpdates = false;
+        var payloadMissing = {};
+        var payloadUpdate = {};
 
-          ajax(url, _extends({ authorize: true }, _this2.options), function (data, xhr) {
-            //const statusCode = xhr.status.toString();
-            // TODO: if statusCode === 4xx do log
+        missings.forEach(function (item) {
+          if (item.options && item.options.isUpdate) {
+            if (!hasUpdates) hasUpdates = true;
+            payloadUpdate[item.key] = item.fallbackValue || '';
+          } else {
+            if (!hasMissing) hasMissing = true;
+            payloadMissing[item.key] = item.fallbackValue || '';
+          }
+        });
 
+        var todo = 0;
+        if (hasMissing) todo++;
+        if (hasUpdates) todo++;
+        var doneOne = function doneOne() {
+          todo--;
+
+          if (!todo) {
             // unlock
-            setPath(_this2.queuedWrites, ['locks', lng, namespace], false);
+            setPath(_this3.queuedWrites, ['locks', lng, namespace], false);
 
             missings.forEach(function (missing) {
               if (missing.callback) missing.callback();
             });
 
             // rerun
-            _this2.debouncedWrite(lng, namespace);
-          }, payload);
-        })();
+            _this3.debouncedWrite(lng, namespace);
+          }
+        };
+
+        if (!todo) doneOne();
+
+        if (hasMissing) {
+          ajax(missingUrl, _extends({ authorize: true }, this.options), function (data, xhr) {
+            //const statusCode = xhr.status.toString();
+            // TODO: if statusCode === 4xx do log
+
+            doneOne();
+          }, payloadMissing);
+        }
+
+        if (hasUpdates) {
+          ajax(updatesUrl, _extends({ authorize: true }, this.options), function (data, xhr) {
+            //const statusCode = xhr.status.toString();
+            // TODO: if statusCode === 4xx do log
+
+            doneOne();
+          }, payloadUpdate);
+        }
       }
     }
   }, {
     key: 'queue',
-    value: function queue(lng, namespace, key, fallbackValue, callback) {
-      pushPath(this.queuedWrites, [lng, namespace], { key: key, fallbackValue: fallbackValue || '', callback: callback });
+    value: function queue(lng, namespace, key, fallbackValue, callback, options) {
+      pushPath(this.queuedWrites, [lng, namespace], { key: key, fallbackValue: fallbackValue || '', callback: callback, options: options });
 
       this.debouncedWrite(lng, namespace);
     }
