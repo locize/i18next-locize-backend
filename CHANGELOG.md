@@ -1,3 +1,6 @@
+### v1.2.1
+- use content-type in case of POST request
+
 ### v1.2.0
 - make the content-type optional using option.setContentTypeJSON
 

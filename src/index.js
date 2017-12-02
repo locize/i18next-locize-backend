@@ -11,7 +11,7 @@ function ajax(url, options, callback, data, cache) {
     if (options.authorize && options.apiKey) {
       x.setRequestHeader('Authorization', options.apiKey);
     }
-    if (options.setContentTypeJSON) {
+    if (data || options.setContentTypeJSON) {
       x.setRequestHeader('Content-type', 'application/json');
     }
     x.onreadystatechange = function() {
