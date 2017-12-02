@@ -85,7 +85,9 @@ function ajax(url, options, callback, data, cache) {
     if (options.authorize && options.apiKey) {
       x.setRequestHeader('Authorization', options.apiKey);
     }
-    x.setRequestHeader('Content-type', 'application/json');
+    if (options.setContentTypeJSON) {
+      x.setRequestHeader('Content-type', 'application/json');
+    }
     x.onreadystatechange = function () {
       x.readyState > 3 && callback && callback(x.responseText, x);
     };
@@ -103,6 +105,7 @@ function getDefaults() {
     updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
+    setContentTypeJSON: false,
     version: 'latest'
   };
 }

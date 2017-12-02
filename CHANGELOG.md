@@ -1,3 +1,6 @@
+### v1.2.0
+- make the content-type optional using option.setContentTypeJSON
+
 ### v1.1.0
 - adds update function
 - adds compatibility to i18next options updateMissing
