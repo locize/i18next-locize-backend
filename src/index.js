@@ -121,12 +121,13 @@ class Backend {
       const payloadUpdate = {};
 
       missings.forEach(item => {
+        const value = (item.options && item.options.tDescription) ? { value: item.fallbackValue || '', context: { text: item.options.tDescription } } : item.fallbackValue || ''
         if (item.options && item.options.isUpdate) {
           if (!hasUpdates) hasUpdates = true;
-          payloadUpdate[item.key] = item.fallbackValue || '';
+          payloadUpdate[item.key] = value;
         } else {
           if (!hasMissing) hasMissing = true;
-          payloadMissing[item.key] = item.fallbackValue || '';
+          payloadMissing[item.key] = value;
         }
       });
 

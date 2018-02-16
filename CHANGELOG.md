@@ -1,3 +1,6 @@
+### v1.3.0
+- supports submitting options tDescription (context) i18next >= 10.4.1
+
 ### v1.2.1
 - use content-type in case of POST request
 
