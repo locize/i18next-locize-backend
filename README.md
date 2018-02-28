@@ -5,7 +5,7 @@
 
 This is an i18next backend to be used for [locize](http://locize.com) service. It will load resources from locize server using xhr.
 
-It will allow you to save missing keys containing both default value and context information by calling:
+It will allow you to save missing keys containing both **default value** and **context information** by calling:
 
 ```js
 i18next.t(key, defaultValue, tDescription);
