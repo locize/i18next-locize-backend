@@ -130,7 +130,7 @@ var Backend = function () {
       this.options = _extends({}, getDefaults(), this.options, options);
 
       this.queuedWrites = {};
-      this.debouncedWrite = debounce(this.write, 10000);
+      this.debouncedProcess = debounce(this.process, 10000);
     }
   }, {
     key: 'getLanguages',
@@ -241,7 +241,7 @@ var Backend = function () {
             });
 
             // rerun
-            _this3.debouncedWrite(lng, namespace);
+            _this3.debouncedProcess(lng, namespace);
           }
         };
 
@@ -267,11 +267,26 @@ var Backend = function () {
       }
     }
   }, {
+    key: 'process',
+    value: function process() {
+      var _this4 = this;
+
+      Object.keys(this.queuedWrites).forEach(function (lng) {
+        if (lng === 'locks') return;
+        Object.keys(_this4.queuedWrites[lng]).forEach(function (ns) {
+          var todo = _this4.queuedWrites[lng][ns];
+          if (todo.length) {
+            _this4.write(lng, ns);
+          }
+        });
+      });
+    }
+  }, {
     key: 'queue',
     value: function queue(lng, namespace, key, fallbackValue, callback, options) {
       pushPath(this.queuedWrites, [lng, namespace], { key: key, fallbackValue: fallbackValue || '', callback: callback, options: options });
 
-      this.debouncedWrite(lng, namespace);
+      this.debouncedProcess();
     }
   }]);
 

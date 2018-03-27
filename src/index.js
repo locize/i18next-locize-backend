@@ -48,7 +48,7 @@ class Backend {
     this.options = { ...getDefaults(), ...this.options, ...options };
 
     this.queuedWrites = {};
-    this.debouncedWrite = utils.debounce(this.write, 10000);
+    this.debouncedProcess = utils.debounce(this.process, 10000);
   }
 
   getLanguages(callback) {
@@ -146,7 +146,7 @@ class Backend {
           });
 
           // rerun
-          this.debouncedWrite(lng, namespace);
+          this.debouncedProcess(lng, namespace);
         }
       }
 
@@ -173,10 +173,22 @@ class Backend {
     }
   }
 
+  process() {
+    Object.keys(this.queuedWrites).forEach((lng) => {
+      if (lng === 'locks') return;
+      Object.keys(this.queuedWrites[lng]).forEach((ns) => {
+        const todo = this.queuedWrites[lng][ns];
+        if (todo.length) {
+          this.write(lng, ns);
+        }
+      });
+    });
+  }
+
   queue(lng, namespace, key, fallbackValue, callback, options) {
     utils.pushPath(this.queuedWrites, [lng, namespace], {key: key, fallbackValue: fallbackValue || '', callback: callback, options});
 
-    this.debouncedWrite(lng, namespace);
+    this.debouncedProcess();
   }
 }
 

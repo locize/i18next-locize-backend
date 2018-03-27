@@ -1,3 +1,6 @@
+### v1.3.1
+- fixes debounced write to send every namespace-language pair
+
 ### v1.3.0
 - supports submitting options tDescription (context) i18next >= 10.4.1
 
