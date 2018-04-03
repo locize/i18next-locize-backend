@@ -151,7 +151,7 @@ locize.getOptions((err, data) => {
 i18next.services.backendConnector.backend.getOptions(callback);
 ```
 
-You can set a threshold for languages to be added to whitelist by setting whitelisThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).
+You can set a threshold for languages to be added to whitelist by setting whitelistThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).
 
 ## SPECIAL - let the backend determine some options to improve loading
 

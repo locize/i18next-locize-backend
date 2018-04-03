@@ -134,7 +134,7 @@ function getDefaults() {
     crossDomain: true,
     setContentTypeJSON: false,
     version: 'latest',
-    whitelisThreshold: 0.899
+    whitelistThreshold: 0.899
   };
 }
 
@@ -200,7 +200,7 @@ var Backend = function () {
 
         var whitelist = keys.reduce(function (mem, k) {
           var item = data[k];
-          if (item.translated[_this2.options.version] && item.translated[_this2.options.version] > _this2.options.whitelisThreshold) mem.push(k);
+          if (item.translated[_this2.options.version] && item.translated[_this2.options.version] > _this2.options.whitelistThreshold) mem.push(k);
           return mem;
         }, []);
 
