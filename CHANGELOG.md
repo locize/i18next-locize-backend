@@ -1,3 +1,6 @@
+### v1.4.1
+- fix getLanguages route to return error on not getting data
+
 ### v1.4.0
 - adds getOptions route
 - add special construction with callback to autoload possible i18next options.

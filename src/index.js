@@ -73,8 +73,8 @@ class Backend {
   getOptions(callback) {
     this.getLanguages((err, data) => {
       if (err) return callback(err);
-
       const keys = Object.keys(data);
+      if (!keys.length) return callback(new Error('was unable to load languages via API'));
 
       const referenceLng = keys.reduce((mem, k) => {
         const item = data[k];

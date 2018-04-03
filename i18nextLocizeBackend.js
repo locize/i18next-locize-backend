@@ -189,8 +189,8 @@ var Backend = function () {
 
       this.getLanguages(function (err, data) {
         if (err) return callback(err);
-
         var keys = Object.keys(data);
+        if (!keys.length) return callback(new Error('was unable to load languages via API'));
 
         var referenceLng = keys.reduce(function (mem, k) {
           var item = data[k];
