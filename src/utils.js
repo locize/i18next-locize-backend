@@ -54,3 +54,31 @@ export function getPath(object, path) {
   if (!obj) return undefined;
   return obj[k];
 }
+
+
+
+const regexp = new RegExp('\{\{(.+?)\}\}', 'g');
+
+function makeString(object) {
+  if (object == null) return '';
+  return '' + object;
+}
+
+export function interpolate(str, data, lng) {
+  let match, value;
+
+  function regexSafe(val) {
+    return val.replace(/\$/g, '$$$$');
+  }
+
+  // regular escape on demand
+  while(match = regexp.exec(str)) {
+     value = match[1].trim();
+     if (typeof value !== 'string') value = makeString(value);
+     if (!value) value = '';
+     value = regexSafe(value);
+     str = str.replace(match[0], data[value] || value);
+     regexp.lastIndex = 0;
+  }
+  return str;
+}

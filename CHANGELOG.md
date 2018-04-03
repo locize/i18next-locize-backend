@@ -1,3 +1,7 @@
+### v1.4.0
+- adds getOptions route
+- add special construction with callback to autoload possible i18next options.
+
 ### v1.3.1
 - fixes debounced write to send every namespace-language pair
 

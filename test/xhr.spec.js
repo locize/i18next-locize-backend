@@ -1,13 +1,10 @@
 import XHR from '../src/';
-import Interpolator from 'i18next/dist/commonjs/Interpolator';
 
 describe('XHR backend', () => {
   let backend;
 
   before(() => {
-    backend = new XHR({
-      interpolator: new Interpolator()
-    }, {
+    backend = new XHR(null, {
       loadPath: 'http://localhost:9876/locales/{{lng}}/{{ns}}.json'
     });
   });

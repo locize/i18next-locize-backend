@@ -1,0 +1,18 @@
+{
+  "en": {
+    "name": "English",
+    "nativeName": "English",
+    "isReferenceLanguage": true,
+    "translated": {
+      "latest": 1
+    }
+  },
+  "de": {
+    "name": "German",
+    "nativeName": "Deutsch",
+    "isReferenceLanguage": false,
+    "translated": {
+      "latest": 0.9
+    }
+  }
+}
