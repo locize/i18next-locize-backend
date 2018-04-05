@@ -10,8 +10,8 @@
     "i18next-backend",
     "locize"
   ],
-  "homepage": "https://github.com/i18next/i18next-locize-backend",
-  "bugs": "https://github.com/i18next/i18next-locize-backend/issues",
+  "homepage": "https://github.com/locize/i18next-locize-backend",
+  "bugs": "https://github.com/locize/i18next-locize-backend/issues",
   "repository": {
     "type": "git",
     "url": "git://github.com/locize/i18next-locize-backend.git"

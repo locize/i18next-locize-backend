@@ -1,3 +1,6 @@
+### v1.4.2
+- fix typo in package.json
+
 ### v1.4.1
 - fix getLanguages route to return error on not getting data
 
