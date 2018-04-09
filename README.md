@@ -57,6 +57,8 @@ i18next
 }
 ```
 
+To load translations only `projectId` needs to be filled. To use the **saveMissing** feature of i18next additional to the projectId both `apiKey` and `referenceLng` have to be set.
+
 Options can be passed in:
 
 **preferred** - by setting options.backend in i18next.init:
