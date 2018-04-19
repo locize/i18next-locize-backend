@@ -1,6 +1,6 @@
 {
   "name": "i18next-locize-backend",
-  "main": "./i18next-locize-backend.min.js",
+  "main": "./i18nextLocizeBackend.min.js",
   "dependencies": {},
   "ignore": [
     "test/",
