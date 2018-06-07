@@ -26,6 +26,7 @@ function ajax(url, options, callback, data, cache) {
 function getDefaults() {
   return {
     loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
     addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
@@ -33,6 +34,7 @@ function getDefaults() {
     crossDomain: true,
     setContentTypeJSON: false,
     version: 'latest',
+    pull: false,
     whitelistThreshold: 0.9
   };
 }
@@ -67,7 +69,7 @@ class Backend {
   getLanguages(callback) {
     let url = utils.interpolate(this.options.getLanguagesPath, { projectId: this.options.projectId });
 
-    this.loadUrl(url, callback);
+    this.loadUrl(url, {}, callback);
   }
 
   getOptions(callback) {
@@ -103,13 +105,13 @@ class Backend {
   }
 
   read(language, namespace, callback) {
-    let url = utils.interpolate(this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
-
-    this.loadUrl(url, callback);
+    let url = utils.interpolate(this.options.pull ? this.options.pullPath : this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+    let options = this.options.pull ? { authorize: true } : {};
+    this.loadUrl(url, options, callback);
   }
 
-  loadUrl(url, callback) {
-    ajax(url, this.options, (data, xhr) => {
+  loadUrl(url, options, callback) {
+    ajax(url, { ...this.options, ...options }, (data, xhr) => {
       if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true /* retry */);
       if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false /* no retry */);
 

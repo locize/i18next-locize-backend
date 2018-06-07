@@ -1,3 +1,6 @@
+### v1.5.0
+- experimental option to use pull api route during development
+
 ### v1.4.2
 - fix typo in package.json
 
