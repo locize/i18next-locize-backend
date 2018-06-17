@@ -1,3 +1,6 @@
+### v1.6.0
+- support for private versions
+
 ### v1.5.0
 - experimental option to use pull api route during development
 

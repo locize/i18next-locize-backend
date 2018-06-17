@@ -26,6 +26,7 @@ function ajax(url, options, callback, data, cache) {
 function getDefaults() {
   return {
     loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
     addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
@@ -35,6 +36,7 @@ function getDefaults() {
     setContentTypeJSON: false,
     version: 'latest',
     pull: false,
+    private: false,
     whitelistThreshold: 0.9
   };
 }
@@ -52,6 +54,8 @@ class Backend {
 
   init(services, options = {}, i18nextOptions, callback) {
     this.options = { ...getDefaults(), ...this.options, ...options }; // initial
+
+    if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions')
 
     if (typeof callback === 'function') {
       this.getOptions((err, opts) => {
@@ -105,8 +109,18 @@ class Backend {
   }
 
   read(language, namespace, callback) {
-    let url = utils.interpolate(this.options.pull ? this.options.pullPath : this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
-    let options = this.options.pull ? { authorize: true } : {};
+    let url;
+    let options = {};
+    if (this.options.private) {
+      url = utils.interpolate(this.options.privatePath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+      options = { authorize: true };
+    } else if (this.options.pull) {
+      url = utils.interpolate(this.options.pullPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+      options = { authorize: true };
+    } else {
+      url = utils.interpolate(this.options.loadPath, { lng: language, ns: namespace, projectId: this.options.projectId, version: this.options.version });
+    }
+
     this.loadUrl(url, options, callback);
   }
 

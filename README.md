@@ -54,6 +54,9 @@ i18next
 
   // version - defaults to latest
   version: '[VERSION]'
+
+  // private - set to true if you version on locize is set to use private publish
+  private: false
 }
 ```
 
