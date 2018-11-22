@@ -95,7 +95,6 @@ declare class I18NextLocizeBackend {
   ): void;
   write(language: string, namespace: string): void;
   type: "backend";
-  services: any;
   options: I18NextLocizeBackend.BackendOptions;
 }
 
