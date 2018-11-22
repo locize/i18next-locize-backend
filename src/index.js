@@ -41,7 +41,7 @@ function getDefaults() {
   };
 }
 
-class Backend {
+class I18NextLocizeBackend {
   constructor(services, options, callback) {
     if (services && services.projectId) {
       this.init(null, services, {}, options);
@@ -253,7 +253,7 @@ class Backend {
   }
 }
 
-Backend.type = 'backend';
+I18NextLocizeBackend.type = 'backend';
 
 
-export default Backend;
+export default I18NextLocizeBackend;

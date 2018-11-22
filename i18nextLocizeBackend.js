@@ -142,9 +142,9 @@ function getDefaults() {
   };
 }
 
-var Backend = function () {
-  function Backend(services, options, callback) {
-    _classCallCheck(this, Backend);
+var I18NextLocizeBackend = function () {
+  function I18NextLocizeBackend(services, options, callback) {
+    _classCallCheck(this, I18NextLocizeBackend);
 
     if (services && services.projectId) {
       this.init(null, services, {}, options);
@@ -155,7 +155,7 @@ var Backend = function () {
     this.type = 'backend';
   }
 
-  _createClass(Backend, [{
+  _createClass(I18NextLocizeBackend, [{
     key: 'init',
     value: function init(services) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -384,11 +384,11 @@ var Backend = function () {
     }
   }]);
 
-  return Backend;
+  return I18NextLocizeBackend;
 }();
 
-Backend.type = 'backend';
+I18NextLocizeBackend.type = 'backend';
 
-return Backend;
+return I18NextLocizeBackend;
 
 })));
