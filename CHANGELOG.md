@@ -1,3 +1,7 @@
+### v1.7.1
+
+- main export index.d.ts as default export
+
 ### v1.7.0
 
 - adds index.d.ts for typescript users

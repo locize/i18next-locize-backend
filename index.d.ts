@@ -98,4 +98,4 @@ declare class I18NextLocizeBackend {
   options: I18NextLocizeBackend.BackendOptions;
 }
 
-export = I18NextLocizeBackend;
+export default I18NextLocizeBackend;
