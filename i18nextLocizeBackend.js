@@ -138,7 +138,8 @@ function getDefaults() {
     version: 'latest',
     pull: false,
     private: false,
-    whitelistThreshold: 0.9
+    whitelistThreshold: 0.9,
+    failLoadingOnEmptyJSON: false // useful if using chained backend
   };
 }
 
@@ -243,6 +244,8 @@ var I18NextLocizeBackend = function () {
   }, {
     key: 'loadUrl',
     value: function loadUrl(url, options, callback) {
+      var _this3 = this;
+
       ajax(url, _extends({}, this.options, options), function (data, xhr) {
         if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true /* retry */);
         if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false /* no retry */);
@@ -255,25 +258,26 @@ var I18NextLocizeBackend = function () {
           err = 'failed parsing ' + url + ' to json';
         }
         if (err) return callback(err, false);
+        if (_this3.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false);
         callback(null, ret);
       });
     }
   }, {
     key: 'create',
     value: function create(languages, namespace, key, fallbackValue, callback, options) {
-      var _this3 = this;
+      var _this4 = this;
 
       if (!callback) callback = function callback() {};
       if (typeof languages === 'string') languages = [languages];
 
       languages.forEach(function (lng) {
-        if (lng === _this3.options.referenceLng) _this3.queue.call(_this3, _this3.options.referenceLng, namespace, key, fallbackValue, callback, options);
+        if (lng === _this4.options.referenceLng) _this4.queue.call(_this4, _this4.options.referenceLng, namespace, key, fallbackValue, callback, options);
       });
     }
   }, {
     key: 'update',
     value: function update(languages, namespace, key, fallbackValue, callback, options) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (!callback) callback = function callback() {};
       if (!options) options = {};
@@ -283,13 +287,13 @@ var I18NextLocizeBackend = function () {
       options.isUpdate = true;
 
       languages.forEach(function (lng) {
-        if (lng === _this4.options.referenceLng) _this4.queue.call(_this4, _this4.options.referenceLng, namespace, key, fallbackValue, callback, options);
+        if (lng === _this5.options.referenceLng) _this5.queue.call(_this5, _this5.options.referenceLng, namespace, key, fallbackValue, callback, options);
       });
     }
   }, {
     key: 'write',
     value: function write(lng, namespace) {
-      var _this5 = this;
+      var _this6 = this;
 
       var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
       if (lock) return;
@@ -328,14 +332,14 @@ var I18NextLocizeBackend = function () {
 
           if (!todo) {
             // unlock
-            setPath(_this5.queuedWrites, ['locks', lng, namespace], false);
+            setPath(_this6.queuedWrites, ['locks', lng, namespace], false);
 
             missings.forEach(function (missing) {
               if (missing.callback) missing.callback();
             });
 
             // rerun
-            _this5.debouncedProcess(lng, namespace);
+            _this6.debouncedProcess(lng, namespace);
           }
         };
 
@@ -363,14 +367,14 @@ var I18NextLocizeBackend = function () {
   }, {
     key: 'process',
     value: function process() {
-      var _this6 = this;
+      var _this7 = this;
 
       Object.keys(this.queuedWrites).forEach(function (lng) {
         if (lng === 'locks') return;
-        Object.keys(_this6.queuedWrites[lng]).forEach(function (ns) {
-          var todo = _this6.queuedWrites[lng][ns];
+        Object.keys(_this7.queuedWrites[lng]).forEach(function (ns) {
+          var todo = _this7.queuedWrites[lng][ns];
           if (todo.length) {
-            _this6.write(lng, ns);
+            _this7.write(lng, ns);
           }
         });
       });

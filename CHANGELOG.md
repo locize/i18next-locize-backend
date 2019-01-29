@@ -1,3 +1,7 @@
+### v1.8.0
+
+- handle empty result as an error if `failLoadingOnEmptyJSON` set true [299](https://github.com/locize/i18next-locize-backend/pull/299)
+
 ### v1.7.1
 
 - main export index.d.ts as default export

@@ -37,7 +37,8 @@ function getDefaults() {
     version: 'latest',
     pull: false,
     private: false,
-    whitelistThreshold: 0.9
+    whitelistThreshold: 0.9,
+    failLoadingOnEmptyJSON: false, // useful if using chained backend
   };
 }
 
@@ -136,7 +137,7 @@ class I18NextLocizeBackend {
         err = 'failed parsing ' + url + ' to json';
       }
       if (err) return callback(err, false);
-      if (0 === Object.keys(ret).length) return callback('translation is blank', false);
+      if (this.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false);
       callback(null, ret);
     });
   }
