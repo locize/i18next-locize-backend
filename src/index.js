@@ -136,6 +136,7 @@ class I18NextLocizeBackend {
         err = 'failed parsing ' + url + ' to json';
       }
       if (err) return callback(err, false);
+      if (0 === Object.keys(ret).length) return callback('translation is blank', false);
       callback(null, ret);
     });
   }
