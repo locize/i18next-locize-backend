@@ -27,19 +27,18 @@ $ bower install i18next-locize-backend
 Wiring up:
 
 ```js
-import i18next from 'i18next';
-import Locize from 'i18next-locize-backend';
+import i18next from "i18next";
+import Locize from "i18next-locize-backend";
 
-i18next
-  .use(Locize)
-  .init(i18nextOptions);
+i18next.use(Locize).init(i18nextOptions);
 ```
 
 - As with all modules you can either pass the constructor function (class) to the i18next.use or a concrete instance.
 - If you don't use a module loader it will be added to `window.i18nextLocizeBackend`
 
-
 ## Backend Options
+
+**IMPORTANT** make sure you do not add your apiKey in the production build to avoid misuse by strangers
 
 ```js
 {
@@ -56,7 +55,11 @@ i18next
   version: '[VERSION]',
 
   // private - set to true if you version on locize is set to use private publish
-  private: false
+  private: false,
+
+  // hostnames that are allowed to create, update keys
+  // please keep those to your local system, staging, test servers (not production)
+  allowedAddOrUpdateHosts: ['localhost']
 }
 ```
 
@@ -67,29 +70,27 @@ Options can be passed in:
 **preferred** - by setting options.backend in i18next.init:
 
 ```js
-import i18next from 'i18next';
-import Locize from 'i18next-locize-backend';
+import i18next from "i18next";
+import Locize from "i18next-locize-backend";
 
-i18next
-  .use(Locize)
-  .init({
-    backend: options
-  });
+i18next.use(Locize).init({
+  backend: options
+});
 ```
 
 on construction:
 
 ```js
-  import Locize from 'i18next-locize-backend';
-  const locize = new Locize(options);
+import Locize from "i18next-locize-backend";
+const locize = new Locize(options);
 ```
 
 via calling init:
 
 ```js
-  import Locize from 'i18next-locize-backend';
-  const locize = new Locize();
-  locize.init(options);
+import Locize from "i18next-locize-backend";
+const locize = new Locize();
+locize.init(options);
 ```
 
 ## Additional API endpoints
@@ -99,7 +100,7 @@ via calling init:
 Will return a list of all languages in your project including percentage of translations done per version.
 
 ```js
-import Locize from 'i18next-locize-backend';
+import Locize from "i18next-locize-backend";
 const locize = new Locize(options);
 
 locize.getLanguages((err, data) => {
@@ -136,7 +137,7 @@ i18next.services.backendConnector.backend.getLanguages(callback);
 Will return an object containing useful informations for the i18next init options.
 
 ```js
-import Locize from 'i18next-locize-backend';
+import Locize from "i18next-locize-backend";
 const locize = new Locize(options);
 
 locize.getOptions((err, data) => {
@@ -169,17 +170,18 @@ You will get i18next options for (same as above backend.getOptions):
 - load
 
 ```js
-import i18next from 'i18next';
-import Locize from 'i18next-locize-backend';
+import i18next from "i18next";
+import Locize from "i18next-locize-backend";
 
-const locize = new Locize({
-  projectId: '[PROJECTID]',
-  apiKey: '[APIKEY]',
-  version: '[VERSION]',
-  // referenceLng -> not needed as will be loaded from API
-}, (err, opts) => {
-  i18next
-    .use(locize)
-    .init({ ...opts, ...yourOptions}); // yourOptions should not include backendOptions!
-});
+const locize = new Locize(
+  {
+    projectId: "[PROJECTID]",
+    apiKey: "[APIKEY]",
+    version: "[VERSION]"
+    // referenceLng -> not needed as will be loaded from API
+  },
+  (err, opts) => {
+    i18next.use(locize).init({ ...opts, ...yourOptions }); // yourOptions should not include backendOptions!
+  }
+);
 ```

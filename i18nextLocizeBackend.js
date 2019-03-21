@@ -139,7 +139,8 @@ function getDefaults() {
     pull: false,
     private: false,
     whitelistThreshold: 0.9,
-    failLoadingOnEmptyJSON: false // useful if using chained backend
+    failLoadingOnEmptyJSON: false, // useful if using chained backend
+    allowedAddOrUpdateHosts: ['localhost']
   };
 }
 
@@ -169,6 +170,13 @@ var I18NextLocizeBackend = function () {
       this.options = _extends({}, getDefaults(), this.options, options); // initial
 
       if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions');
+
+      var hostname = window.location && window.location.hostname;
+      if (hostname) {
+        this.isAddOrUpdateAllowed = this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
+      } else {
+        this.isAddOrUpdateAllowed = true;
+      }
 
       if (typeof callback === 'function') {
         this.getOptions(function (err, opts) {
@@ -268,6 +276,7 @@ var I18NextLocizeBackend = function () {
       var _this4 = this;
 
       if (!callback) callback = function callback() {};
+      if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
       if (typeof languages === 'string') languages = [languages];
 
       languages.forEach(function (lng) {
@@ -280,6 +289,7 @@ var I18NextLocizeBackend = function () {
       var _this5 = this;
 
       if (!callback) callback = function callback() {};
+      if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
       if (!options) options = {};
       if (typeof languages === 'string') languages = [languages];
 

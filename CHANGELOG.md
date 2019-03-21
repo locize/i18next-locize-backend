@@ -1,3 +1,7 @@
+### v1.9.0
+
+- allow to define a list of allowed hosts to send lastUsed data - defaults to localhost
+
 ### v1.8.0
 
 - handle empty result as an error if `failLoadingOnEmptyJSON` set true [299](https://github.com/locize/i18next-locize-backend/pull/299)
