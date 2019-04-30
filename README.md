@@ -14,7 +14,9 @@ i18next.t(key, { defaultValue, tDescription });
 
 # Troubleshooting
 
-**SaveMissing is not working** per default only `localhost` is allowed to send them (to avoid you're using this feature accidentally in production. If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['localhost']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
+**SaveMissing is not working**
+
+Per default only `localhost` is allowed to send them (to avoid you're using this feature accidentally in production. If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['localhost']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
 # Getting started
 
