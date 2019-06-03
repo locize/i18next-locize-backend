@@ -1,3 +1,10 @@
+### 2.0.0
+
+- removes deprecated jsnext:main from package.json
+- Bundle all entry points with rollup [303](https://github.com/locize/i18next-locize-backend/pull/303)
+- **note:** dist/es -> dist/esm, dist/commonjs -> dist/cjs (individual files -> one bundled file)
+- removes bower finally
+
 ### v1.9.0
 
 - allow to define a list of allowed hosts to send lastUsed data - defaults to localhost
