@@ -1,6 +1,6 @@
 {
   "name": "i18next-locize-backend",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "backend layer for i18next using locize service ",
   "main": "./dist/cjs/i18nextLocizeBackend.js",
   "module": "./dist/esm/i18nextLocizeBackend.js",
