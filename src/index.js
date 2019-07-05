@@ -71,11 +71,11 @@ class I18NextLocizeBackend {
     if (hostname) {
       this.isAddOrUpdateAllowed =
         this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
-      if (i18nextOptions.saveMissing && this.isAddOrUpdateAllowed)
+      if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed)
         services &&
           services.logger &&
           services.logger.warn(
-            `locize-backend: will not save missings because the host "${hostname}" was not in the list of allowedAddOrUpdateHosts: ${allowedAddOrUpdateHosts.join(
+            `locize-backend: will not save missings because the host "${hostname}" was not in the list of allowedAddOrUpdateHosts: ${this.options.allowedAddOrUpdateHosts.join(
               ", "
             )} (matches need to be exact).`
           );

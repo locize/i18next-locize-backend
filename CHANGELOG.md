@@ -1,3 +1,7 @@
+### 2.0.2
+
+- small fixes in warn logic
+
 ### 2.0.1
 
 - give warnings when save missing does block the saving because reference language was not found or the allowed hosts did not contain the host
