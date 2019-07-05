@@ -1,3 +1,7 @@
+### 2.0.1
+
+- give warnings when save missing does block the saving because reference language was not found or the allowed hosts did not contain the host
+
 ### 2.0.0
 
 - removes deprecated jsnext:main from package.json

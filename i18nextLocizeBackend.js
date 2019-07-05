@@ -152,19 +152,19 @@
 
   function ajax(url, options, callback, data, cache) {
     try {
-      var x = new (XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
-      x.open(data ? 'POST' : 'GET', url, 1);
+      var x = new (XMLHttpRequest || ActiveXObject)("MSXML2.XMLHTTP.3.0");
+      x.open(data ? "POST" : "GET", url, 1);
 
       if (!options.crossDomain) {
-        x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        x.setRequestHeader("X-Requested-With", "XMLHttpRequest");
       }
 
       if (options.authorize && options.apiKey) {
-        x.setRequestHeader('Authorization', options.apiKey);
+        x.setRequestHeader("Authorization", options.apiKey);
       }
 
       if (data || options.setContentTypeJSON) {
-        x.setRequestHeader('Content-type', 'application/json');
+        x.setRequestHeader("Content-type", "application/json");
       }
 
       x.onreadystatechange = function () {
@@ -179,22 +179,22 @@
 
   function getDefaults() {
     return {
-      loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
-      addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      referenceLng: 'en',
+      loadPath: "https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}",
+      privatePath: "https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}",
+      pullPath: "https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}",
+      getLanguagesPath: "https://api.locize.io/languages/{{projectId}}",
+      addPath: "https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}",
+      updatePath: "https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}",
+      referenceLng: "en",
       crossDomain: true,
       setContentTypeJSON: false,
-      version: 'latest',
+      version: "latest",
       pull: false,
       "private": false,
       whitelistThreshold: 0.9,
       failLoadingOnEmptyJSON: false,
       // useful if using chained backend
-      allowedAddOrUpdateHosts: ['localhost']
+      allowedAddOrUpdateHosts: ["localhost"]
     };
   }
 
@@ -210,7 +210,7 @@
         this.init(null, options, {}, callback);
       }
 
-      this.type = 'backend';
+      this.type = "backend";
     }
 
     _createClass(I18NextLocizeBackend, [{
@@ -219,19 +219,22 @@
         var _this = this;
 
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var i18nextOptions = arguments.length > 2 ? arguments[2] : undefined;
         var callback = arguments.length > 3 ? arguments[3] : undefined;
         this.options = _objectSpread({}, getDefaults(), this.options, options); // initial
 
-        if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions');
+        this.services = services;
+        if (this.options.pull) console.warn("deprecated: pull will be removed in future versions and should be replaced with locize private versions");
         var hostname = window.location && window.location.hostname;
 
         if (hostname) {
           this.isAddOrUpdateAllowed = this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
+          if (i18nextOptions.saveMissing && this.isAddOrUpdateAllowed) services && services.logger && services.logger.warn("locize-backend: will not save missings because the host \"".concat(hostname, "\" was not in the list of allowedAddOrUpdateHosts: ").concat(allowedAddOrUpdateHosts.join(", "), " (matches need to be exact)."));
         } else {
           this.isAddOrUpdateAllowed = true;
         }
 
-        if (typeof callback === 'function') {
+        if (typeof callback === "function") {
           this.getOptions(function (err, opts) {
             if (err) return callback(err);
             _this.options.referenceLng = options.referenceLng || opts.referenceLng || _this.options.referenceLng;
@@ -258,26 +261,26 @@
         this.getLanguages(function (err, data) {
           if (err) return callback(err);
           var keys = Object.keys(data);
-          if (!keys.length) return callback(new Error('was unable to load languages via API'));
+          if (!keys.length) return callback(new Error("was unable to load languages via API"));
           var referenceLng = keys.reduce(function (mem, k) {
             var item = data[k];
             if (item.isReferenceLanguage) mem = k;
             return mem;
-          }, '');
+          }, "");
           var whitelist = keys.reduce(function (mem, k) {
             var item = data[k];
             if (item.translated[_this2.options.version] && item.translated[_this2.options.version] >= _this2.options.whitelistThreshold) mem.push(k);
             return mem;
           }, []);
           var hasRegion = keys.reduce(function (mem, k) {
-            if (k.indexOf('-') > -1) return true;
+            if (k.indexOf("-") > -1) return true;
             return mem;
           }, false);
           callback(null, {
             fallbackLng: referenceLng,
             referenceLng: referenceLng,
             whitelist: whitelist,
-            load: hasRegion ? 'all' : 'languageOnly'
+            load: hasRegion ? "all" : "languageOnly"
           });
         });
       }
@@ -324,10 +327,10 @@
         var _this3 = this;
 
         ajax(url, _objectSpread({}, this.options, options), function (data, xhr) {
-          if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true
+          if (xhr.status >= 500 && xhr.status < 600) return callback("failed loading " + url, true
           /* retry */
           );
-          if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false
+          if (xhr.status >= 400 && xhr.status < 500) return callback("failed loading " + url, false
           /* no retry */
           );
           var ret, err;
@@ -335,11 +338,11 @@
           try {
             ret = JSON.parse(data);
           } catch (e) {
-            err = 'failed parsing ' + url + ' to json';
+            err = "failed parsing " + url + " to json";
           }
 
           if (err) return callback(err, false);
-          if (_this3.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false);
+          if (_this3.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback("loaded result empty for " + url, false);
           callback(null, ret);
         });
       }
@@ -349,8 +352,15 @@
         var _this4 = this;
 
         if (!callback) callback = function callback() {};
-        if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
-        if (typeof languages === 'string') languages = [languages];
+        if (!this.isAddOrUpdateAllowed) return callback("host is not allowed to create key.");
+        if (typeof languages === "string") languages = [languages];
+
+        if (languages.filter(function (l) {
+          return l === _this4.options.referenceLng;
+        }).length < 1) {
+          this.services && this.services.logger && this.services.logger.warn("locize-backend: will not save missings because the reference language \"".concat(this.options.referenceLng, "\" was not in the list of to save languages: ").concat(languages.join(", "), " (open your site in the reference language to save missings)."));
+        }
+
         languages.forEach(function (lng) {
           if (lng === _this4.options.referenceLng) _this4.queue.call(_this4, _this4.options.referenceLng, namespace, key, fallbackValue, callback, options);
         });
@@ -361,9 +371,9 @@
         var _this5 = this;
 
         if (!callback) callback = function callback() {};
-        if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
+        if (!this.isAddOrUpdateAllowed) return callback("host is not allowed to update key.");
         if (!options) options = {};
-        if (typeof languages === 'string') languages = [languages]; // mark as update
+        if (typeof languages === "string") languages = [languages]; // mark as update
 
         options.isUpdate = true;
         languages.forEach(function (lng) {
@@ -375,7 +385,7 @@
       value: function write(lng, namespace) {
         var _this6 = this;
 
-        var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
+        var lock = getPath(this.queuedWrites, ["locks", lng, namespace]);
         if (lock) return;
         var missingUrl = interpolate(this.options.addPath, {
           lng: lng,
@@ -394,18 +404,18 @@
 
         if (missings.length) {
           // lock
-          setPath(this.queuedWrites, ['locks', lng, namespace], true);
+          setPath(this.queuedWrites, ["locks", lng, namespace], true);
           var hasMissing = false;
           var hasUpdates = false;
           var payloadMissing = {};
           var payloadUpdate = {};
           missings.forEach(function (item) {
             var value = item.options && item.options.tDescription ? {
-              value: item.fallbackValue || '',
+              value: item.fallbackValue || "",
               context: {
                 text: item.options.tDescription
               }
-            } : item.fallbackValue || '';
+            } : item.fallbackValue || "";
 
             if (item.options && item.options.isUpdate) {
               if (!hasUpdates) hasUpdates = true;
@@ -424,7 +434,7 @@
 
             if (!todo) {
               // unlock
-              setPath(_this6.queuedWrites, ['locks', lng, namespace], false);
+              setPath(_this6.queuedWrites, ["locks", lng, namespace], false);
               missings.forEach(function (missing) {
                 if (missing.callback) missing.callback();
               }); // rerun
@@ -462,7 +472,7 @@
         var _this7 = this;
 
         Object.keys(this.queuedWrites).forEach(function (lng) {
-          if (lng === 'locks') return;
+          if (lng === "locks") return;
           Object.keys(_this7.queuedWrites[lng]).forEach(function (ns) {
             var todo = _this7.queuedWrites[lng][ns];
 
@@ -477,7 +487,7 @@
       value: function queue(lng, namespace, key, fallbackValue, callback, options) {
         pushPath(this.queuedWrites, [lng, namespace], {
           key: key,
-          fallbackValue: fallbackValue || '',
+          fallbackValue: fallbackValue || "",
           callback: callback,
           options: options
         });
@@ -488,7 +498,7 @@
     return I18NextLocizeBackend;
   }();
 
-  I18NextLocizeBackend.type = 'backend';
+  I18NextLocizeBackend.type = "backend";
 
   return I18NextLocizeBackend;
 
