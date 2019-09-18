@@ -1,3 +1,7 @@
+### 2.1.0
+
+- emit a onSaved(lng, ns) event if in options
+
 ### 2.0.2
 
 - small fixes in warn logic

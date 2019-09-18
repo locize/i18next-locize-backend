@@ -43,7 +43,8 @@ function getDefaults() {
     private: false,
     whitelistThreshold: 0.9,
     failLoadingOnEmptyJSON: false, // useful if using chained backend
-    allowedAddOrUpdateHosts: ['localhost']
+    allowedAddOrUpdateHosts: ['localhost'],
+    onSaved
   };
 }
 
@@ -311,6 +312,9 @@ class I18NextLocizeBackend {
           missings.forEach(missing => {
             if (missing.callback) missing.callback();
           });
+
+          // emit notification onSaved
+          if (this.options.onSaved) this.options.onSaved(lng, namespace);
 
           // rerun
           this.debouncedProcess(lng, namespace);
