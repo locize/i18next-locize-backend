@@ -44,7 +44,7 @@ function getDefaults() {
     whitelistThreshold: 0.9,
     failLoadingOnEmptyJSON: false, // useful if using chained backend
     allowedAddOrUpdateHosts: ['localhost'],
-    onSaved
+    onSaved: false
   };
 }
 
