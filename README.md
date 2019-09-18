@@ -65,7 +65,10 @@ i18next.use(Locize).init(i18nextOptions);
 
   // hostnames that are allowed to create, update keys
   // please keep those to your local system, staging, test servers (not production)
-  allowedAddOrUpdateHosts: ['localhost']
+  allowedAddOrUpdateHosts: ['localhost'],
+  
+  // optional event triggered on saved to backend
+  onSaved: (lng, ns) => { ... }
 }
 ```
 
