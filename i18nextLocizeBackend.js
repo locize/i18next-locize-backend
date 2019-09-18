@@ -195,7 +195,7 @@
       failLoadingOnEmptyJSON: false,
       // useful if using chained backend
       allowedAddOrUpdateHosts: ['localhost'],
-      onSaved: onSaved
+      onSaved: false
     };
   }
 
