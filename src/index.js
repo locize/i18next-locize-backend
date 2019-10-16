@@ -1,9 +1,20 @@
 import * as utils from './utils';
 
+// this is for avoiding error if running in nodejs
+var isNode = typeof global !== 'undefined' && typeof require !== 'undefined';
+
 // https://gist.github.com/Xeoncross/7663273
 function ajax(url, options, callback, data, cache) {
   try {
-    var x = new (XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
+    var x
+    if (isNode) {
+      // we will use node-XMLHttpRequest for mimic window.XMLHttpRequest
+      var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+      x = new XMLHttpRequest('MSXML2.XMLHTTP.3.0');
+    } else {
+      x = new (XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
+    }
+    
     x.open(data ? 'POST' : 'GET', url, 1);
     if (!options.crossDomain) {
       x.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -19,7 +30,7 @@ function ajax(url, options, callback, data, cache) {
     };
     x.send(JSON.stringify(data));
   } catch (e) {
-    window.console && console.log(e);
+    console.log(e);
   }
 }
 
@@ -67,11 +78,15 @@ class I18NextLocizeBackend {
       console.warn(
         'deprecated: pull will be removed in future versions and should be replaced with locize private versions'
       );
-    const isBrowser = typeof window !== 'undefined';
-    const hostname = isBrowser && window.location && window.location.hostname;
-    if (hostname) {
+    
+    // if running in nodejs, we will set this to true
+    if (isNode) {
+      this.isAddOrUpdateAllowed = true;
+    } else {
+      const hostname = window.location && window.location.hostname;
       this.isAddOrUpdateAllowed =
         this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
+      
       if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed)
         services &&
           services.logger &&
@@ -80,8 +95,6 @@ class I18NextLocizeBackend {
               ', '
             )} (matches need to be exact).`
           );
-    } else {
-      this.isAddOrUpdateAllowed = true;
     }
 
     if (typeof callback === 'function') {
