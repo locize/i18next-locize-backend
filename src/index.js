@@ -70,8 +70,8 @@ class I18NextLocizeBackend {
 
     const hostname = window.location && window.location.hostname;
     if (hostname) {
-      this.isAddOrUpdateAllowed =
-        this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
+      this.isAddOrUpdateAllowed = typeof this.options.allowedAddOrUpdateHosts === 'function' ?this.options.allowedAddOrUpdateHosts(hostname) : this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
+
       if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed)
         services &&
           services.logger &&

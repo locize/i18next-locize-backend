@@ -1,3 +1,7 @@
+### 2.2.0
+
+- allow `allowedAddOrUpdateHosts` to be a function returning true if allowed or false if not allowed host
+
 ### 2.1.0
 
 - emit a onSaved(lng, ns) event if in options
