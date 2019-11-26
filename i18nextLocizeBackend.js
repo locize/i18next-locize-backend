@@ -173,7 +173,7 @@
 
       x.send(JSON.stringify(data));
     } catch (e) {
-      window.console && console.log(e);
+      typeof window !== 'undefined' && window.console && console.log(e);
     }
   }
 
@@ -226,7 +226,7 @@
 
         this.services = services;
         if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions');
-        var hostname = window.location && window.location.hostname;
+        var hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
 
         if (hostname) {
           this.isAddOrUpdateAllowed = typeof this.options.allowedAddOrUpdateHosts === 'function' ? this.options.allowedAddOrUpdateHosts(hostname) : this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
