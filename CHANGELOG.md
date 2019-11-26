@@ -1,3 +1,7 @@
+### 2.2.1
+
+- check for window type [312](https://github.com/locize/i18next-locize-backend/pull/312)
+
 ### 2.2.0
 
 - allow `allowedAddOrUpdateHosts` to be a function returning true if allowed or false if not allowed host
