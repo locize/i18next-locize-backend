@@ -19,7 +19,7 @@ function ajax(url, options, callback, data, cache) {
     };
     x.send(JSON.stringify(data));
   } catch (e) {
-    window.console && console.log(e);
+    typeof window !== 'undefined' && window.console && console.log(e);
   }
 }
 
@@ -68,7 +68,7 @@ class I18NextLocizeBackend {
         'deprecated: pull will be removed in future versions and should be replaced with locize private versions'
       );
 
-    const hostname = window.location && window.location.hostname;
+    const hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
     if (hostname) {
       this.isAddOrUpdateAllowed = typeof this.options.allowedAddOrUpdateHosts === 'function' ?this.options.allowedAddOrUpdateHosts(hostname) : this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
 
