@@ -62,6 +62,13 @@ class I18NextLocizeBackend {
   init(services, options = {}, i18nextOptions, callback) {
     this.options = { ...getDefaults(), ...this.options, ...options }; // initial
     this.services = services;
+    
+    if (!this.options.projectId || this.options.projectId === 'projectid' || this.options.projectId === 'projectId') {
+      const err = new Error('projectId is not valid');
+      console.error(err);
+      if (typeof callback === 'function') return callback(err);
+      throw err;
+    }
 
     if (this.options.pull)
       console.warn(
