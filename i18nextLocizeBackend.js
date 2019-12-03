@@ -362,7 +362,7 @@
 
         if (!callback) callback = function callback() {}; // missing options
 
-        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey']);
+        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
         if (isMissing) return callback(new Error(isMissing)); // unallowed host
 
         if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
@@ -383,7 +383,10 @@
       value: function update(languages, namespace, key, fallbackValue, callback, options) {
         var _this5 = this;
 
-        if (!callback) callback = function callback() {};
+        if (!callback) callback = function callback() {}; // missing options
+
+        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
+        if (isMissing) return callback(new Error(isMissing));
         if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
         if (!options) options = {};
         if (typeof languages === 'string') languages = [languages]; // mark as update
