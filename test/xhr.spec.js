@@ -5,7 +5,8 @@ describe('XHR backend', () => {
 
   before(() => {
     backend = new XHR(null, {
-      loadPath: 'http://localhost:9876/locales/{{lng}}/{{ns}}.json'
+      loadPath: 'http://localhost:9876/locales/{{lng}}/{{ns}}.json',
+      projectId: 'test'
     });
   });
 

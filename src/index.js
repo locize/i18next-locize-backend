@@ -101,6 +101,9 @@ class I18NextLocizeBackend {
   }
 
   getLanguages(callback) {
+    const isMissing = utils.isMissingOption(this.options, ['projectId'])
+    if (isMissing) return callback(new Error(isMissing));
+
     let url = utils.interpolate(this.options.getLanguagesPath, {
       projectId: this.options.projectId
     });
@@ -150,6 +153,9 @@ class I18NextLocizeBackend {
     let url;
     let options = {};
     if (this.options.private) {
+      const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey'])
+      if (isMissing) return callback(new Error(isMissing), false);
+
       url = utils.interpolate(this.options.privatePath, {
         lng: language,
         ns: namespace,
@@ -158,6 +164,9 @@ class I18NextLocizeBackend {
       });
       options = { authorize: true };
     } else if (this.options.pull) {
+      const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey'])
+      if (isMissing) return callback(new Error(isMissing), false);
+
       url = utils.interpolate(this.options.pullPath, {
         lng: language,
         ns: namespace,
@@ -166,6 +175,9 @@ class I18NextLocizeBackend {
       });
       options = { authorize: true };
     } else {
+      const isMissing = utils.isMissingOption(this.options, ['projectId', 'version'])
+      if (isMissing) return callback(new Error(isMissing), false);
+
       url = utils.interpolate(this.options.loadPath, {
         lng: language,
         ns: namespace,
@@ -199,8 +211,15 @@ class I18NextLocizeBackend {
 
   create(languages, namespace, key, fallbackValue, callback, options) {
     if (!callback) callback = () => {};
+
+    // missing options
+    const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey'])
+    if (isMissing) return callback(new Error(isMissing));
+
+    // unallowed host
     if (!this.isAddOrUpdateAllowed)
       return callback('host is not allowed to create key.');
+
     if (typeof languages === 'string') languages = [languages];
 
     if (languages.filter(l => l === this.options.referenceLng).length < 1) {

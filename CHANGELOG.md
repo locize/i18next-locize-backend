@@ -1,3 +1,7 @@
+### 2.2.2
+
+- warn for missing options
+
 ### 2.2.1
 
 - check for window type [312](https://github.com/locize/i18next-locize-backend/pull/312)

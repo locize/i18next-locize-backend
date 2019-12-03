@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.i18nextLocizeBackend = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
   function _defineProperty(obj, key, value) {
     if (key in obj) {
@@ -17,25 +17,6 @@
     }
 
     return obj;
-  }
-
-  function _objectSpread(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
-
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
-      }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    }
-
-    return target;
   }
 
   function _classCallCheck(instance, Constructor) {
@@ -149,6 +130,23 @@
 
     return str;
   }
+  function isMissingOption(obj, props) {
+    return props.reduce(function (mem, p) {
+      if (mem) return mem;
+
+      if (!obj || !obj[p] || typeof obj[p] !== 'string' || !obj[p].toLowerCase() === p.toLowerCase()) {
+        var err = "i18next-locize-backend :: got \"".concat(obj[p], "\" in options for ").concat(p, " which is invalid.");
+        console.warn(err);
+        return err;
+      }
+
+      return false;
+    }, false);
+  }
+
+  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
   function ajax(url, options, callback, data, cache) {
     try {
@@ -222,7 +220,7 @@
         var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var i18nextOptions = arguments.length > 2 ? arguments[2] : undefined;
         var callback = arguments.length > 3 ? arguments[3] : undefined;
-        this.options = _objectSpread({}, getDefaults(), this.options, options); // initial
+        this.options = _objectSpread({}, getDefaults(), {}, this.options, {}, options); // initial
 
         this.services = services;
         if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions');
@@ -249,6 +247,8 @@
     }, {
       key: "getLanguages",
       value: function getLanguages(callback) {
+        var isMissing = isMissingOption(this.options, ['projectId']);
+        if (isMissing) return callback(new Error(isMissing));
         var url = interpolate(this.options.getLanguagesPath, {
           projectId: this.options.projectId
         });
@@ -292,6 +292,8 @@
         var options = {};
 
         if (this.options["private"]) {
+          var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey']);
+          if (isMissing) return callback(new Error(isMissing), false);
           url = interpolate(this.options.privatePath, {
             lng: language,
             ns: namespace,
@@ -302,6 +304,9 @@
             authorize: true
           };
         } else if (this.options.pull) {
+          var _isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey']);
+
+          if (_isMissing) return callback(new Error(_isMissing), false);
           url = interpolate(this.options.pullPath, {
             lng: language,
             ns: namespace,
@@ -312,6 +317,9 @@
             authorize: true
           };
         } else {
+          var _isMissing2 = isMissingOption(this.options, ['projectId', 'version']);
+
+          if (_isMissing2) return callback(new Error(_isMissing2), false);
           url = interpolate(this.options.loadPath, {
             lng: language,
             ns: namespace,
@@ -327,7 +335,7 @@
       value: function loadUrl(url, options, callback) {
         var _this3 = this;
 
-        ajax(url, _objectSpread({}, this.options, options), function (data, xhr) {
+        ajax(url, _objectSpread({}, this.options, {}, options), function (data, xhr) {
           if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true
           /* retry */
           );
@@ -352,7 +360,11 @@
       value: function create(languages, namespace, key, fallbackValue, callback, options) {
         var _this4 = this;
 
-        if (!callback) callback = function callback() {};
+        if (!callback) callback = function callback() {}; // missing options
+
+        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey']);
+        if (isMissing) return callback(new Error(isMissing)); // unallowed host
+
         if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
         if (typeof languages === 'string') languages = [languages];
 
@@ -451,7 +463,7 @@
           if (hasMissing) {
             ajax(missingUrl, _objectSpread({}, {
               authorize: true
-            }, this.options), function (data, xhr) {
+            }, {}, this.options), function (data, xhr) {
               //const statusCode = xhr.status.toString();
               // TODO: if statusCode === 4xx do log
               doneOne();
@@ -461,7 +473,7 @@
           if (hasUpdates) {
             ajax(updatesUrl, _objectSpread({}, {
               authorize: true
-            }, this.options), function (data, xhr) {
+            }, {}, this.options), function (data, xhr) {
               //const statusCode = xhr.status.toString();
               // TODO: if statusCode === 4xx do log
               doneOne();
@@ -505,4 +517,4 @@
 
   return I18NextLocizeBackend;
 
-}));
+})));
