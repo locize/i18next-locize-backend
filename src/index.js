@@ -213,7 +213,7 @@ class I18NextLocizeBackend {
     if (!callback) callback = () => {};
 
     // missing options
-    const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey'])
+    const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng'])
     if (isMissing) return callback(new Error(isMissing));
 
     // unallowed host
@@ -250,8 +250,14 @@ class I18NextLocizeBackend {
 
   update(languages, namespace, key, fallbackValue, callback, options) {
     if (!callback) callback = () => {};
+
+    // missing options
+    const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng'])
+    if (isMissing) return callback(new Error(isMissing));
+
     if (!this.isAddOrUpdateAllowed)
       return callback('host is not allowed to update key.');
+
     if (!options) options = {};
     if (typeof languages === 'string') languages = [languages];
 
