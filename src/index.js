@@ -25,21 +25,18 @@ function ajax(url, options, callback, data, cache) {
 
 function getDefaults() {
   return {
-    loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    loadPath: 'https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     privatePath:
-      'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    pullPath:
-      'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
+      'https://api.locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    getLanguagesPath: 'https://api.locize.app/languages/{{projectId}}',
     addPath:
-      'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      'https://api.locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     updatePath:
-      'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      'https://api.locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
     setContentTypeJSON: false,
     version: 'latest',
-    pull: false,
     private: false,
     whitelistThreshold: 0.9,
     failLoadingOnEmptyJSON: false, // useful if using chained backend
@@ -65,7 +62,7 @@ class I18NextLocizeBackend {
 
     if (this.options.pull)
       console.warn(
-        'deprecated: pull will be removed in future versions and should be replaced with locize private versions'
+        'The pull API was removed use "private: true" option instead: https://docs.locize.com/integration/api#fetch-private-namespace-resources'
       );
 
     const hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
@@ -157,17 +154,6 @@ class I18NextLocizeBackend {
       if (isMissing) return callback(new Error(isMissing), false);
 
       url = utils.interpolate(this.options.privatePath, {
-        lng: language,
-        ns: namespace,
-        projectId: this.options.projectId,
-        version: this.options.version
-      });
-      options = { authorize: true };
-    } else if (this.options.pull) {
-      const isMissing = utils.isMissingOption(this.options, ['projectId', 'version', 'apiKey'])
-      if (isMissing) return callback(new Error(isMissing), false);
-
-      url = utils.interpolate(this.options.pullPath, {
         lng: language,
         ns: namespace,
         projectId: this.options.projectId,

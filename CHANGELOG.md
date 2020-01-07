@@ -1,3 +1,9 @@
+### 3.0.0
+
+- using the new `locize.app` domain replacing the deprecated `locize.io` domain
+- removed the deprecated pull API keeping a warning to use `private` option instead
+- updated dev dependencies
+
 ### 2.2.2
 
 - warn for missing options

@@ -177,17 +177,15 @@
 
   function getDefaults() {
     return {
-      loadPath: 'https://api.locize.io/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      privatePath: 'https://api.locize.io/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      pullPath: 'https://api.locize.io/pull/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      getLanguagesPath: 'https://api.locize.io/languages/{{projectId}}',
-      addPath: 'https://api.locize.io/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-      updatePath: 'https://api.locize.io/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      loadPath: 'https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      privatePath: 'https://api.locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      getLanguagesPath: 'https://api.locize.app/languages/{{projectId}}',
+      addPath: 'https://api.locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      updatePath: 'https://api.locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
       referenceLng: 'en',
       crossDomain: true,
       setContentTypeJSON: false,
       version: 'latest',
-      pull: false,
       "private": false,
       whitelistThreshold: 0.9,
       failLoadingOnEmptyJSON: false,
@@ -223,7 +221,7 @@
         this.options = _objectSpread({}, getDefaults(), {}, this.options, {}, options); // initial
 
         this.services = services;
-        if (this.options.pull) console.warn('deprecated: pull will be removed in future versions and should be replaced with locize private versions');
+        if (this.options.pull) console.warn('The pull API was removed use "private: true" option instead: https://docs.locize.com/integration/api#fetch-private-namespace-resources');
         var hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
 
         if (hostname) {
@@ -303,23 +301,10 @@
           options = {
             authorize: true
           };
-        } else if (this.options.pull) {
-          var _isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey']);
+        } else {
+          var _isMissing = isMissingOption(this.options, ['projectId', 'version']);
 
           if (_isMissing) return callback(new Error(_isMissing), false);
-          url = interpolate(this.options.pullPath, {
-            lng: language,
-            ns: namespace,
-            projectId: this.options.projectId,
-            version: this.options.version
-          });
-          options = {
-            authorize: true
-          };
-        } else {
-          var _isMissing2 = isMissingOption(this.options, ['projectId', 'version']);
-
-          if (_isMissing2) return callback(new Error(_isMissing2), false);
           url = interpolate(this.options.loadPath, {
             lng: language,
             ns: namespace,
