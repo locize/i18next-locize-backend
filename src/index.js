@@ -72,11 +72,13 @@ class I18NextLocizeBackend {
       if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed)
         services &&
           services.logger &&
-          services.logger.warn(
-            `locize-backend: will not save missings because the host "${hostname}" was not in the list of allowedAddOrUpdateHosts: ${this.options.allowedAddOrUpdateHosts.join(
-              ', '
-            )} (matches need to be exact).`
-          );
+            services.logger.warn(
+              typeof this.options.allowedAddOrUpdateHosts === 'function' ?
+                `locize-backend: will not save missings because allowedAddOrUpdateHosts returned false for the host "${hostname}".` :
+                `locize-backend: will not save missings because the host "${hostname}" was not in the list of allowedAddOrUpdateHosts: ${this.options.allowedAddOrUpdateHosts.join(
+                  ', '
+                )} (matches need to be exact).`
+            );
     } else {
       this.isAddOrUpdateAllowed = true;
     }
