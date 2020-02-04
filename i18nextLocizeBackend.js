@@ -226,7 +226,7 @@
 
         if (hostname) {
           this.isAddOrUpdateAllowed = typeof this.options.allowedAddOrUpdateHosts === 'function' ? this.options.allowedAddOrUpdateHosts(hostname) : this.options.allowedAddOrUpdateHosts.indexOf(hostname) > -1;
-          if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed) services && services.logger && services.logger.warn(this.options.allowedAddOrUpdateHosts === 'function' ? "locize-backend: will not save missings because allowedAddOrUpdateHosts returned false for the host \"".concat(hostname, "\".") : "locize-backend: will not save missings because the host \"".concat(hostname, "\" was not in the list of allowedAddOrUpdateHosts: ").concat(this.options.allowedAddOrUpdateHosts.join(', '), " (matches need to be exact)."));
+          if (i18nextOptions.saveMissing && !this.isAddOrUpdateAllowed) services && services.logger && services.logger.warn(typeof this.options.allowedAddOrUpdateHosts === 'function' ? "locize-backend: will not save missings because allowedAddOrUpdateHosts returned false for the host \"".concat(hostname, "\".") : "locize-backend: will not save missings because the host \"".concat(hostname, "\" was not in the list of allowedAddOrUpdateHosts: ").concat(this.options.allowedAddOrUpdateHosts.join(', '), " (matches need to be exact)."));
         } else {
           this.isAddOrUpdateAllowed = true;
         }
