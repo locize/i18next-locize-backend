@@ -1,3 +1,7 @@
+### 3.0.1
+
+- fix allowedAddOrUpdateHosts function failure log [317](https://github.com/locize/i18next-locize-backend/pull/317)
+
 ### 3.0.0
 
 - using the new `locize.app` domain replacing the deprecated `locize.io` domain
