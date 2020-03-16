@@ -1,3 +1,7 @@
+### 3.0.2
+
+- retry on 408 status
+
 ### 3.0.1
 
 - fix allowedAddOrUpdateHosts function failure log [317](https://github.com/locize/i18next-locize-backend/pull/317)
