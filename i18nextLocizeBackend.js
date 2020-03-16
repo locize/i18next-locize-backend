@@ -321,7 +321,11 @@
         var _this3 = this;
 
         ajax(url, _objectSpread({}, this.options, {}, options), function (data, xhr) {
-          if (xhr.status === 408 || xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true
+          if (xhr.status === 408 || xhr.status === 400) // extras for timeouts on cloudfront
+            return callback('failed loading ' + url, true
+            /* retry */
+            );
+          if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true
           /* retry */
           );
           if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false

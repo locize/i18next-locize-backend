@@ -1,3 +1,7 @@
+### 3.0.3
+
+- retry on 400 status
+
 ### 3.0.2
 
 - retry on 408 status

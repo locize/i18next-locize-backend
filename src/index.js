@@ -179,7 +179,9 @@ class I18NextLocizeBackend {
 
   loadUrl(url, options, callback) {
     ajax(url, { ...this.options, ...options }, (data, xhr) => {
-      if (xhr.status === 408 || (xhr.status >= 500 && xhr.status < 600))
+      if (xhr.status === 408 || xhr.status === 400) // extras for timeouts on cloudfront
+        return callback('failed loading ' + url, true /* retry */);
+      if (xhr.status >= 500 && xhr.status < 600)
         return callback('failed loading ' + url, true /* retry */);
       if (xhr.status >= 400 && xhr.status < 500)
         return callback('failed loading ' + url, false /* no retry */);
