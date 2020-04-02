@@ -2,7 +2,7 @@ import XHR from '../src/';
 
 import expected from './languages/test.json';
 
-describe('XHR backend', () => {
+describe('locize backend', () => {
   let backend;
 
   before(() => {

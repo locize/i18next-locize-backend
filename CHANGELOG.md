@@ -1,3 +1,7 @@
+### 3.1.0
+
+- check if project exists
+
 ### 3.0.3
 
 - retry on 400 status

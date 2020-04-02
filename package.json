@@ -1,6 +1,6 @@
 {
   "name": "i18next-locize-backend",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "backend layer for i18next using locize service ",
   "main": "./dist/cjs/i18nextLocizeBackend.js",
   "module": "./dist/esm/i18nextLocizeBackend.js",
@@ -32,7 +32,7 @@
     "cpy-cli": "^3.0.0",
     "eslint": "6.8.0",
     "eslint-config-airbnb": "18.0.1",
-    "i18next": "19.0.3",
+    "i18next": "19.3.4",
     "istanbul": "gotwarlost/istanbul#source-map",
     "karma": "4.4.1",
     "karma-browserify": "6.1.0",
