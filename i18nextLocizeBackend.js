@@ -191,7 +191,75 @@
       failLoadingOnEmptyJSON: false,
       // useful if using chained backend
       allowedAddOrUpdateHosts: ['localhost'],
-      onSaved: false
+      onSaved: false,
+      checkForProjectTimeout: 3 * 1000,
+      storageExpiration: 60 * 60 * 1000
+    };
+  }
+
+  var hasLocalStorageSupport;
+
+  try {
+    hasLocalStorageSupport = window !== 'undefined' && window.localStorage !== null;
+    var testKey = 'notExistingLocizeProject';
+    window.localStorage.setItem(testKey, 'foo');
+    window.localStorage.removeItem(testKey);
+  } catch (e) {
+    hasLocalStorageSupport = false;
+  }
+
+  function getStorage(storageExpiration) {
+    var setProjectNotExisting = function setProjectNotExisting() {};
+
+    var isProjectNotExisting = function isProjectNotExisting() {};
+
+    if (hasLocalStorageSupport) {
+      setProjectNotExisting = function setProjectNotExisting(projectId) {
+        window.localStorage.setItem("notExistingLocizeProject_".concat(projectId), Date.now());
+      };
+
+      isProjectNotExisting = function isProjectNotExisting(projectId) {
+        var ret = window.localStorage.getItem("notExistingLocizeProject_".concat(projectId));
+        if (!ret) return false;
+
+        if (Date.now() - ret > storageExpiration) {
+          window.localStorage.removeItem("notExistingLocizeProject_".concat(projectId));
+          return false;
+        }
+
+        return true;
+      };
+    } else {
+      setProjectNotExisting = function setProjectNotExisting(projectId) {
+        var date = new Date();
+        date.setTime(date.getTime() + storageExpiration);
+        var expires = "; expires=".concat(date.toGMTString());
+        var name = "notExistingLocizeProject_".concat(projectId);
+        document.cookie = "".concat(name, "=").concat(Date.now()).concat(expires, ";path=/");
+      };
+
+      isProjectNotExisting = function isProjectNotExisting(projectId) {
+        var name = "notExistingLocizeProject_".concat(projectId);
+        var nameEQ = "".concat(name, "=");
+        var ca = document.cookie.split(';');
+
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1, c.length);
+          }
+
+          if (c.indexOf(nameEQ) === 0) return true; // return c.substring(nameEQ.length,c.length);
+        }
+
+        return false;
+      };
+    }
+
+    return {
+      setProjectNotExisting: setProjectNotExisting,
+      isProjectNotExisting: isProjectNotExisting
     };
   }
 
@@ -221,6 +289,9 @@
         this.options = _objectSpread({}, getDefaults(), {}, this.options, {}, options); // initial
 
         this.services = services;
+        this.somethingLoaded = false;
+        this.isProjectNotExisting = false;
+        this.storage = getStorage(this.options.storageExpiration);
         if (this.options.pull) console.warn('The pull API was removed use "private: true" option instead: https://docs.locize.com/integration/api#fetch-private-namespace-resources');
         var hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
 
@@ -245,17 +316,36 @@
     }, {
       key: "getLanguages",
       value: function getLanguages(callback) {
+        var _this2 = this;
+
         var isMissing = isMissingOption(this.options, ['projectId']);
         if (isMissing) return callback(new Error(isMissing));
         var url = interpolate(this.options.getLanguagesPath, {
           projectId: this.options.projectId
         });
-        this.loadUrl(url, {}, callback);
+
+        if (!this.isProjectNotExisting && this.storage.isProjectNotExisting(this.options.projectId)) {
+          this.isProjectNotExisting = true;
+        }
+
+        if (this.isProjectNotExisting) return callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
+        this.loadUrl(url, {}, function (err, ret, info) {
+          if (!_this2.somethingLoaded && info && info.resourceNotExisting) {
+            _this2.isProjectNotExisting = true;
+
+            _this2.storage.setProjectNotExisting(_this2.options.projectId);
+
+            return callback(new Error("locize project ".concat(_this2.options.projectId, " does not exist!")));
+          }
+
+          _this2.somethingLoaded = true;
+          callback(err, ret);
+        });
       }
     }, {
       key: "getOptions",
       value: function getOptions(callback) {
-        var _this2 = this;
+        var _this3 = this;
 
         this.getLanguages(function (err, data) {
           if (err) return callback(err);
@@ -268,7 +358,7 @@
           }, '');
           var whitelist = keys.reduce(function (mem, k) {
             var item = data[k];
-            if (item.translated[_this2.options.version] && item.translated[_this2.options.version] >= _this2.options.whitelistThreshold) mem.push(k);
+            if (item.translated[_this3.options.version] && item.translated[_this3.options.version] >= _this3.options.whitelistThreshold) mem.push(k);
             return mem;
           }, []);
           var hasRegion = keys.reduce(function (mem, k) {
@@ -284,8 +374,32 @@
         });
       }
     }, {
+      key: "checkIfProjectExists",
+      value: function checkIfProjectExists(callback) {
+        var logger = this.services.logger;
+
+        if (this.somethingLoaded) {
+          if (callback) callback(null);
+          return;
+        }
+
+        this.getLanguages(function (err) {
+          if (err && err.message && err.message.indexOf('does not exist') > 0) {
+            if (callback) return callback(err);
+            logger.error(err.message);
+          }
+        });
+      }
+    }, {
       key: "read",
       value: function read(language, namespace, callback) {
+        var _this4 = this;
+
+        var _ref = this.services || {
+          logger: console
+        },
+            logger = _ref.logger;
+
         var url;
         var options = {};
 
@@ -313,24 +427,54 @@
           });
         }
 
-        this.loadUrl(url, options, callback);
+        if (!this.isProjectNotExisting && this.storage.isProjectNotExisting(this.options.projectId)) {
+          this.isProjectNotExisting = true;
+        }
+
+        if (this.isProjectNotExisting) {
+          var err = new Error("locize project ".concat(this.options.projectId, " does not exist!"));
+          logger.error(err.message);
+          if (callback) callback(err);
+          return;
+        }
+
+        this.loadUrl(url, options, function (err, ret, info) {
+          if (!_this4.somethingLoaded) {
+            if (info && info.resourceNotExisting) {
+              setTimeout(function () {
+                return _this4.checkIfProjectExists();
+              }, _this4.options.checkForProjectTimeout);
+            } else {
+              _this4.somethingLoaded = true;
+            }
+          }
+
+          callback(err, ret);
+        });
       }
     }, {
       key: "loadUrl",
       value: function loadUrl(url, options, callback) {
-        var _this3 = this;
+        var _this5 = this;
 
         ajax(url, _objectSpread({}, this.options, {}, options), function (data, xhr) {
+          var resourceNotExisting = xhr.getResponseHeader('x-cache') === 'Error from cloudfront';
           if (xhr.status === 408 || xhr.status === 400) // extras for timeouts on cloudfront
             return callback('failed loading ' + url, true
             /* retry */
-            );
+            , {
+              resourceNotExisting: resourceNotExisting
+            });
           if (xhr.status >= 500 && xhr.status < 600) return callback('failed loading ' + url, true
           /* retry */
-          );
+          , {
+            resourceNotExisting: resourceNotExisting
+          });
           if (xhr.status >= 400 && xhr.status < 500) return callback('failed loading ' + url, false
           /* no retry */
-          );
+          , {
+            resourceNotExisting: resourceNotExisting
+          });
           var ret, err;
 
           try {
@@ -340,55 +484,65 @@
           }
 
           if (err) return callback(err, false);
-          if (_this3.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false);
-          callback(null, ret);
+          if (_this5.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false, {
+            resourceNotExisting: resourceNotExisting
+          });
+          callback(null, ret, {
+            resourceNotExisting: resourceNotExisting
+          });
         });
       }
     }, {
       key: "create",
       value: function create(languages, namespace, key, fallbackValue, callback, options) {
-        var _this4 = this;
+        var _this6 = this;
 
-        if (!callback) callback = function callback() {}; // missing options
+        if (!callback) callback = function callback() {};
+        this.checkIfProjectExists(function (err) {
+          if (err) return callback(err); // missing options
 
-        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
-        if (isMissing) return callback(new Error(isMissing)); // unallowed host
+          var isMissing = isMissingOption(_this6.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
+          if (isMissing) return callback(new Error(isMissing)); // unallowed host
 
-        if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
-        if (typeof languages === 'string') languages = [languages];
+          if (!_this6.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
+          if (typeof languages === 'string') languages = [languages];
 
-        if (languages.filter(function (l) {
-          return l === _this4.options.referenceLng;
-        }).length < 1) {
-          this.services && this.services.logger && this.services.logger.warn("locize-backend: will not save missings because the reference language \"".concat(this.options.referenceLng, "\" was not in the list of to save languages: ").concat(languages.join(', '), " (open your site in the reference language to save missings)."));
-        }
+          if (languages.filter(function (l) {
+            return l === _this6.options.referenceLng;
+          }).length < 1) {
+            _this6.services && _this6.services.logger && _this6.services.logger.warn("locize-backend: will not save missings because the reference language \"".concat(_this6.options.referenceLng, "\" was not in the list of to save languages: ").concat(languages.join(', '), " (open your site in the reference language to save missings)."));
+          }
 
-        languages.forEach(function (lng) {
-          if (lng === _this4.options.referenceLng) _this4.queue.call(_this4, _this4.options.referenceLng, namespace, key, fallbackValue, callback, options);
+          languages.forEach(function (lng) {
+            if (lng === _this6.options.referenceLng) _this6.queue.call(_this6, _this6.options.referenceLng, namespace, key, fallbackValue, callback, options);
+          });
         });
       }
     }, {
       key: "update",
       value: function update(languages, namespace, key, fallbackValue, callback, options) {
-        var _this5 = this;
+        var _this7 = this;
 
-        if (!callback) callback = function callback() {}; // missing options
+        if (!callback) callback = function callback() {};
+        this.checkIfProjectExists(function (err) {
+          if (err) return callback(err); // missing options
 
-        var isMissing = isMissingOption(this.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
-        if (isMissing) return callback(new Error(isMissing));
-        if (!this.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
-        if (!options) options = {};
-        if (typeof languages === 'string') languages = [languages]; // mark as update
+          var isMissing = isMissingOption(_this7.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
+          if (isMissing) return callback(new Error(isMissing));
+          if (!_this7.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
+          if (!options) options = {};
+          if (typeof languages === 'string') languages = [languages]; // mark as update
 
-        options.isUpdate = true;
-        languages.forEach(function (lng) {
-          if (lng === _this5.options.referenceLng) _this5.queue.call(_this5, _this5.options.referenceLng, namespace, key, fallbackValue, callback, options);
+          options.isUpdate = true;
+          languages.forEach(function (lng) {
+            if (lng === _this7.options.referenceLng) _this7.queue.call(_this7, _this7.options.referenceLng, namespace, key, fallbackValue, callback, options);
+          });
         });
       }
     }, {
       key: "write",
       value: function write(lng, namespace) {
-        var _this6 = this;
+        var _this8 = this;
 
         var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
         if (lock) return;
@@ -439,14 +593,14 @@
 
             if (!todo) {
               // unlock
-              setPath(_this6.queuedWrites, ['locks', lng, namespace], false);
+              setPath(_this8.queuedWrites, ['locks', lng, namespace], false);
               missings.forEach(function (missing) {
                 if (missing.callback) missing.callback();
               }); // emit notification onSaved
 
-              if (_this6.options.onSaved) _this6.options.onSaved(lng, namespace); // rerun
+              if (_this8.options.onSaved) _this8.options.onSaved(lng, namespace); // rerun
 
-              _this6.debouncedProcess(lng, namespace);
+              _this8.debouncedProcess(lng, namespace);
             }
           };
 
@@ -476,15 +630,15 @@
     }, {
       key: "process",
       value: function process() {
-        var _this7 = this;
+        var _this9 = this;
 
         Object.keys(this.queuedWrites).forEach(function (lng) {
           if (lng === 'locks') return;
-          Object.keys(_this7.queuedWrites[lng]).forEach(function (ns) {
-            var todo = _this7.queuedWrites[lng][ns];
+          Object.keys(_this9.queuedWrites[lng]).forEach(function (ns) {
+            var todo = _this9.queuedWrites[lng][ns];
 
             if (todo.length) {
-              _this7.write(lng, ns);
+              _this9.write(lng, ns);
             }
           });
         });
