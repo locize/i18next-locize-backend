@@ -1,3 +1,7 @@
+### 3.1.1
+
+- fix for non-browser usage
+
 ### 3.1.0
 
 - check if project exists
