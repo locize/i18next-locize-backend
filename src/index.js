@@ -49,7 +49,7 @@ function getDefaults() {
 
 let hasLocalStorageSupport;
 try {
-  hasLocalStorageSupport = window !== 'undefined' && window.localStorage !== null;
+  hasLocalStorageSupport = typeof window !== 'undefined' && window.localStorage !== null;
   const testKey = 'notExistingLocizeProject';
   window.localStorage.setItem(testKey, 'foo');
   window.localStorage.removeItem(testKey);
@@ -73,7 +73,7 @@ function getStorage(storageExpiration) {
       }
       return true;
     }
-  } else {
+  } else if (typeof document !== 'undefined') {
     setProjectNotExisting = (projectId) => {
       let date = new Date();
       date.setTime(date.getTime() + storageExpiration);

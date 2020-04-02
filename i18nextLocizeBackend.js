@@ -200,7 +200,7 @@
   var hasLocalStorageSupport;
 
   try {
-    hasLocalStorageSupport = window !== 'undefined' && window.localStorage !== null;
+    hasLocalStorageSupport = typeof window !== 'undefined' && window.localStorage !== null;
     var testKey = 'notExistingLocizeProject';
     window.localStorage.setItem(testKey, 'foo');
     window.localStorage.removeItem(testKey);
@@ -229,7 +229,7 @@
 
         return true;
       };
-    } else {
+    } else if (typeof document !== 'undefined') {
       setProjectNotExisting = function setProjectNotExisting(projectId) {
         var date = new Date();
         date.setTime(date.getTime() + storageExpiration);
