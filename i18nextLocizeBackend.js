@@ -263,9 +263,7 @@
     };
   }
 
-  var I18NextLocizeBackend =
-  /*#__PURE__*/
-  function () {
+  var I18NextLocizeBackend = /*#__PURE__*/function () {
     function I18NextLocizeBackend(services, options, callback) {
       _classCallCheck(this, I18NextLocizeBackend);
 
