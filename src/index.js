@@ -226,6 +226,11 @@ class I18NextLocizeBackend {
       if (callback) callback(null);
       return;
     }
+    if (this.alreadyRequestedCheckIfProjectExists) {
+      setTimeout(() => this.checkIfProjectExists(callback), this.options.checkForProjectTimeout);
+      return;
+    }
+    this.alreadyRequestedCheckIfProjectExists = true;
     this.getLanguages((err) => {
       if (err && err.message && err.message.indexOf('does not exist') > 0) {
         if (callback) return callback(err);
