@@ -390,7 +390,7 @@ class I18NextLocizeBackend {
     });
   }
 
-  writePage(lng, namespace, missings) {
+  writePage(lng, namespace, missings, callback) {
     let missingUrl = utils.interpolate(this.options.addPath, {
       lng: lng,
       ns: namespace,
@@ -403,9 +403,6 @@ class I18NextLocizeBackend {
       projectId: this.options.projectId,
       version: this.options.version
     });
-
-    // lock
-    utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
 
     let hasMissing = false;
     let hasUpdates = false;
@@ -434,21 +431,7 @@ class I18NextLocizeBackend {
     if (hasUpdates) todo++;
     const doneOne = () => {
       todo--;
-
-      if (!todo) {
-        // unlock
-        utils.setPath(this.queuedWrites, ['locks', lng, namespace], false);
-
-        missings.forEach(missing => {
-          if (missing.callback) missing.callback();
-        });
-
-        // emit notification onSaved
-        if (this.options.onSaved) this.options.onSaved(lng, namespace);
-
-        // rerun
-        this.debouncedProcess(lng, namespace);
-      }
+      if (!todo) callback()
     };
 
     if (!todo) doneOne();
@@ -491,11 +474,38 @@ class I18NextLocizeBackend {
     const pageSize = 1000;
 
     if (missings.length) {
+      // lock
+      utils.setPath(this.queuedWrites, ['locks', lng, namespace], true);
+
+      const namespaceSaved = () => {
+        // unlock
+        utils.setPath(this.queuedWrites, ['locks', lng, namespace], false);
+
+        missings.forEach(missing => {
+          if (missing.callback) missing.callback();
+        });
+
+        // emit notification onSaved
+        if (this.options.onSaved) this.options.onSaved(lng, namespace);
+
+        // rerun
+        this.debouncedProcess(lng, namespace);
+      };
+
+      const amountOfPages = missings.length / pageSize;
+      let pagesDone = 0;
+
       let page = missings.splice(0, pageSize);
-      this.writePage(lng, namespace, page);
+      this.writePage(lng, namespace, page, () => {
+        pagesDone++;
+        if (pagesDone >= amountOfPages) namespaceSaved();
+      });
       while (page.length === pageSize) {
         page = missings.splice(0, pageSize);
-        if (page.length) this.writePage(lng, namespace, page);
+        if (page.length) this.writePage(lng, namespace, page, () => {
+          pagesDone++;
+          if (pagesDone >= amountOfPages) namespaceSaved();
+        });
       }
     }
   }

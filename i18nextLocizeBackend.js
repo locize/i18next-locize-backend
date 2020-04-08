@@ -549,9 +549,7 @@
       }
     }, {
       key: "writePage",
-      value: function writePage(lng, namespace, missings) {
-        var _this9 = this;
-
+      value: function writePage(lng, namespace, missings, callback) {
         var missingUrl = interpolate(this.options.addPath, {
           lng: lng,
           ns: namespace,
@@ -563,9 +561,7 @@
           ns: namespace,
           projectId: this.options.projectId,
           version: this.options.version
-        }); // lock
-
-        setPath(this.queuedWrites, ['locks', lng, namespace], true);
+        });
         var hasMissing = false;
         var hasUpdates = false;
         var payloadMissing = {};
@@ -592,18 +588,7 @@
 
         var doneOne = function doneOne() {
           todo--;
-
-          if (!todo) {
-            // unlock
-            setPath(_this9.queuedWrites, ['locks', lng, namespace], false);
-            missings.forEach(function (missing) {
-              if (missing.callback) missing.callback();
-            }); // emit notification onSaved
-
-            if (_this9.options.onSaved) _this9.options.onSaved(lng, namespace); // rerun
-
-            _this9.debouncedProcess(lng, namespace);
-          }
+          if (!todo) callback();
         };
 
         if (!todo) doneOne();
@@ -631,6 +616,8 @@
     }, {
       key: "write",
       value: function write(lng, namespace) {
+        var _this9 = this;
+
         var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
         if (lock) return;
         var missings = getPath(this.queuedWrites, [lng, namespace]);
@@ -638,13 +625,39 @@
         var pageSize = 1000;
 
         if (missings.length) {
-          var page = missings.splice(0, pageSize);
-          this.writePage(lng, namespace, page);
+          (function () {
+            // lock
+            setPath(_this9.queuedWrites, ['locks', lng, namespace], true);
 
-          while (page.length === pageSize) {
-            page = missings.splice(0, pageSize);
-            if (page.length) this.writePage(lng, namespace, page);
-          }
+            var namespaceSaved = function namespaceSaved() {
+              // unlock
+              setPath(_this9.queuedWrites, ['locks', lng, namespace], false);
+              missings.forEach(function (missing) {
+                if (missing.callback) missing.callback();
+              }); // emit notification onSaved
+
+              if (_this9.options.onSaved) _this9.options.onSaved(lng, namespace); // rerun
+
+              _this9.debouncedProcess(lng, namespace);
+            };
+
+            var amountOfPages = missings.length / pageSize;
+            var pagesDone = 0;
+            var page = missings.splice(0, pageSize);
+
+            _this9.writePage(lng, namespace, page, function () {
+              pagesDone++;
+              if (pagesDone >= amountOfPages) namespaceSaved();
+            });
+
+            while (page.length === pageSize) {
+              page = missings.splice(0, pageSize);
+              if (page.length) _this9.writePage(lng, namespace, page, function () {
+                pagesDone++;
+                if (pagesDone >= amountOfPages) namespaceSaved();
+              });
+            }
+          })();
         }
       }
     }, {
