@@ -374,6 +374,8 @@
     }, {
       key: "checkIfProjectExists",
       value: function checkIfProjectExists(callback) {
+        var _this4 = this;
+
         var logger = this.services.logger;
 
         if (this.somethingLoaded) {
@@ -381,6 +383,14 @@
           return;
         }
 
+        if (this.alreadyRequestedCheckIfProjectExists) {
+          setTimeout(function () {
+            return _this4.checkIfProjectExists(callback);
+          }, this.options.checkForProjectTimeout);
+          return;
+        }
+
+        this.alreadyRequestedCheckIfProjectExists = true;
         this.getLanguages(function (err) {
           if (err && err.message && err.message.indexOf('does not exist') > 0) {
             if (callback) return callback(err);
@@ -391,7 +401,7 @@
     }, {
       key: "read",
       value: function read(language, namespace, callback) {
-        var _this4 = this;
+        var _this5 = this;
 
         var _ref = this.services || {
           logger: console
@@ -437,13 +447,13 @@
         }
 
         this.loadUrl(url, options, function (err, ret, info) {
-          if (!_this4.somethingLoaded) {
+          if (!_this5.somethingLoaded) {
             if (info && info.resourceNotExisting) {
               setTimeout(function () {
-                return _this4.checkIfProjectExists();
-              }, _this4.options.checkForProjectTimeout);
+                return _this5.checkIfProjectExists();
+              }, _this5.options.checkForProjectTimeout);
             } else {
-              _this4.somethingLoaded = true;
+              _this5.somethingLoaded = true;
             }
           }
 
@@ -453,7 +463,7 @@
     }, {
       key: "loadUrl",
       value: function loadUrl(url, options, callback) {
-        var _this5 = this;
+        var _this6 = this;
 
         ajax(url, _objectSpread({}, this.options, {}, options), function (data, xhr) {
           var resourceNotExisting = xhr.getResponseHeader('x-cache') === 'Error from cloudfront';
@@ -482,7 +492,7 @@
           }
 
           if (err) return callback(err, false);
-          if (_this5.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false, {
+          if (_this6.options.failLoadingOnEmptyJSON && !Object.keys(ret).length) return callback('loaded result empty for ' + url, false, {
             resourceNotExisting: resourceNotExisting
           });
           callback(null, ret, {
@@ -493,32 +503,6 @@
     }, {
       key: "create",
       value: function create(languages, namespace, key, fallbackValue, callback, options) {
-        var _this6 = this;
-
-        if (!callback) callback = function callback() {};
-        this.checkIfProjectExists(function (err) {
-          if (err) return callback(err); // missing options
-
-          var isMissing = isMissingOption(_this6.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
-          if (isMissing) return callback(new Error(isMissing)); // unallowed host
-
-          if (!_this6.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
-          if (typeof languages === 'string') languages = [languages];
-
-          if (languages.filter(function (l) {
-            return l === _this6.options.referenceLng;
-          }).length < 1) {
-            _this6.services && _this6.services.logger && _this6.services.logger.warn("locize-backend: will not save missings because the reference language \"".concat(_this6.options.referenceLng, "\" was not in the list of to save languages: ").concat(languages.join(', '), " (open your site in the reference language to save missings)."));
-          }
-
-          languages.forEach(function (lng) {
-            if (lng === _this6.options.referenceLng) _this6.queue.call(_this6, _this6.options.referenceLng, namespace, key, fallbackValue, callback, options);
-          });
-        });
-      }
-    }, {
-      key: "update",
-      value: function update(languages, namespace, key, fallbackValue, callback, options) {
         var _this7 = this;
 
         if (!callback) callback = function callback() {};
@@ -526,21 +510,47 @@
           if (err) return callback(err); // missing options
 
           var isMissing = isMissingOption(_this7.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
-          if (isMissing) return callback(new Error(isMissing));
-          if (!_this7.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
-          if (!options) options = {};
-          if (typeof languages === 'string') languages = [languages]; // mark as update
+          if (isMissing) return callback(new Error(isMissing)); // unallowed host
 
-          options.isUpdate = true;
+          if (!_this7.isAddOrUpdateAllowed) return callback('host is not allowed to create key.');
+          if (typeof languages === 'string') languages = [languages];
+
+          if (languages.filter(function (l) {
+            return l === _this7.options.referenceLng;
+          }).length < 1) {
+            _this7.services && _this7.services.logger && _this7.services.logger.warn("locize-backend: will not save missings because the reference language \"".concat(_this7.options.referenceLng, "\" was not in the list of to save languages: ").concat(languages.join(', '), " (open your site in the reference language to save missings)."));
+          }
+
           languages.forEach(function (lng) {
             if (lng === _this7.options.referenceLng) _this7.queue.call(_this7, _this7.options.referenceLng, namespace, key, fallbackValue, callback, options);
           });
         });
       }
     }, {
+      key: "update",
+      value: function update(languages, namespace, key, fallbackValue, callback, options) {
+        var _this8 = this;
+
+        if (!callback) callback = function callback() {};
+        this.checkIfProjectExists(function (err) {
+          if (err) return callback(err); // missing options
+
+          var isMissing = isMissingOption(_this8.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
+          if (isMissing) return callback(new Error(isMissing));
+          if (!_this8.isAddOrUpdateAllowed) return callback('host is not allowed to update key.');
+          if (!options) options = {};
+          if (typeof languages === 'string') languages = [languages]; // mark as update
+
+          options.isUpdate = true;
+          languages.forEach(function (lng) {
+            if (lng === _this8.options.referenceLng) _this8.queue.call(_this8, _this8.options.referenceLng, namespace, key, fallbackValue, callback, options);
+          });
+        });
+      }
+    }, {
       key: "write",
       value: function write(lng, namespace) {
-        var _this8 = this;
+        var _this9 = this;
 
         var lock = getPath(this.queuedWrites, ['locks', lng, namespace]);
         if (lock) return;
@@ -591,14 +601,14 @@
 
             if (!todo) {
               // unlock
-              setPath(_this8.queuedWrites, ['locks', lng, namespace], false);
+              setPath(_this9.queuedWrites, ['locks', lng, namespace], false);
               missings.forEach(function (missing) {
                 if (missing.callback) missing.callback();
               }); // emit notification onSaved
 
-              if (_this8.options.onSaved) _this8.options.onSaved(lng, namespace); // rerun
+              if (_this9.options.onSaved) _this9.options.onSaved(lng, namespace); // rerun
 
-              _this8.debouncedProcess(lng, namespace);
+              _this9.debouncedProcess(lng, namespace);
             }
           };
 
@@ -628,15 +638,15 @@
     }, {
       key: "process",
       value: function process() {
-        var _this9 = this;
+        var _this10 = this;
 
         Object.keys(this.queuedWrites).forEach(function (lng) {
           if (lng === 'locks') return;
-          Object.keys(_this9.queuedWrites[lng]).forEach(function (ns) {
-            var todo = _this9.queuedWrites[lng][ns];
+          Object.keys(_this10.queuedWrites[lng]).forEach(function (ns) {
+            var todo = _this10.queuedWrites[lng][ns];
 
             if (todo.length) {
-              _this9.write(lng, ns);
+              _this10.write(lng, ns);
             }
           });
         });
