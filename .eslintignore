@@ -1,3 +1,6 @@
-**/dist/*
-**/node_modules/*
-**/*.min.*
+/build
+/node_modules
+/cjs
+/dist
+/i18nextLocizeBackend.js
+/i18nextLocizeBackend.min.js

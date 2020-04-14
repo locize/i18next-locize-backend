@@ -1,7 +1,4 @@
 language: node_js
 node_js:
-  - "12"
-before_script:
-  - npm install -g mocha
-  - npm install -g karma
-  - npm install -g babel-cli
+- '12'
+- '13'
