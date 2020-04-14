@@ -1,0 +1,14 @@
+{
+  "name": "i18next-node-locize-backend-example",
+  "version": "0.0.0",
+  "description": "just a sample",
+  "main": "./index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "i18next": "19.4.1"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "locize",
+  "license": "MIT"
+}
