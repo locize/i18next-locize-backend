@@ -33,11 +33,11 @@ $ bower install i18next-locize-backend
 Wiring up:
 
 ```js
-import i18next from "i18next";
-import Locize from "i18next-locize-backend";
+import i18next from 'i18next';
+import Locize from 'i18next-locize-backend';
 // or
 const i18next = require('i18next');
-const Backend = require('i18next-locize-backend');
+const Locize = require('i18next-locize-backend');
 
 i18next.use(Locize).init(i18nextOptions);
 ```
