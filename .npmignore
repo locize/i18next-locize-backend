@@ -11,8 +11,6 @@ bin
 .travis.yml
 package-lock.json
 README.md
-i18nextHttpBackend.js
-i18nextHttpBackend.min.js
 tsconfig.json
 bower.json
 gulpfile.js
