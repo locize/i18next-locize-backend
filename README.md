@@ -35,6 +35,9 @@ Wiring up:
 ```js
 import i18next from "i18next";
 import Locize from "i18next-locize-backend";
+// or
+const i18next = require('i18next');
+const Backend = require('i18next-locize-backend');
 
 i18next.use(Locize).init(i18nextOptions);
 ```
@@ -194,4 +197,50 @@ const locize = new Locize(
     i18next.use(locize).init({ ...opts, ...yourOptions }); // yourOptions should not include backendOptions!
   }
 );
+```
+
+## IMPORTANT ADVICE FOR SERVERLESS environments - AWS lambda, Google Cloud Functions, Azure Functions, etc...
+
+<font color="red">
+  <b>Please be aware</b>
+</font>
+
+Due to how serverless functions work, you cannot guarantee that a cached version of your data is available. Serverless functions are short-lived, and can shut down at any time, purging any in-memory or filesystem cache. This may be an acceptable trade-off, but sometimes it isn't acceptable.
+
+**Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://docs.locize.com/integration/api#list-all-namespace-resources)) and package them with your serverless function.**
+
+### For example with [i18next-node-fs-backend](https://github.com/i18next/i18next-node-fs-backend)
+
+```js
+import i18next from 'i18next';
+import Backend from 'i18next-node-fs-backend';
+
+const backend = new Backend({
+  // path where resources get loaded from
+  loadPath: '/locales/{{lng}}/{{ns}}.json'
+});
+
+i18next
+  .use(backend)
+  .init({ ...opts, ...yourOptions}); // yourOptions should not include backendOptions!
+```
+
+#### Another example with [i18next-sync-fs-backend](https://github.com/sallar/i18next-sync-fs-backend): [here](https://stackoverflow.com/questions/59591125/initialize-i18next-in-azure-function/59634847#59634847)
+
+### or just [import/require](https://www.i18next.com/how-to/add-or-load-translations#add-on-init) your files directly
+
+```js
+import i18next from 'i18next';
+import en from './locales/en.json'
+import de from './locales/de.json'
+
+i18next
+  .init({
+    ...opts,
+    ...yourOptions,
+    resources: {
+      en,
+      de
+    }
+  });
 ```
