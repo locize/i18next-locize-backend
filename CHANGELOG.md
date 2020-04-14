@@ -1,3 +1,7 @@
+### 4.0.2
+
+- fix for bundlers like rollup
+
 ### 4.0.0
 
 - complete refactoring to make this module universal (replaces i18next-node-locize-backend)
