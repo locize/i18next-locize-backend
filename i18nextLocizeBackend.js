@@ -696,7 +696,8 @@ var requestWithFetch = function requestWithFetch(options, url, payload, callback
     method: payload ? 'POST' : 'GET',
     body: payload ? JSON.stringify(payload) : undefined,
     headers: {
-      Authorization: options.authorize && options.apiKey ? options.apiKey : undefined
+      Authorization: options.authorize && options.apiKey ? options.apiKey : undefined,
+      'Content-Type': 'application/json'
     }
   }).then(function (response) {
     var resourceNotExisting = response.headers && response.headers.get('x-cache') === 'Error from cloudfront';
@@ -736,7 +737,7 @@ var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url,
     }
 
     if (payload || options.setContentTypeJSON) {
-      x.setRequestHeader('Content-type', 'application/json');
+      x.setRequestHeader('Content-Type', 'application/json');
     }
 
     x.onreadystatechange = function () {
