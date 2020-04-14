@@ -48,7 +48,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "compile": "rm -rf cjs && mkdir cjs && babel lib -d cjs --presets=@babel/preset-env --plugins=add-module-exports && echo '{\"type\":\"commonjs\"}' > cjs/package.json",
+    "compile": "rm -rf cjs && mkdir cjs && babel lib -d cjs --presets=@babel/preset-env --plugins=add-module-exports && echo '{\"type\":\"commonjs\"}' > cjs/package.json && cp lib/getFetch.cjs cjs/getFetch.cjs",
     "browser": "browserify --standalone i18nextLocizeBackend cjs/index.js -o i18nextLocizeBackend.js && uglifyjs i18nextLocizeBackend.js --compress --mangle -o i18nextLocizeBackend.min.js",
     "build": "npm run compile && npm run browser",
     "test:xmlhttpreq": "mocha test -R spec --require test/fixtures/xmlHttpRequest.cjs --exit --experimental-modules",
