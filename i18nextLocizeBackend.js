@@ -29,7 +29,7 @@ var getDefaults = function getDefaults() {
     loadPath: 'https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     privatePath: 'https://api.locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     getLanguagesPath: 'https://api.locize.app/languages/{{projectId}}',
-    addPath: 'https://api.locize.app/missing/{{projectId}}/{{version}}/{{lng}s}/{{ns}}',
+    addPath: 'https://api.locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     updatePath: 'https://api.locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
     referenceLng: 'en',
     crossDomain: true,
@@ -540,9 +540,9 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
       if (hasMissing) todo++;
       if (hasUpdates) todo++;
 
-      var doneOne = function doneOne() {
+      var doneOne = function doneOne(err) {
         todo--;
-        if (!todo) callback();
+        if (!todo) callback(err);
       };
 
       if (!todo) doneOne();
@@ -550,23 +550,13 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
       if (hasMissing) {
         (0, _request["default"])(_objectSpread({}, {
           authorize: true
-        }, {}, this.options), missingUrl, payloadMissing, function ()
-        /* err, res */
-        {
-          // TODO: if statusCode === 4xx do log
-          doneOne();
-        });
+        }, {}, this.options), missingUrl, payloadMissing, doneOne);
       }
 
       if (hasUpdates) {
         (0, _request["default"])(_objectSpread({}, {
           authorize: true
-        }, {}, this.options), updatesUrl, payloadUpdate, function ()
-        /* err, res */
-        {
-          // TODO: if statusCode === 4xx do log
-          doneOne();
-        });
+        }, {}, this.options), updatesUrl, payloadUpdate, doneOne);
       }
     }
   }, {
@@ -704,7 +694,7 @@ if (typeof ActiveXObject === 'function') {
 var requestWithFetch = function requestWithFetch(options, url, payload, callback) {
   fetchApi(url, {
     method: payload ? 'POST' : 'GET',
-    body: payload ? options.stringify(payload) : undefined,
+    body: payload ? JSON.stringify(payload) : undefined,
     headers: {
       Authorization: options.authorize && options.apiKey ? options.apiKey : undefined
     }
@@ -758,7 +748,7 @@ var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url,
       });
     };
 
-    x.send(payload);
+    x.send(JSON.stringify(payload));
   } catch (e) {
     console && console.log(e);
   }

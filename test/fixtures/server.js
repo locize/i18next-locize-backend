@@ -39,6 +39,9 @@ const server = (done) => {
       }
     })
   })
+  js.post('/add/test/latest/en/translation', (req, res) => {
+    res.jsonp()
+  })
 
   js.use(jsonServer.defaults())
   js.listen(6001, () => {
