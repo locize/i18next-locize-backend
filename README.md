@@ -45,7 +45,7 @@ for Deno:
 
 ```js
 import i18next from 'https://deno.land/x/i18next/index.js'
-import Backend from 'https://cdn.jsdelivr.net/gh/locize/i18next-locize-backend/index.js'
+import Backend from 'https://deno.land/x/i18next_locize_backend/index.js'
 
 i18next.use(Backend).init(i18nextOptions);
 ```
@@ -217,11 +217,11 @@ Due to how serverless functions work, you cannot guarantee that a cached version
 
 **Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://docs.locize.com/integration/api#list-all-namespace-resources)) and package them with your serverless function.**
 
-### For example with [i18next-node-fs-backend](https://github.com/i18next/i18next-node-fs-backend)
+### For example with [i18next-fs-backend](https://github.com/i18next/i18next-fs-backend)
 
 ```js
 import i18next from 'i18next';
-import Backend from 'i18next-node-fs-backend';
+import Backend from 'i18next-fs-backend';
 
 const backend = new Backend({
   // path where resources get loaded from
@@ -230,10 +230,12 @@ const backend = new Backend({
 
 i18next
   .use(backend)
-  .init({ ...opts, ...yourOptions}); // yourOptions should not include backendOptions!
+  .init({
+    // initImmediate: false, // setting initImediate to false, will load the resources synchronously
+    ...opts,
+    ...yourOptions
+  }); // yourOptions should not include backendOptions!
 ```
-
-#### Another example with [i18next-sync-fs-backend](https://github.com/sallar/i18next-sync-fs-backend): [here](https://stackoverflow.com/questions/59591125/initialize-i18next-in-azure-function/59634847#59634847)
 
 ### or just [import/require](https://www.i18next.com/how-to/add-or-load-translations#add-on-init) your files directly
 
