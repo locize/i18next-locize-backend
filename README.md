@@ -1,3 +1,4 @@
+[![Actions](https://github.com/locize/i18next-locize-backend/workflows/node/badge.svg)](https://github.com/locize/i18next-locize-backend/actions?query=workflow%3Anode)
 [![Travis](https://img.shields.io/travis/locize/i18next-locize-backend/master.svg?style=flat-square)](https://travis-ci.org/locize/i18next-locize-backend)
 [![npm version](https://img.shields.io/npm/v/i18next-locize-backend.svg?style=flat-square)](https://www.npmjs.com/package/i18next-locize-backend)
 [![David](https://img.shields.io/david/locize/i18next-locize-backend.svg?style=flat-square)](https://david-dm.org/locize/i18next-locize-backend)
