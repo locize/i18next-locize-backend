@@ -1,3 +1,7 @@
+### 4.0.3
+
+- warning for using saveMissing or updateMissing feature on a host not beeing localhost
+
 ### 4.0.2
 
 - fix for bundlers like rollup
