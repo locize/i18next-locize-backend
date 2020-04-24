@@ -1,3 +1,7 @@
+### 4.0.4
+
+- fix for react-native
+
 ### 4.0.3
 
 - warning for using saveMissing or updateMissing feature on a host not beeing localhost
