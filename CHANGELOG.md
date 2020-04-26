@@ -1,3 +1,7 @@
+### 4.0.5
+
+- fix checkIfProjectExists callback
+
 ### 4.0.4
 
 - fix for react-native

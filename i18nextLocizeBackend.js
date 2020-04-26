@@ -333,9 +333,10 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
       this.alreadyRequestedCheckIfProjectExists = true;
       this.getLanguages(function (err) {
         if (err && err.message && err.message.indexOf('does not exist') > 0) {
-          if (callback) return callback(err);
           logger.error(err.message);
         }
+
+        if (callback) callback(err);
       });
     }
   }, {

@@ -1,5 +1,6 @@
 const i18next = require('i18next')
 const LocizeBackend = require('../cjs/index.js')
+// const LocizeBackend = require('i18next-locize-backend')
 
 const yourOptions = {
   debug: true,
