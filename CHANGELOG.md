@@ -1,3 +1,7 @@
+### 4.0.6
+
+- check for logger to exist
+
 ### 4.0.5
 
 - fix checkIfProjectExists callback
