@@ -1,3 +1,7 @@
+### 4.0.7
+
+- dedicated export for node v14
+
 ### 4.0.6
 
 - check for logger to exist
