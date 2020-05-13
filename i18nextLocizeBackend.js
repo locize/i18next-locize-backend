@@ -572,15 +572,15 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
       if (!todo) doneOne();
 
       if (hasMissing) {
-        (0, _request["default"])(_objectSpread({}, {
+        (0, _request["default"])(_objectSpread(_objectSpread({}, {
           authorize: true
-        }, {}, this.options), missingUrl, payloadMissing, doneOne);
+        }), this.options), missingUrl, payloadMissing, doneOne);
       }
 
       if (hasUpdates) {
-        (0, _request["default"])(_objectSpread({}, {
+        (0, _request["default"])(_objectSpread(_objectSpread({}, {
           authorize: true
-        }, {}, this.options), updatesUrl, payloadUpdate, doneOne);
+        }), this.options), updatesUrl, payloadUpdate, doneOne);
       }
     }
   }, {
