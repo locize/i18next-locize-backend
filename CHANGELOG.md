@@ -1,3 +1,7 @@
+### 4.0.9
+
+- replace spread operator with defaults function
+
 ### 4.0.8
 
 - fix exports for react-native
