@@ -1,3 +1,7 @@
+### 4.0.10
+
+- fix for non-fetch browsers using i18nextLocizeBackend.js
+
 ### 4.0.9
 
 - replace spread operator with defaults function
