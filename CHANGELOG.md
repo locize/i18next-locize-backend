@@ -1,3 +1,7 @@
+### 4.0.11
+
+- do not try to load node-fetch in browser
+
 ### 4.0.10
 
 - fix for non-fetch browsers using i18nextLocizeBackend.js
