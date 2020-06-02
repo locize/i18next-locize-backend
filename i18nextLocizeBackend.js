@@ -710,7 +710,7 @@ if (typeof ActiveXObject === 'function') {
   }
 }
 
-if (!fetchApi && fetchNode) fetchApi = fetchNode["default"] || fetchNode; // because of strange export
+if (!fetchApi && fetchNode && !XmlHttpRequestApi && !ActiveXObjectApi) fetchApi = fetchNode["default"] || fetchNode; // because of strange export
 
 if (typeof fetchApi !== 'function') fetchApi = undefined; // fetch api stuff
 
@@ -765,7 +765,7 @@ var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url,
 
     x.onreadystatechange = function () {
       var resourceNotExisting = x.getResponseHeader('x-cache') === 'Error from cloudfront';
-      x.readyState > 3 && callback(x.statusText, {
+      x.readyState > 3 && callback(x.status >= 400 ? x.statusText : null, {
         status: x.status,
         data: x.responseText,
         resourceNotExisting: resourceNotExisting

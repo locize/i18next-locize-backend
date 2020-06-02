@@ -1,3 +1,7 @@
+### 4.0.12
+
+- fix xhr response handling
+
 ### 4.0.11
 
 - do not try to load node-fetch in browser
