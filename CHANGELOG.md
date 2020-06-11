@@ -1,3 +1,7 @@
+### 4.0.13
+
+- fix callback types
+
 ### 4.0.12
 
 - fix xhr response handling
