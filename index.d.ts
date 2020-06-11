@@ -1,3 +1,5 @@
+import { ReadCallback } from 'i18next';
+
 declare namespace I18NextLocizeBackend {
   interface BackendOptions {
     /**
@@ -59,23 +61,23 @@ declare namespace I18NextLocizeBackend {
     whitelistThreshold?: number;
   }
 
-  type LoadCallback = (error: any, result: string | false) => void;
+  type LoadCallback = (error: any, result: any) => void;
 }
 
 declare class I18NextLocizeBackend {
-  constructor(services?: any, options?: I18NextLocizeBackend.BackendOptions);
-  init(services?: any, options?: I18NextLocizeBackend.BackendOptions): void;
+  constructor(services?: any, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
+  init(services?: any, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
   getLanguages(callback: I18NextLocizeBackend.LoadCallback): void;
   getOptions(callback: I18NextLocizeBackend.LoadCallback): void;
   read(
     language: string,
     namespace: string,
-    callback: I18NextLocizeBackend.LoadCallback
+    callback: ReadCallback
   ): void;
   loadUrl(
     url: string,
     options: any,
-    callback: I18NextLocizeBackend.LoadCallback
+    callback: ReadCallback
   ): void;
   create(
     languages: string | string[],
