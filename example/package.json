@@ -5,8 +5,8 @@
   "main": "./index.js",
   "type": "commonjs",
   "dependencies": {
-    "i18next": "19.4.4",
-    "i18next-locize-backend": "4.0.7"
+    "i18next": "19.5.0",
+    "i18next-locize-backend": "4.1.0"
   },
   "devDependencies": {},
   "scripts": {},
