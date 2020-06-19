@@ -23,7 +23,10 @@ describe(`locize backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttp
         projectId: 'test'
       }, (err, options) => {
         expect(err).not.to.be.ok()
-        expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', whitelist: ['en', 'de'], load: 'languageOnly' })
+        // expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], load: 'languageOnly' })
+        // temporal backwards compatibility WHITELIST REMOVAL
+        expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], whitelist: ['en', 'de'], load: 'languageOnly' })
+        // end temporal backwards compatibility WHITELIST REMOVAL
         done()
       })
     })
@@ -44,7 +47,10 @@ describe(`locize backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttp
     it('should return possible options', (done) => {
       backend.getOptions((err, options) => {
         expect(err).not.to.be.ok()
-        expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', whitelist: ['en', 'de'], load: 'languageOnly' })
+        // expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], load: 'languageOnly' })
+        // temporal backwards compatibility WHITELIST REMOVAL
+        expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], whitelist: ['en', 'de'], load: 'languageOnly' })
+        // end temporal backwards compatibility WHITELIST REMOVAL
         done()
       })
     })

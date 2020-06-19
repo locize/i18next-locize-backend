@@ -49,7 +49,10 @@ var getDefaults = function getDefaults() {
     setContentTypeJSON: false,
     version: 'latest',
     "private": false,
+    translatedPercentageThreshold: 0.9,
+    // temporal backwards compatibility WHITELIST REMOVAL
     whitelistThreshold: 0.9,
+    // end temporal backwards compatibility WHITELIST REMOVAL
     failLoadingOnEmptyJSON: false,
     // useful if using chained backend
     allowedAddOrUpdateHosts: ['localhost'],
@@ -154,7 +157,14 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var allOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var callback = arguments.length > 3 ? arguments[3] : undefined;
-      this.services = services;
+      this.services = services; // temporal backwards compatibility WHITELIST REMOVAL
+
+      if (options.whitelistThreshold !== undefined && options.translatedPercentageThreshold === undefined) {
+        if (services && services.logger) services.logger.deprecate('whitelistThreshold', 'option "whitelistThreshold" will be renamed to "translatedPercentageThreshold" in the next major - please make sure to rename this option asap.');
+        options.translatedPercentageThreshold = options.whitelistThreshold;
+      } // end temporal backwards compatibility WHITELIST REMOVAL
+
+
       this.options = (0, _utils.defaults)(options, this.options || {}, getDefaults());
       this.allOptions = allOptions;
       this.somethingLoaded = false;
@@ -284,10 +294,10 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
           if (item.isReferenceLanguage) mem = k;
           return mem;
         }, '');
-        var whitelist = keys.reduce(function (mem, k) {
+        var lngs = keys.reduce(function (mem, k) {
           var item = data[k];
 
-          if (item.translated[_this4.options.version] && item.translated[_this4.options.version] >= _this4.options.whitelistThreshold) {
+          if (item.translated[_this4.options.version] && item.translated[_this4.options.version] >= _this4.options.translatedPercentageThreshold) {
             mem.push(k);
           }
 
@@ -300,7 +310,10 @@ var I18NextLocizeBackend = /*#__PURE__*/function () {
         callback(null, {
           fallbackLng: referenceLng,
           referenceLng: referenceLng,
-          whitelist: whitelist,
+          supportedLngs: lngs,
+          // temporal backwards compatibility WHITELIST REMOVAL
+          whitelist: lngs,
+          // end temporal backwards compatibility WHITELIST REMOVAL
           load: hasRegion ? 'all' : 'languageOnly'
         });
       });

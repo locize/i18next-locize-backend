@@ -169,8 +169,8 @@ locize.getOptions((err, data) => {
   {
     fallbackLng: 'en',
     referenceLng: 'en',
-    whitelist: ['en', 'de'],
-    load: 'languageOnly|all' // depending on your whitelist has locals having region like en-US
+    supportedLngs: ['en', 'de'],
+    load: 'languageOnly|all' // depending on your supportedLngs has locals having region like en-US
   }
   */
 });
@@ -179,16 +179,16 @@ locize.getOptions((err, data) => {
 i18next.services.backendConnector.backend.getOptions(callback);
 ```
 
-You can set a threshold for languages to be added to whitelist by setting whitelistThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).
+You can set a threshold for languages to be added to supportedLngs by setting translatedPercentageThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).
 
 ## SPECIAL - let the backend determine some options to improve loading
 
-You can load some information from the backend to eg. set whitelist for i18next just supporting languages you got in your locize project.
+You can load some information from the backend to eg. set supportedLngs for i18next just supporting languages you got in your locize project.
 
 You will get i18next options for (same as above backend.getOptions):
 
 - fallbackLng
-- whitelist
+- supportedLngs
 - load
 
 ```js

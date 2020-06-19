@@ -56,9 +56,15 @@ declare namespace I18NextLocizeBackend {
      */
     setContentTypeJSON?: boolean;
     /**
-     * threshold to accept languages from locize in to whitelist
+     * threshold to accept languages from locize in to supportedLngs
+     */
+    translatedPercentageThreshold?: number;
+    // temporal backwards compatibility WHITELIST REMOVAL
+    /**
+     * threshold to accept languages from locize in to supportedLngs
      */
     whitelistThreshold?: number;
+    // end temporal backwards compatibility WHITELIST REMOVAL
   }
 
   type LoadCallback = (error: any, result: any) => void;

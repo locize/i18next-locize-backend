@@ -1,3 +1,14 @@
+### 4.1.0
+
+- rename option whitelist to supportedLngs
+- rename option whitelistThreshold to translatedPercentageThreshold
+
+This changes are made with temporal backwards compatiblity and will warn your for deprecated usage of old terms to give users and plugin providers some time to adapt their code base.
+
+The temporal backwards compatiblity will be removed in a follow up major release.
+
+Learn more about why this change was made [here](https://github.com/i18next/i18next/issues/1466).
+
 ### 4.0.13
 
 - fix callback types
