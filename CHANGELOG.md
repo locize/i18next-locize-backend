@@ -1,3 +1,7 @@
+### 4.1.1
+
+- transpile also esm
+
 ### 4.1.0
 
 - rename option whitelist to supportedLngs

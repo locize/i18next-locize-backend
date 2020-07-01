@@ -2,6 +2,7 @@
 node_modules
 /example
 /cjs
+/esm
 /dist
 /i18nextLocizeBackend.js
 /i18nextLocizeBackend.min.js
