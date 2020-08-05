@@ -22,7 +22,7 @@ Per default only `localhost` is allowed to send them (to avoid you're using this
 
 Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), bower or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
 
-```
+```bash
 # npm package
 $ npm install i18next-locize-backend
 
