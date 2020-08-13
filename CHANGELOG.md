@@ -1,3 +1,7 @@
+### 4.1.2
+
+- fix for retry logic
+
 ### 4.1.1
 
 - transpile also esm

@@ -424,7 +424,7 @@ var I18NextLocizeBackend = function () {
           });
         }
 
-        if (res && res.status >= 500 && res.status < 600) {
+        if (res && (res.status >= 500 && res.status < 600 || !res.status)) {
           return callback('failed loading ' + url, true, {
             resourceNotExisting: resourceNotExisting
           });
@@ -432,6 +432,12 @@ var I18NextLocizeBackend = function () {
 
         if (res && res.status >= 400 && res.status < 500) {
           return callback('failed loading ' + url, false, {
+            resourceNotExisting: resourceNotExisting
+          });
+        }
+
+        if (!res && err && err.message && err.message.indexOf('Failed to fetch') > -1) {
+          return callback('failed loading ' + url, true, {
             resourceNotExisting: resourceNotExisting
           });
         }
