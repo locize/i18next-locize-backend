@@ -1,3 +1,7 @@
+### 4.1.3
+
+- ts: reloadInterval option
+
 ### 4.1.2
 
 - fix for retry logic
