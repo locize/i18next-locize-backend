@@ -13,7 +13,7 @@ declare namespace I18NextLocizeBackend {
     /**
      * the reference (source) language of your project (default "en")
      */
-    referenceLanguage?: string;
+    referenceLng?: string;
     /**
      * the version of translations to load
      */
