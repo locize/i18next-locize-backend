@@ -55,6 +55,11 @@ declare namespace I18NextLocizeBackend {
      * set JSON as content type
      */
     setContentTypeJSON?: boolean;
+
+    /**
+     * Automatic reload from server time
+     */
+    reloadInterval?: false | number;
     /**
      * threshold to accept languages from locize in to supportedLngs
      */
