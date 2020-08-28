@@ -1,3 +1,7 @@
+### 4.1.5
+
+- ts: allowedAddOrUpdateHosts
+
 ### 4.1.4
 
 - ts: fix referenceLng option
