@@ -1,6 +1,7 @@
 import { ReadCallback } from 'i18next';
 
 declare namespace I18NextLocizeBackend {
+  type AllowedAddOrUpdateHostsFunction = (hostname: string) => boolean;
   interface BackendOptions {
     /**
      * your locize projectId
@@ -55,11 +56,14 @@ declare namespace I18NextLocizeBackend {
      * set JSON as content type
      */
     setContentTypeJSON?: boolean;
-
     /**
      * Automatic reload from server time
      */
     reloadInterval?: false | number;
+    /**
+     * hostnames that are allowed to create & update keys
+     */
+    allowedAddOrUpdateHosts: string[] | AllowedAddOrUpdateHostsFunction,
     /**
      * threshold to accept languages from locize in to supportedLngs
      */
