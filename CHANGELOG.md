@@ -1,3 +1,7 @@
+### 4.1.4
+
+- ts: fix referenceLng option
+
 ### 4.1.3
 
 - ts: reloadInterval option
