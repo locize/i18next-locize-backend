@@ -18,7 +18,8 @@ describe(`http backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRe
         },
         {
           loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
-          projectId: 'test'
+          projectId: 'test',
+          failLoadingOnEmptyJSON: true
         }
       )
     })
@@ -42,6 +43,15 @@ describe(`http backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRe
       backend.read('en', 'nonjson', function (err, data) {
         expect(err).to.equal(
           'failed parsing http://localhost:6001/locales/en/nonjson to json'
+        )
+        done()
+      })
+    })
+
+    it('should throw error on empty json file if failLoadingOnEmptyJSON=true', (done) => {
+      backend.read('en', 'empty', function (err, data) {
+        expect(err).to.equal(
+          'loaded result empty for http://localhost:6001/locales/en/empty'
         )
         done()
       })

@@ -9,6 +9,9 @@ const server = (done) => {
 
   js.use(jsonServer.bodyParser)
 
+  js.get('/locales/en/empty', (req, res) => {
+    res.jsonp({})
+  })
   js.get('/locales/en/test', (req, res) => {
     res.jsonp({
       key: 'passing'
