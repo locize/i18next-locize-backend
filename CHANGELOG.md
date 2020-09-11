@@ -1,3 +1,7 @@
+### 4.1.6
+
+- update dependencies
+
 ### 4.1.5
 
 - ts: allowedAddOrUpdateHosts
