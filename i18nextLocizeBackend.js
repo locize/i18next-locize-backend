@@ -54,7 +54,7 @@ var getDefaults = function getDefaults() {
     failLoadingOnEmptyJSON: false,
     allowedAddOrUpdateHosts: ['localhost'],
     onSaved: false,
-    reloadInterval: 60 * 60 * 1000,
+    reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000,
     checkForProjectTimeout: 3 * 1000,
     storageExpiration: 60 * 60 * 1000
   };
