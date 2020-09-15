@@ -1,3 +1,7 @@
+### 4.1.8
+
+- better default for reloadInterval
+
 ### 4.1.7
 
 - first first check of reloadInterval
