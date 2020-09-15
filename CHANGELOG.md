@@ -1,3 +1,7 @@
+### 4.1.7
+
+- first first check of reloadInterval
+
 ### 4.1.6
 
 - update dependencies

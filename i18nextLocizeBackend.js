@@ -201,7 +201,7 @@ var I18NextLocizeBackend = function () {
       this.debouncedProcess = (0, _utils.debounce)(this.process, 10000);
       if (this.interval) clearInterval(this.interval);
 
-      if (this.options.reloadInterval) {
+      if (this.options.reloadInterval && this.options.projectId) {
         this.interval = setInterval(function () {
           return _this.reload();
         }, this.options.reloadInterval);
