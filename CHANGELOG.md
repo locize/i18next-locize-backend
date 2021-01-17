@@ -1,3 +1,7 @@
+### 4.1.9
+
+- XMLHttpRequest fix for ios < 9
+
 ### 4.1.8
 
 - better default for reloadInterval
