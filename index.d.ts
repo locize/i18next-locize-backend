@@ -63,7 +63,7 @@ declare namespace I18NextLocizeBackend {
     /**
      * hostnames that are allowed to create & update keys
      */
-    allowedAddOrUpdateHosts: string[] | AllowedAddOrUpdateHostsFunction,
+    allowedAddOrUpdateHosts?: string[] | AllowedAddOrUpdateHostsFunction,
     /**
      * threshold to accept languages from locize in to supportedLngs
      */
