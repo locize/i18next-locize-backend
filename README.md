@@ -16,11 +16,11 @@ i18next.t(key, { defaultValue, tDescription });
 
 **SaveMissing is not working**
 
-Per default only `localhost` is allowed to send missing keys (to avoid using this feature accidentally in production). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
+Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally in production). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
 # Getting started
 
-Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn` or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
+Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn`, `bower` or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
 
 ```bash
 # npm package
@@ -28,6 +28,9 @@ $ npm install i18next-locize-backend
 
 # yarn
 $ yarn add i18next-locize-backend
+
+# bower
+$ bower install i18next-locize-backend
 ```
 
 Wiring up:
