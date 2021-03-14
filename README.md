@@ -3,7 +3,9 @@
 [![npm version](https://img.shields.io/npm/v/i18next-locize-backend.svg?style=flat-square)](https://www.npmjs.com/package/i18next-locize-backend)
 [![David](https://img.shields.io/david/locize/i18next-locize-backend.svg?style=flat-square)](https://david-dm.org/locize/i18next-locize-backend)
 
-This is an i18next backend to be used for [locize](http://locize.com) service. It will load resources from locize server using xhr.
+This is an [i18next backend plugin](https://www.i18next.com/principles/plugins) to be used for [locize](http://locize.com) service. It will load resources from locize server using http fetch or xhr as fallback.
+
+If you're not familiar with i18next and how i18next backend plugins works, please first have a look at the [i18next documentation](https://www.i18next.com/how-to/add-or-load-translations#load-using-a-backend-plugin).
 
 It will allow you to save missing keys containing both **default value** and **context information** by calling:
 
