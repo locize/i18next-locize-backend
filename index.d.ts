@@ -79,6 +79,7 @@ declare namespace I18NextLocizeBackend {
 
   type LoadCallback = (error: any, result: any) => void;
 }
+
 declare class I18NextLocizeBackend {
   constructor(options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
   constructor(services?: Services, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
