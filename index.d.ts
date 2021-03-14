@@ -1,4 +1,5 @@
-import { ReadCallback } from 'i18next';
+import { ReadCallback, Services } from 'i18next';
+
 
 declare namespace I18NextLocizeBackend {
   type AllowedAddOrUpdateHostsFunction = (hostname: string) => boolean;
@@ -78,10 +79,13 @@ declare namespace I18NextLocizeBackend {
 
   type LoadCallback = (error: any, result: any) => void;
 }
-
 declare class I18NextLocizeBackend {
-  constructor(services?: any, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
-  init(services?: any, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
+  constructor(options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
+  constructor(services?: Services, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
+
+  init(options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
+  init(services?: Services, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
+
   getLanguages(callback: I18NextLocizeBackend.LoadCallback): void;
   getOptions(callback: I18NextLocizeBackend.LoadCallback): void;
   read(
