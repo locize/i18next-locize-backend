@@ -1,3 +1,8 @@
+### 4.1.10
+
+- fix types constructor and init signatures
+- update dependencies
+
 ### 4.1.9
 
 - XMLHttpRequest fix for ios < 9
