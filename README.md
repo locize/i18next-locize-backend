@@ -14,6 +14,10 @@ i18next.t(key, defaultValue, tDescription);
 i18next.t(key, { defaultValue, tDescription });
 ```
 
+## Advice:
+
+To see i18next-locize-backend in a working app example, you may have a look at [this react-tutorial](https://github.com/locize/react-tutorial) starting from [Step 2](https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn).
+
 # Troubleshooting
 
 **SaveMissing is not working**
