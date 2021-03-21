@@ -47,7 +47,7 @@
     "eslint-plugin-require-path-exists": "1.1.9",
     "eslint-plugin-standard": "5.0.0",
     "expect.js": "0.3.1",
-    "i18next": "19.9.2",
+    "i18next": "19.9.3",
     "json-server": "0.16.3",
     "mocha": "8.3.2",
     "uglify-js": "3.13.1",
