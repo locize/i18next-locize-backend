@@ -1,4 +1,4 @@
-import { ReadCallback, Services } from "i18next";
+import { ReadCallback, Services, PluginOptions } from "i18next";
 
 declare namespace I18NextLocizeBackend {
   type AllowedAddOrUpdateHostsFunction = (hostname: string) => boolean;
@@ -77,6 +77,12 @@ declare namespace I18NextLocizeBackend {
   }
 
   type LoadCallback = (error: any, result: any) => void;
+}
+
+declare module "i18next" {
+  interface PluginOptions {
+    backend?: I18NextLocizeBackend.BackendOptions;
+  }
 }
 
 declare class I18NextLocizeBackend {
