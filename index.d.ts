@@ -1,5 +1,4 @@
-import { ReadCallback, Services } from 'i18next';
-
+import { ReadCallback, Services } from "i18next";
 
 declare namespace I18NextLocizeBackend {
   type AllowedAddOrUpdateHostsFunction = (hostname: string) => boolean;
@@ -64,7 +63,7 @@ declare namespace I18NextLocizeBackend {
     /**
      * hostnames that are allowed to create & update keys
      */
-    allowedAddOrUpdateHosts?: string[] | AllowedAddOrUpdateHostsFunction,
+    allowedAddOrUpdateHosts?: string[] | AllowedAddOrUpdateHostsFunction;
     /**
      * threshold to accept languages from locize in to supportedLngs
      */
@@ -80,25 +79,37 @@ declare namespace I18NextLocizeBackend {
   type LoadCallback = (error: any, result: any) => void;
 }
 
-declare class I18NextLocizeBackend {
-  constructor(options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
-  constructor(services?: Services, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback);
+declare module "i18next" {
+  interface PluginOptions {
+    backend?: I18NextLocizeBackend.BackendOptions;
+  }
+}
 
-  init(options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
-  init(services?: Services, options?: I18NextLocizeBackend.BackendOptions, callback?: I18NextLocizeBackend.LoadCallback): void;
+declare class I18NextLocizeBackend {
+  constructor(
+    options?: I18NextLocizeBackend.BackendOptions,
+    callback?: I18NextLocizeBackend.LoadCallback
+  );
+  constructor(
+    services?: Services,
+    options?: I18NextLocizeBackend.BackendOptions,
+    callback?: I18NextLocizeBackend.LoadCallback
+  );
+
+  init(
+    options?: I18NextLocizeBackend.BackendOptions,
+    callback?: I18NextLocizeBackend.LoadCallback
+  ): void;
+  init(
+    services?: Services,
+    options?: I18NextLocizeBackend.BackendOptions,
+    callback?: I18NextLocizeBackend.LoadCallback
+  ): void;
 
   getLanguages(callback: I18NextLocizeBackend.LoadCallback): void;
   getOptions(callback: I18NextLocizeBackend.LoadCallback): void;
-  read(
-    language: string,
-    namespace: string,
-    callback: ReadCallback
-  ): void;
-  loadUrl(
-    url: string,
-    options: any,
-    callback: ReadCallback
-  ): void;
+  read(language: string, namespace: string, callback: ReadCallback): void;
+  loadUrl(url: string, options: any, callback: ReadCallback): void;
   create(
     languages: string | string[],
     namespace: string,
