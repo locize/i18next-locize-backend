@@ -1,3 +1,8 @@
+### 4.2.0
+
+- Type PluginOptions properly
+- update dependencies
+
 ### 4.1.10
 
 - fix types constructor and init signatures
