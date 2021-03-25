@@ -57,7 +57,8 @@ declare namespace I18NextLocizeBackend {
      */
     setContentTypeJSON?: boolean;
     /**
-     * Automatic reload from server time
+     * can be used to reload resources in a specific
+     * interval (useful in server environments)
      */
     reloadInterval?: false | number;
     /**
