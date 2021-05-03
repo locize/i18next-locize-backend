@@ -90,7 +90,10 @@ i18next.use(Backend).init(i18nextOptions);
   allowedAddOrUpdateHosts: ['localhost'],
 
   // optional event triggered on saved to backend
-  onSaved: (lng, ns) => { ... }
+  onSaved: (lng, ns) => { ... },
+
+  // can be used to reload resources in a specific interval (useful in server environments)
+  reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000
 }
 ```
 
