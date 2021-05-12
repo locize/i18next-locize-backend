@@ -1,3 +1,7 @@
+### 4.2.1
+
+- replace internal node-fetch with cross-fetch
+
 ### 4.2.0
 
 - Type PluginOptions properly
