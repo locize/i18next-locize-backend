@@ -1,3 +1,8 @@
+### 4.2.3
+
+- update dependencies
+- decrease default write debounce
+
 ### 4.2.2
 
 - replace internal node-fetch with cross-fetch

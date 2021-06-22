@@ -56,7 +56,8 @@ var getDefaults = function getDefaults() {
     onSaved: false,
     reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000,
     checkForProjectTimeout: 3 * 1000,
-    storageExpiration: 60 * 60 * 1000
+    storageExpiration: 60 * 60 * 1000,
+    writeDebounce: 5 * 1000
   };
 };
 
@@ -198,7 +199,7 @@ var I18NextLocizeBackend = function () {
       this.queuedWrites = {
         pending: {}
       };
-      this.debouncedProcess = (0, _utils.debounce)(this.process, 10000);
+      this.debouncedProcess = (0, _utils.debounce)(this.process, this.options.writeDebounce);
       if (this.interval) clearInterval(this.interval);
 
       if (this.options.reloadInterval && this.options.projectId) {

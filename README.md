@@ -20,7 +20,11 @@ To see i18next-locize-backend in a working app example, you may have a look at [
 
 # Troubleshooting
 
+Make sure you set the `debug` option of i18next to `true`. This will maybe log more information in the developer console.
+
 **SaveMissing is not working**
+
+Did you wait 5-10 seconds before refreshing the locize UI? It may take a couple of seconds until the missing keys are sent and saved.
 
 Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally [in production](https://docs.locize.com/guides-tips-and-tricks/going-production)). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
