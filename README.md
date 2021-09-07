@@ -224,6 +224,47 @@ const locize = new Locize(
 );
 ```
 
+### Special usage with react-i18next without using Suspense
+
+Use `setI18n` to pass in the i18next instance before initializing:
+
+```js
+import i18n from "i18next";
+import { initReactI18next, setI18n } from "react-i18next";
+import LocizeBackend from "i18next-locize-backend";
+
+const backendOptions = {
+  projectId: "1d0aa5aa-4660-4154-b6d9-907dbef10bb3"
+};
+
+const yourOptions = {
+  debug: true,
+  interpolation: {
+    escapeValue: false
+  },
+  react: {
+    useSuspense: false
+  }
+};
+
+// this is only used if not using suspense
+i18n.options.react = yourOptions.react;
+setI18n(i18n);
+
+const backend = new LocizeBackend(backendOptions, (err, opts) => {
+  if (err) return console.error(err);
+  i18n
+    .use(backend)
+    .use(initReactI18next)
+    // yourOptions should not include backendOptions!
+    .init({ ...opts, ...yourOptions }, (err, t) => {
+      if (err) return console.error(err);
+    });
+});
+
+export default i18n;
+```
+
 ## IMPORTANT ADVICE FOR SERVERLESS environments - AWS lambda, Google Cloud Functions, Azure Functions, etc...
 
 <font color="red">
