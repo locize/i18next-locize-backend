@@ -36,4 +36,4 @@ i18next.init(yourOptions)
 
 setInterval(function () {
   console.log(i18next.t('translation:All', { lng: 'en' }))
-}, 15000)
+}, 1500)
