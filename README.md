@@ -255,7 +255,7 @@ const backend = new LocizeBackend(backendOptions, (err, opts) => {
   if (err) return console.error(err);
   i18n
     .use(backend)
-    .use(initReactI18next)
+    // .use(initReactI18next) // keep this if using suspense
     // yourOptions should not include backendOptions!
     .init({ ...opts, ...yourOptions }, (err, t) => {
       if (err) return console.error(err);
