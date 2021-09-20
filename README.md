@@ -28,6 +28,20 @@ Did you wait 5-10 seconds before refreshing the locize UI? It may take a couple 
 
 Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally [in production](https://docs.locize.com/guides-tips-and-tricks/going-production)). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
+
+**On server side: process is not exiting**
+
+In case you want to use i18next-locize-backend on server side for a short running process, you might want to set the `reloadInterval` option to `false`:
+
+```javascript
+{
+  reloadInterval: false,
+  projectId: 'my-project-id',
+  version: 'latest',
+  referenceLng: 'en',
+}
+```
+
 # Getting started
 
 Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn`, `bower` or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
