@@ -133,7 +133,10 @@ i18next.use(Backend).init(i18nextOptions);
   onSaved: (lng, ns) => { ... },
 
   // can be used to reload resources in a specific interval (useful in server environments)
-  reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000
+  reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000,
+  
+  // define the threshold for languages to be added to supportedLngs (eg: 1 = 100% translated, 0.9 = 90% translated [default]).
+  translatedPercentageThreshold: 0.8
 }
 ```
 
