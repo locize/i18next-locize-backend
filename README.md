@@ -29,6 +29,28 @@ Did you wait 5-10 seconds before refreshing the locize UI? It may take a couple 
 Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally [in production](https://docs.locize.com/guides-tips-and-tricks/going-production)). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
 
+**Loading translations not working**
+
+Make sure the translations are published, either by having enabled auto publishing for your version or by [manually publishing](https://docs.locize.com/more/general-questions/how-to-manually-publish-a-specific-version) the version. Alternatively, you can publish via [CLI](https://github.com/locize/locize-cli#publish-version) or directly by consuming the [API](https://docs.locize.com/integration/api#publish-version).
+
+In case you're using the private publish mode, make sure you're using the correct api key and are setting the `private` option to `true`.
+
+```javascript
+import i18next from "i18next";
+import Locize from "i18next-locize-backend";
+
+i18next.use(Locize).init({
+  backend: {
+    projectId: "[PROJECTID]",
+    apiKey: "[APIKEY]",
+    version: "[VERSION]",
+    private: true,
+    referenceLng: "en"
+  }
+});
+```
+
+
 **On server side: process is not exiting**
 
 In case you want to use i18next-locize-backend on server side for a short running process, you might want to set the `reloadInterval` option to `false`:
@@ -36,7 +58,7 @@ In case you want to use i18next-locize-backend on server side for a short runnin
 ```javascript
 {
   reloadInterval: false,
-  projectId: 'my-project-id',
+  projectId: "[PROJECTID]",
   version: 'latest',
   referenceLng: 'en',
 }
