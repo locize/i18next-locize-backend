@@ -219,10 +219,13 @@ var I18NextLocizeBackend = function () {
     value: function reload() {
       var _this2 = this;
 
-      var _this$services = this.services,
-          backendConnector = _this$services.backendConnector,
-          languageUtils = _this$services.languageUtils,
-          logger = _this$services.logger;
+      var _ref = this.services || {
+        logger: console
+      },
+          backendConnector = _ref.backendConnector,
+          languageUtils = _ref.languageUtils,
+          logger = _ref.logger;
+
       if (!backendConnector) return;
       var currentLanguage = backendConnector.language;
       if (currentLanguage && currentLanguage.toLowerCase() === 'cimode') return;
@@ -323,7 +326,10 @@ var I18NextLocizeBackend = function () {
     value: function checkIfProjectExists(callback) {
       var _this5 = this;
 
-      var logger = this.services.logger;
+      var _ref2 = this.services || {
+        logger: console
+      },
+          logger = _ref2.logger;
 
       if (this.somethingLoaded) {
         if (callback) callback(null);
@@ -351,10 +357,10 @@ var I18NextLocizeBackend = function () {
     value: function read(language, namespace, callback) {
       var _this6 = this;
 
-      var _ref = this.services || {
+      var _ref3 = this.services || {
         logger: console
       },
-          logger = _ref.logger;
+          logger = _ref3.logger;
 
       var url;
       var options = {};

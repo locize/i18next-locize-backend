@@ -1,3 +1,7 @@
+### 4.2.5
+
+- default console logger if not available
+
 ### 4.2.4
 
 - ignore document.cookie errors
