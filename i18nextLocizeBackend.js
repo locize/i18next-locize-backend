@@ -99,23 +99,29 @@ function getStorage(storageExpiration) {
       date.setTime(date.getTime() + storageExpiration);
       var expires = "; expires=".concat(date.toGMTString());
       var name = "notExistingLocizeProject_".concat(projectId);
-      document.cookie = "".concat(name, "=").concat(Date.now()).concat(expires, ";path=/");
+
+      try {
+        document.cookie = "".concat(name, "=").concat(Date.now()).concat(expires, ";path=/");
+      } catch (err) {}
     };
 
     isProjectNotExisting = function isProjectNotExisting(projectId) {
       var name = "notExistingLocizeProject_".concat(projectId);
       var nameEQ = "".concat(name, "=");
-      var ca = document.cookie.split(';');
 
-      for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
+      try {
+        var ca = document.cookie.split(';');
 
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1, c.length);
+        for (var i = 0; i < ca.length; i++) {
+          var c = ca[i];
+
+          while (c.charAt(0) === ' ') {
+            c = c.substring(1, c.length);
+          }
+
+          if (c.indexOf(nameEQ) === 0) return true;
         }
-
-        if (c.indexOf(nameEQ) === 0) return true;
-      }
+      } catch (err) {}
 
       return false;
     };

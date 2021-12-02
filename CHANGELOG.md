@@ -1,3 +1,7 @@
+### 4.2.4
+
+- ignore document.cookie errors
+
 ### 4.2.3
 
 - update dependencies
