@@ -1,3 +1,7 @@
+### 4.2.6
+
+- ensure optional callback for create is called
+
 ### 4.2.5
 
 - default console logger if not available

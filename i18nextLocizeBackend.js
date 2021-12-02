@@ -600,6 +600,11 @@ var I18NextLocizeBackend = function () {
       var missings = (0, _utils.getPath)(this.queuedWrites, [lng, namespace]);
       (0, _utils.setPath)(this.queuedWrites, [lng, namespace], []);
       var pageSize = 1000;
+      var clbs = missings.filter(function (m) {
+        return m.callback;
+      }).map(function (missing) {
+        return missing.callback;
+      });
 
       if (missings.length) {
         (function () {
@@ -607,8 +612,8 @@ var I18NextLocizeBackend = function () {
 
           var namespaceSaved = function namespaceSaved() {
             (0, _utils.setPath)(_this10.queuedWrites, ['locks', lng, namespace], false);
-            missings.forEach(function (missing) {
-              if (missing.callback) missing.callback();
+            clbs.forEach(function (clb) {
+              return clb();
             });
             if (_this10.options.onSaved) _this10.options.onSaved(lng, namespace);
 
