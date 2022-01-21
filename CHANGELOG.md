@@ -1,3 +1,7 @@
+### 4.2.7
+
+- update dependencies
+
 ### 4.2.6
 
 - ensure optional callback for create is called
