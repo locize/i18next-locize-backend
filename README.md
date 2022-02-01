@@ -262,7 +262,7 @@ const locize = new Locize(
     version: "[VERSION]"
     // referenceLng -> not needed as will be loaded from API
   },
-  (err, opts) => {
+  (err, opts, lngs) => {
     i18next.use(locize).init({ ...opts, ...yourOptions }); // yourOptions should not include backendOptions!
   }
 );

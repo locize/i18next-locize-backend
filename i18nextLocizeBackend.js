@@ -195,10 +195,10 @@ var I18NextLocizeBackend = function () {
       }
 
       if (typeof callback === 'function') {
-        this.getOptions(function (err, opts) {
+        this.getOptions(function (err, opts, languages) {
           if (err) return callback(err);
           _this.options.referenceLng = options.referenceLng || opts.referenceLng || _this.options.referenceLng;
-          callback(null, opts);
+          callback(null, opts, languages);
         });
       }
 
@@ -318,7 +318,7 @@ var I18NextLocizeBackend = function () {
           supportedLngs: lngs,
           whitelist: lngs,
           load: hasRegion ? 'all' : 'languageOnly'
-        });
+        }, data);
       });
     }
   }, {

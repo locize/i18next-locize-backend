@@ -1,3 +1,7 @@
+### 4.2.8
+
+- getOptions: return also languages result
+
 ### 4.2.7
 
 - update dependencies
