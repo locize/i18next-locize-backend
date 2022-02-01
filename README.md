@@ -16,7 +16,12 @@ i18next.t(key, { defaultValue, tDescription });
 
 ## Advice:
 
-To see i18next-locize-backend in a working app example, you may have a look at [this react-tutorial](https://github.com/locize/react-tutorial) starting from [Step 2](https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn).
+To see i18next-locize-backend in a working app example, you may have a look at:
+
+- [this react-tutorial](https://github.com/locize/react-tutorial) starting from [Step 2](https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn)
+- [this guide](https://locize.com/blog/how-to-internationalize-react-i18next) starting from the step of [replacing i18next-http-backend with i18next-locize-backend](https://locize.com/blog/how-to-internationalize-react-i18next/#how-look)
+- [this Angular blog post](https://locize.com/blog/unleash-the-full-power-of-angular-i18next) [introducing i18next-locize-backend](https://locize.com/blog/unleash-the-full-power-of-angular-i18next/#how-look)
+- [the code integration part](https://www.youtube.com/watch?v=ds-yEEYP1Ks&t=423s) in this [YouTube video](https://www.youtube.com/watch?v=ds-yEEYP1Ks)
 
 # Troubleshooting
 
