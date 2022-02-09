@@ -50,7 +50,6 @@ var getDefaults = function getDefaults() {
     version: 'latest',
     private: false,
     translatedPercentageThreshold: 0.9,
-    whitelistThreshold: 0.9,
     failLoadingOnEmptyJSON: false,
     allowedAddOrUpdateHosts: ['localhost'],
     onSaved: false,
@@ -162,12 +161,6 @@ var I18NextLocizeBackend = function () {
       var allOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var callback = arguments.length > 3 ? arguments[3] : undefined;
       this.services = services;
-
-      if (options.whitelistThreshold !== undefined && options.translatedPercentageThreshold === undefined) {
-        if (services && services.logger) services.logger.deprecate('whitelistThreshold', 'option "whitelistThreshold" will be renamed to "translatedPercentageThreshold" in the next major - please make sure to rename this option asap.');
-        options.translatedPercentageThreshold = options.whitelistThreshold;
-      }
-
       this.options = (0, _utils.defaults)(options, this.options || {}, getDefaults());
       this.allOptions = allOptions;
       this.somethingLoaded = false;
@@ -316,7 +309,6 @@ var I18NextLocizeBackend = function () {
           fallbackLng: referenceLng,
           referenceLng: referenceLng,
           supportedLngs: lngs,
-          whitelist: lngs,
           load: hasRegion ? 'all' : 'languageOnly'
         }, data);
       });
