@@ -1,3 +1,7 @@
+### 4.3.0
+
+- limit the number of preflight requests by CORS [#346](https://github.com/locize/i18next-locize-backend/pull/346)
+
 ### 4.2.8
 
 - getOptions: return also languages result

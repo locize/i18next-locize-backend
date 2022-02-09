@@ -729,13 +729,20 @@ if (!fetchApi && fetchNode && !XmlHttpRequestApi && !ActiveXObjectApi) fetchApi 
 if (typeof fetchApi !== 'function') fetchApi = undefined;
 
 var requestWithFetch = function requestWithFetch(options, url, payload, callback) {
+  var headers = {};
+
+  if (options.authorize && options.apiKey) {
+    headers.Authorization = options.apiKey;
+  }
+
+  if (payload || options.setContentTypeJSON) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   fetchApi(url, {
     method: payload ? 'POST' : 'GET',
     body: payload ? JSON.stringify(payload) : undefined,
-    headers: {
-      Authorization: options.authorize && options.apiKey ? options.apiKey : undefined,
-      'Content-Type': 'application/json'
-    }
+    headers: headers
   }).then(function (response) {
     var resourceNotExisting = response.headers && response.headers.get('x-cache') === 'Error from cloudfront';
     if (!response.ok) return callback(response.statusText || 'Error', {

@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/i18next@21.6.10/i18next.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-i18next@1.2.1/jquery-i18next.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/i18next-locize-backend@4.2.8/i18nextLocizeBackend.min.js"></script> -->
+    <script src="/i18nextLocizeBackend.js" ></script>
+  </head>
+
+  <body>
+
+    <div class="content">
+      <h2 data-i18n="contact"></h2>
+    </div>
+
+    <script>
+      // use plugins and options as needed, for options, detail see
+      // http://i18next.com/docs/
+      i18next.use(i18nextLocizeBackend).init({
+        debug: true,
+        lng: 'en', // evtl. use language-detector https://github.com/i18next/i18next-browser-languageDetector
+        backend: {
+          projectId: '8d751621-323e-4bda-94c8-7d2368102e62'
+        }
+      }, function(err, t) {
+        // for options see
+        // https://github.com/i18next/jquery-i18next#initialize-the-plugin
+        jqueryI18next.init(i18next, $);
+
+        // start localizing, details:
+        // https://github.com/i18next/jquery-i18next#usage-of-selector-function
+        $('.content').localize();
+      });
+    </script>
+
+  </body>
+
+</html>
