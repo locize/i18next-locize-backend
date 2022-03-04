@@ -261,17 +261,29 @@ var I18NextLocizeBackend = function () {
       }
 
       if (this.isProjectNotExisting) return callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
+      this.getLanguagesCalls = this.getLanguagesCalls || [];
+      this.getLanguagesCalls.push(callback);
+      if (this.getLanguagesCalls.length > 1) return;
       this.loadUrl({}, url, function (err, ret, info) {
         if (!_this3.somethingLoaded && info && info.resourceNotExisting) {
           _this3.isProjectNotExisting = true;
 
           _this3.storage.setProjectNotExisting(_this3.options.projectId);
 
-          return callback(new Error("locize project ".concat(_this3.options.projectId, " does not exist!")));
+          var e = new Error("locize project ".concat(_this3.options.projectId, " does not exist!"));
+          var _clbs = _this3.getLanguagesCalls;
+          _this3.getLanguagesCalls = [];
+          return _clbs.forEach(function (clb) {
+            return clb(e);
+          });
         }
 
         _this3.somethingLoaded = true;
-        callback(err, ret);
+        var clbs = _this3.getLanguagesCalls;
+        _this3.getLanguagesCalls = [];
+        clbs.forEach(function (clb) {
+          return clb(err, ret);
+        });
       });
     }
   }, {

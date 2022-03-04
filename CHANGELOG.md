@@ -1,3 +1,7 @@
+### 5.0.1
+
+- optimize internal checkIfProjectExists call, when requesting a lot of requests, i.e. multiple namespaces etc.
+
 ### 5.0.0
 
 - remove old deprecated options: whitelist->supportedLngs and whitelistThreshold->translatedPercentageThreshold
