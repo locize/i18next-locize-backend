@@ -1,3 +1,7 @@
+### 5.1.0
+
+- promise api for getLanguages and getOptions
+
 ### 5.0.1
 
 - optimize internal checkIfProjectExists call, when requesting a lot of requests, i.e. multiple namespaces etc.

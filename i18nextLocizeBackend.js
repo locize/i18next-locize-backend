@@ -250,6 +250,17 @@ var I18NextLocizeBackend = function () {
     value: function getLanguages(callback) {
       var _this3 = this;
 
+      var deferred;
+
+      if (!callback) {
+        deferred = (0, _utils.defer)();
+
+        callback = function callback(err, ret) {
+          if (err) return deferred.reject(err);
+          deferred.resolve(ret);
+        };
+      }
+
       var isMissing = (0, _utils.isMissingOption)(this.options, ['projectId']);
       if (isMissing) return callback(new Error(isMissing));
       var url = (0, _utils.interpolate)(this.options.getLanguagesPath, {
@@ -285,11 +296,23 @@ var I18NextLocizeBackend = function () {
           return clb(err, ret);
         });
       });
+      return deferred;
     }
   }, {
     key: "getOptions",
     value: function getOptions(callback) {
       var _this4 = this;
+
+      var deferred;
+
+      if (!callback) {
+        deferred = (0, _utils.defer)();
+
+        callback = function callback(err, ret) {
+          if (err) return deferred.reject(err);
+          deferred.resolve(ret);
+        };
+      }
 
       this.getLanguages(function (err, data) {
         if (err) return callback(err);
@@ -324,6 +347,7 @@ var I18NextLocizeBackend = function () {
           load: hasRegion ? 'all' : 'languageOnly'
         }, data);
       });
+      return deferred;
     }
   }, {
     key: "checkIfProjectExists",
@@ -831,6 +855,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.debounce = debounce;
 exports.defaults = defaults;
+exports.defer = defer;
 exports.getPath = getPath;
 exports.interpolate = interpolate;
 exports.isMissingOption = isMissingOption;
@@ -962,6 +987,18 @@ function isMissingOption(obj, props) {
 
 function optionExist(obj, props) {
   return !isMissingOption(obj, props);
+}
+
+function defer() {
+  var res;
+  var rej;
+  var promise = new Promise(function (resolve, reject) {
+    res = resolve;
+    rej = reject;
+  });
+  promise.resolve = res;
+  promise.reject = rej;
+  return promise;
 }
 },{}],5:[function(require,module,exports){
 

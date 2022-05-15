@@ -38,6 +38,14 @@ describe(`locize backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttp
         done()
       })
     })
+
+    describe('as promise', () => {
+      it('should return languages', async () => {
+        const data = await backend.getLanguages()
+        expect(data).to.have.property('en')
+        expect(data).to.have.property('de')
+      })
+    })
   })
 
   describe('#getOptions', () => {
@@ -46,6 +54,13 @@ describe(`locize backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttp
         expect(err).not.to.be.ok()
         expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], load: 'languageOnly' })
         done()
+      })
+    })
+
+    describe('as promise', () => {
+      it('should return languages', async () => {
+        const options = await backend.getOptions()
+        expect(options).to.eql({ fallbackLng: 'en', referenceLng: 'en', supportedLngs: ['en', 'de'], load: 'languageOnly' })
       })
     })
   })

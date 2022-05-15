@@ -211,7 +211,13 @@ locize.getLanguages((err, data) => {
 });
 
 // or
+const data = await locize.getLanguages();
+
+// or
 i18next.services.backendConnector.backend.getLanguages(callback);
+
+// or
+const data = await i18next.services.backendConnector.backend.getLanguages();
 ```
 
 ### backend.getOptions
@@ -236,7 +242,13 @@ locize.getOptions((err, data) => {
 });
 
 // or
+const data = await locize.getOptions();
+
+// or
 i18next.services.backendConnector.backend.getOptions(callback);
+
+// or
+const data = await i18next.services.backendConnector.backend.getOptions();
 ```
 
 You can set a threshold for languages to be added to supportedLngs by setting translatedPercentageThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).

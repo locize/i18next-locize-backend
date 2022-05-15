@@ -102,7 +102,9 @@ declare class I18NextLocizeBackend {
   ): void;
 
   getLanguages(callback: I18NextLocizeBackend.LoadCallback): void;
+  getLanguages(): Promise<any>;
   getOptions(callback: I18NextLocizeBackend.LoadCallback): void;
+  getOptions(): Promise<any>;
   read(language: string, namespace: string, callback: ReadCallback): void;
   loadUrl(url: string, options: any, callback: ReadCallback): void;
   create(
