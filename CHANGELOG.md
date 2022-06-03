@@ -1,3 +1,7 @@
+### 5.1.1
+
+- fix detecting referenceLng if only getLanguages function is used
+
 ### 5.1.0
 
 - promise api for getLanguages and getOptions
