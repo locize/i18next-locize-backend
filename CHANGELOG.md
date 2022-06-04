@@ -1,3 +1,7 @@
+### 5.1.2
+
+- also check for fallbackLng if no referenceLng is found
+
 ### 5.1.1
 
 - fix detecting referenceLng if only getLanguages function is used
