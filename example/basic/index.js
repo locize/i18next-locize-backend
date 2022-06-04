@@ -9,7 +9,7 @@ const yourOptions = {
   fallbackLng: 'en',
   lng: 'en',
   backend: {
-    referenceLng: 'en',
+    // referenceLng: 'en',
     projectId: '49fb5220-dfc0-47bb-987c-b737524d76af',
     apiKey: '3dc91839-ca3e-440d-a1a3-ce52ebfd12e3'
     // reloadInterval: false,

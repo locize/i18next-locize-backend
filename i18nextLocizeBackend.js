@@ -160,6 +160,11 @@ var I18NextLocizeBackend = function () {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var allOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
       var callback = arguments.length > 3 ? arguments[3] : undefined;
+
+      if (!options.referenceLng && allOptions.fallbackLng && Array.isArray(allOptions.fallbackLng) && allOptions.fallbackLng[0] !== 'dev') {
+        options.referenceLng = allOptions.fallbackLng[0];
+      }
+
       this.services = services;
       this.options = (0, _utils.defaults)(options, this.options || {}, getDefaults());
       this.allOptions = allOptions;
