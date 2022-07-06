@@ -55,8 +55,8 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "compile:esm": "rm -rf esm && mkdir esm && BABEL_ENV=esm babel lib -d esm && cp lib/getFetch.cjs esm/getFetch.cjs && rm -f esm/getFetch.js",
-    "compile:cjs": "rm -rf cjs && mkdir cjs && BABEL_ENV=cjs babel lib -d cjs && echo '{\"type\":\"commonjs\"}' > cjs/package.json && cp lib/getFetch.cjs cjs/getFetch.js && node -e \"fs.writeFileSync('cjs/request.js', fs.readFileSync('cjs/request.js').toString().replace('getFetch.cjs', 'getFetch.js'))\"",
+    "compile:esm": "rm -rf esm && mkdir esm && BABEL_ENV=esm babel lib -d esm && cp lib/getFetch.cjs esm/getFetch.cjs && rm -f esm/getFetch.js && node -e \"fs.writeFileSync('esm/getFetch.cjs', fs.readFileSync('esm/getFetch.cjs').toString().replace('/* eslint-disable no-var */\\n', ''))\"",
+    "compile:cjs": "rm -rf cjs && mkdir cjs && BABEL_ENV=cjs babel lib -d cjs && echo '{\"type\":\"commonjs\"}' > cjs/package.json && cp lib/getFetch.cjs cjs/getFetch.js && node -e \"fs.writeFileSync('cjs/getFetch.js', fs.readFileSync('cjs/getFetch.js').toString().replace('/* eslint-disable no-var */\\n', ''))\" && node -e \"fs.writeFileSync('cjs/request.js', fs.readFileSync('cjs/request.js').toString().replace('getFetch.cjs', 'getFetch.js'))\"",
     "compile": "npm run compile:esm && npm run compile:cjs",
     "browser": "browserify --ignore cross-fetch --standalone i18nextLocizeBackend cjs/index.js -o i18nextLocizeBackend.js && uglifyjs i18nextLocizeBackend.js --compress --mangle -o i18nextLocizeBackend.min.js",
     "build": "npm run compile && npm run browser",
