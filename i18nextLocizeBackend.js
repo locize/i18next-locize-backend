@@ -166,7 +166,15 @@ var I18NextLocizeBackend = function () {
       }
 
       this.services = services;
-      this.options = (0, _utils.defaults)(options, this.options || {}, getDefaults());
+      var defOpt = getDefaults();
+      var passedOpt = (0, _utils.defaults)(options, this.options || {});
+
+      if (passedOpt.reloadInterval && passedOpt.reloadInterval < 5 * 60 * 1000) {
+        console.warn('Your configured reloadInterval option is to low.');
+        passedOpt.reloadInterval = defOpt.reloadInterval;
+      }
+
+      this.options = (0, _utils.defaults)(options, this.options || {}, defOpt);
       this.allOptions = allOptions;
       this.somethingLoaded = false;
       this.isProjectNotExisting = false;

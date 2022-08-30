@@ -1,3 +1,7 @@
+### 5.1.3
+
+- warn for low reloadInterval values
+
 ### 5.1.2
 
 - also check for fallbackLng if no referenceLng is found
