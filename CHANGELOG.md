@@ -1,3 +1,7 @@
+### 5.1.4
+
+- error if no fetch and no xhr implementation found
+
 ### 5.1.3
 
 - warn for low reloadInterval values
