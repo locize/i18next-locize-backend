@@ -1,3 +1,8 @@
+### 5.1.5
+
+- update dependencies
+- define types also in exports
+
 ### 5.1.4
 
 - error if no fetch and no xhr implementation found
