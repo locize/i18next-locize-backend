@@ -75,7 +75,7 @@ declare namespace I18NextLocizeBackend {
 }
 
 declare module "i18next" {
-  interface PluginOptions {
+  interface CustomPluginOptions {
     backend?: I18NextLocizeBackend.BackendOptions;
   }
 }

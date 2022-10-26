@@ -1,3 +1,7 @@
+### 6.0.0
+
+- typescript fix for i18next v22
+
 ### 5.1.5
 
 - update dependencies
