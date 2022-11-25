@@ -81,6 +81,7 @@ declare module "i18next" {
 }
 
 declare class I18NextLocizeBackend {
+  static type: "backend";
   constructor(
     options?: I18NextLocizeBackend.BackendOptions,
     callback?: I18NextLocizeBackend.LoadCallback
