@@ -29,9 +29,12 @@ exports.default = void 0;
 var _utils = require("./utils.js");
 var _request = _interopRequireDefault(require("./request.js"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 var getDefaults = function getDefaults() {
   return {
     loadPath: 'https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
@@ -195,7 +198,6 @@ var I18NextLocizeBackend = function () {
       if (!backendConnector) return;
       var currentLanguage = backendConnector.language;
       if (currentLanguage && currentLanguage.toLowerCase() === 'cimode') return;
-
       var toLoad = [];
       var append = function append(lng) {
         var lngs = languageUtils.toResolveHierarchy(lng);
@@ -238,7 +240,6 @@ var I18NextLocizeBackend = function () {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) return callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
-
       this.getLanguagesCalls = this.getLanguagesCalls || [];
       this.getLanguagesCalls.push(callback);
       if (this.getLanguagesCalls.length > 1) return;
@@ -447,10 +448,8 @@ var I18NextLocizeBackend = function () {
       if (!callback) callback = function callback() {};
       this.checkIfProjectExists(function (err) {
         if (err) return callback(err);
-
         var isMissing = (0, _utils.isMissingOption)(_this8.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
         if (isMissing) return callback(new Error(isMissing));
-
         if (!_this8.isAddOrUpdateAllowed) {
           return callback('host is not allowed to create key.');
         }
@@ -474,7 +473,6 @@ var I18NextLocizeBackend = function () {
       if (!callback) callback = function callback() {};
       this.checkIfProjectExists(function (err) {
         if (err) return callback(err);
-
         var isMissing = (0, _utils.isMissingOption)(_this9.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
         if (isMissing) return callback(new Error(isMissing));
         if (!_this9.isAddOrUpdateAllowed) {
@@ -482,7 +480,6 @@ var I18NextLocizeBackend = function () {
         }
         if (!options) options = {};
         if (typeof languages === 'string') languages = [languages];
-
         options.isUpdate = true;
         languages.forEach(function (lng) {
           if (lng === _this9.options.referenceLng) {
@@ -566,9 +563,7 @@ var I18NextLocizeBackend = function () {
             clbs.forEach(function (clb) {
               return clb();
             });
-
             if (_this10.options.onSaved) _this10.options.onSaved(lng, namespace);
-
             _this10.debouncedProcess(lng, namespace);
           };
           var amountOfPages = missings.length / pageSize;
@@ -662,7 +657,6 @@ if (typeof ActiveXObject === 'function') {
 }
 if (!fetchApi && fetchNode && !XmlHttpRequestApi && !ActiveXObjectApi) fetchApi = fetchNode.default || fetchNode;
 if (typeof fetchApi !== 'function') fetchApi = undefined;
-
 var requestWithFetch = function requestWithFetch(options, url, payload, callback) {
   var headers = {};
   if (options.authorize && options.apiKey) {
@@ -690,7 +684,6 @@ var requestWithFetch = function requestWithFetch(options, url, payload, callback
     }).catch(callback);
   }).catch(callback);
 };
-
 var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url, payload, callback) {
   try {
     var x;
@@ -734,7 +727,6 @@ var request = function request(options, url, payload, callback) {
   if (typeof XMLHttpRequest === 'function' || (typeof XMLHttpRequest === "undefined" ? "undefined" : _typeof(XMLHttpRequest)) === 'object' || typeof ActiveXObject === 'function') {
     return requestWithXmlHttpRequest(options, url, payload, callback);
   }
-
   callback(new Error('No fetch and no xhr implementation found!'));
 };
 var _default = request;
@@ -823,7 +815,6 @@ function getPath(object, path) {
   if (!obj) return undefined;
   return obj[k];
 }
-
 var regexp = new RegExp('{{(.+?)}}', 'g');
 function makeString(object) {
   if (object == null) return '';
@@ -834,7 +825,6 @@ function interpolate(str, data, lng) {
   function regexSafe(val) {
     return val.replace(/\$/g, '$$$$');
   }
-
   while (match = regexp.exec(str)) {
     value = match[1].trim();
     if (typeof value !== 'string') value = makeString(value);
@@ -859,7 +849,6 @@ function isMissingOption(obj, props) {
 function optionExist(obj, props) {
   return !isMissingOption(obj, props);
 }
-
 function defer() {
   var res;
   var rej;

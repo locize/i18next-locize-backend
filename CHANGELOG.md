@@ -1,3 +1,7 @@
+### 6.1.0
+
+- typescript: export the backend options type
+
 ### 6.0.1
 
 - typescript: static type prop
