@@ -445,7 +445,7 @@ var I18NextLocizeBackend = function () {
     key: "create",
     value: function create(languages, namespace, key, fallbackValue, callback, options) {
       var _this8 = this;
-      if (!callback) callback = function callback() {};
+      if (typeof callback !== 'function') callback = function callback() {};
       this.checkIfProjectExists(function (err) {
         if (err) return callback(err);
         var isMissing = (0, _utils.isMissingOption)(_this8.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
@@ -470,7 +470,7 @@ var I18NextLocizeBackend = function () {
     key: "update",
     value: function update(languages, namespace, key, fallbackValue, callback, options) {
       var _this9 = this;
-      if (!callback) callback = function callback() {};
+      if (typeof callback !== 'function') callback = function callback() {};
       this.checkIfProjectExists(function (err) {
         if (err) return callback(err);
         var isMissing = (0, _utils.isMissingOption)(_this9.options, ['projectId', 'version', 'apiKey', 'referenceLng']);
