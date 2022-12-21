@@ -72,12 +72,6 @@ export interface LocizeBackendOptions {
 
 type LoadCallback = (error: any, result: any) => void;
 
-declare module "i18next" {
-  interface CustomPluginOptions {
-    backend?: LocizeBackendOptions;
-  }
-}
-
 declare class I18NextLocizeBackend
   implements BackendModule<LocizeBackendOptions>
 {

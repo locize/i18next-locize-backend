@@ -1,3 +1,7 @@
+### 6.1.1
+
+- typescript: fix old declaration of plugin
+
 ### 6.1.0
 
 - typescript: export the backend options type
