@@ -1,4 +1,4 @@
-import { BackendModule, ReadCallback, Services } from "i18next";
+import { BackendModule, ReadCallback, ResourceKey, Services } from "i18next";
 
 type AllowedAddOrUpdateHostsFunction = (hostname: string) => boolean;
 export interface LocizeBackendOptions {
@@ -71,6 +71,19 @@ export interface LocizeBackendOptions {
 }
 
 type LoadCallback = (error: any, result: any) => void;
+interface RequestResponse {
+  status: number;
+  data: ResourceKey;
+}
+type RequestCallback = (error: any, response: RequestResponse) => void;
+interface CustomRequestOptions {
+  url: string,
+  method: 'GET' | 'POST'
+  body: ResourceKey | undefined,
+  headers: {
+    [name: string]: string;
+  }
+}
 
 declare class I18NextLocizeBackend
   implements BackendModule<LocizeBackendOptions>
@@ -102,7 +115,7 @@ declare class I18NextLocizeBackend
   getOptions(callback: LoadCallback): void;
   getOptions(): Promise<any>;
   read(language: string, namespace: string, callback: ReadCallback): void;
-  loadUrl(url: string, options: any, callback: ReadCallback): void;
+  loadUrl(options: any, url: string, callback: ReadCallback): void;
   create(
     languages: string | string[],
     namespace: string,
@@ -128,6 +141,18 @@ declare class I18NextLocizeBackend
   write(language: string, namespace: string): void;
   type: "backend";
   options: LocizeBackendOptions;
+
+  /**
+   * define a custom request function
+   * can be used to support Angular http client
+   */
+  request?(
+    info: CustomRequestOptions,
+    callback: RequestCallback
+  ): void;
+  request?(
+    info: CustomRequestOptions,
+  ): Promise<RequestResponse>;
 }
 
 export default I18NextLocizeBackend;

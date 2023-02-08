@@ -1,3 +1,7 @@
+### 6.2.0
+
+- possibility to define custom request function, can be used to support Angular http client [#351](https://github.com/locize/i18next-locize-backend/issues/351)
+
 ### 6.1.1
 
 - typescript: fix old declaration of plugin

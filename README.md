@@ -141,7 +141,23 @@ i18next.use(Backend).init(i18nextOptions);
   reloadInterval: typeof window !== 'undefined' ? false : 60 * 60 * 1000,
   
   // define the threshold for languages to be added to supportedLngs (eg: 1 = 100% translated, 0.9 = 90% translated [default]).
-  translatedPercentageThreshold: 0.8
+  translatedPercentageThreshold: 0.8,
+
+  // define a custom request function
+  // can be used to support Angular http client
+  //
+  // 'info' contains 'url', 'method', 'body' and 'headers'
+  //   'url' the url that should be requested
+  //   'method' GET for fetching translations and POST for saving missing translations
+  //   'body' will be a key:value object used when saving missing translations
+  //   'headers' will be a key:value object containing the header information that should be sent
+  // 'callback' is a function that takes two parameters, 'err' and 'res'.
+  //            'err' should be an error
+  //            'res' should be an object with a 'status' property and a 'data' property containing a stringified object instance beeing the key:value translation pairs for the
+  //            requested language and namespace, or null in case of an error.
+  request: function (info, callback) {},
+  // or async / promise
+  //request: async (info) {},
 }
 ```
 

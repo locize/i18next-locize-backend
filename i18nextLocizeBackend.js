@@ -113,6 +113,39 @@ function getStorage(storageExpiration) {
     isProjectNotExisting: isProjectNotExisting
   };
 }
+var getCustomRequestInfo = function getCustomRequestInfo(url, options, payload) {
+  var headers = {};
+  if (options.authorize && options.apiKey) {
+    headers.Authorization = options.apiKey;
+  }
+  if (payload || options.setContentTypeJSON) {
+    headers['Content-Type'] = 'application/json';
+  }
+  return {
+    method: payload ? 'POST' : 'GET',
+    url: url,
+    headers: headers,
+    body: payload
+  };
+};
+var handleCustomRequest = function handleCustomRequest(opt, info, cb) {
+  if (opt.request.length === 1) {
+    try {
+      var r = opt.request(info);
+      if (r && typeof r.then === 'function') {
+        r.then(function (data) {
+          return cb(null, data);
+        }).catch(cb);
+      } else {
+        cb(null, r);
+      }
+    } catch (err) {
+      cb(err);
+    }
+    return;
+  }
+  opt.request(info, cb);
+};
 var I18NextLocizeBackend = function () {
   function I18NextLocizeBackend(services) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -401,7 +434,7 @@ var I18NextLocizeBackend = function () {
         payload = undefined;
       }
       callback = callback || function () {};
-      (0, _request.default)(options, url, payload, function (err, res) {
+      var clb = function clb(err, res) {
         var resourceNotExisting = res && res.resourceNotExisting;
         if (res && (res.status === 408 || res.status === 400)) {
           return callback('failed loading ' + url, true, {
@@ -426,7 +459,11 @@ var I18NextLocizeBackend = function () {
         if (err) return callback(err, false);
         var ret, parseErr;
         try {
-          ret = JSON.parse(res.data);
+          if (typeof res.data === 'string') {
+            ret = JSON.parse(res.data);
+          } else {
+            ret = res.data;
+          }
         } catch (e) {
           parseErr = 'failed parsing ' + url + ' to json';
         }
@@ -439,7 +476,10 @@ var I18NextLocizeBackend = function () {
         callback(null, ret, {
           resourceNotExisting: resourceNotExisting
         });
-      });
+      };
+      if (!this.options.request || url.indexOf("/languages/".concat(options.projectId)) > 0) return (0, _request.default)(options, url, payload, clb);
+      var info = getCustomRequestInfo(url, options, payload);
+      handleCustomRequest(this.options, info, clb);
     }
   }, {
     key: "create",
@@ -531,14 +571,28 @@ var I18NextLocizeBackend = function () {
       };
       if (!todo) doneOne();
       if (hasMissing) {
-        (0, _request.default)((0, _utils.defaults)({
-          authorize: true
-        }, this.options), missingUrl, payloadMissing, doneOne);
+        if (!this.options.request) {
+          (0, _request.default)((0, _utils.defaults)({
+            authorize: true
+          }, this.options), missingUrl, payloadMissing, doneOne);
+        } else {
+          var info = getCustomRequestInfo(missingUrl, (0, _utils.defaults)({
+            authorize: true
+          }, this.options), payloadMissing);
+          handleCustomRequest(this.options, info, doneOne);
+        }
       }
       if (hasUpdates) {
-        (0, _request.default)((0, _utils.defaults)({
-          authorize: true
-        }, this.options), updatesUrl, payloadUpdate, doneOne);
+        if (!this.options.request) {
+          (0, _request.default)((0, _utils.defaults)({
+            authorize: true
+          }, this.options), updatesUrl, payloadUpdate, doneOne);
+        } else {
+          var _info = getCustomRequestInfo(updatesUrl, (0, _utils.defaults)({
+            authorize: true
+          }, this.options), payloadUpdate);
+          handleCustomRequest(this.options, _info, doneOne);
+        }
       }
     }
   }, {
