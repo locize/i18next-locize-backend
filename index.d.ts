@@ -71,12 +71,12 @@ export interface LocizeBackendOptions {
 }
 
 type LoadCallback = (error: any, result: any) => void;
-interface RequestResponse {
+export interface RequestResponse {
   status: number;
   data: ResourceKey;
 }
-type RequestCallback = (error: any, response: RequestResponse) => void;
-interface CustomRequestOptions {
+export type RequestCallback = (error: any, response: RequestResponse) => void;
+export interface CustomRequestOptions {
   url: string,
   method: 'GET' | 'POST'
   body: ResourceKey | undefined,

@@ -1,3 +1,7 @@
+### 6.2.1
+
+- exported some type definitions
+
 ### 6.2.0
 
 - possibility to define custom request function, can be used to support Angular http client [#351](https://github.com/locize/i18next-locize-backend/issues/351)
