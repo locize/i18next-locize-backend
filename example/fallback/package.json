@@ -1,0 +1,11 @@
+{
+  "description": "just a sample",
+  "main": "./index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "i18next": "22.4.12",
+    "i18next-chained-backend": "4.2.0",
+    "i18next-locize-backend": "6.2.1",
+    "i18next-resources-to-backend": "1.1.2"
+  }
+}
