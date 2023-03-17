@@ -3,8 +3,8 @@
   "main": "./index.js",
   "type": "commonjs",
   "dependencies": {
-    "i18next": "20.3.0",
-    "i18next-chained-backend": "3.0.2",
-    "i18next-locize-backend": "4.1.1"
+    "i18next": "22.4.12",
+    "i18next-chained-backend": "4.2.0",
+    "i18next-locize-backend": "6.2.1"
   }
 }

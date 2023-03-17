@@ -1,7 +1,7 @@
 const i18next = require('i18next')
 const ChainedBackend = require('i18next-chained-backend')
-const LocizeBackend = require('../../cjs/index.js')
-// const LocizeBackend = require('i18next-locize-backend')
+const LocizeBackend = require('i18next-locize-backend')
+// const LocizeBackend = require('../../cjs/index.js')
 
 i18next
   .use(ChainedBackend)

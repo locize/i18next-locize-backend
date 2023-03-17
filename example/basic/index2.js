@@ -1,6 +1,6 @@
 const i18next = require('i18next')
-const LocizeBackend = require('../../cjs/index.js')
-// const LocizeBackend = require('i18next-locize-backend')
+const LocizeBackend = require('i18next-locize-backend')
+// const LocizeBackend = require('../../cjs/index.js')
 
 const backendOptions = {
   projectId: '3d0aa5aa-4660-4154-b6d9-907dbef10bb2'
