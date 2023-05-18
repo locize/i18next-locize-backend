@@ -99,9 +99,7 @@ function getStorage(storageExpiration) {
         var ca = document.cookie.split(';');
         for (var i = 0; i < ca.length; i++) {
           var c = ca[i];
-          while (c.charAt(0) === ' ') {
-            c = c.substring(1, c.length);
-          }
+          while (c.charAt(0) === ' ') c = c.substring(1, c.length);
           if (c.indexOf(nameEQ) === 0) return true;
         }
       } catch (err) {}
@@ -610,33 +608,31 @@ var I18NextLocizeBackend = function () {
         return missing.callback;
       });
       if (missings.length) {
-        (function () {
-          (0, _utils.setPath)(_this10.queuedWrites, ['locks', lng, namespace], true);
-          var namespaceSaved = function namespaceSaved() {
-            (0, _utils.setPath)(_this10.queuedWrites, ['locks', lng, namespace], false);
-            clbs.forEach(function (clb) {
-              return clb();
-            });
-            if (_this10.options.onSaved) _this10.options.onSaved(lng, namespace);
-            _this10.debouncedProcess(lng, namespace);
-          };
-          var amountOfPages = missings.length / pageSize;
-          var pagesDone = 0;
-          var page = missings.splice(0, pageSize);
-          _this10.writePage(lng, namespace, page, function () {
-            pagesDone++;
-            if (pagesDone >= amountOfPages) namespaceSaved();
+        (0, _utils.setPath)(this.queuedWrites, ['locks', lng, namespace], true);
+        var namespaceSaved = function namespaceSaved() {
+          (0, _utils.setPath)(_this10.queuedWrites, ['locks', lng, namespace], false);
+          clbs.forEach(function (clb) {
+            return clb();
           });
-          while (page.length === pageSize) {
-            page = missings.splice(0, pageSize);
-            if (page.length) {
-              _this10.writePage(lng, namespace, page, function () {
-                pagesDone++;
-                if (pagesDone >= amountOfPages) namespaceSaved();
-              });
-            }
+          if (_this10.options.onSaved) _this10.options.onSaved(lng, namespace);
+          _this10.debouncedProcess(lng, namespace);
+        };
+        var amountOfPages = missings.length / pageSize;
+        var pagesDone = 0;
+        var page = missings.splice(0, pageSize);
+        this.writePage(lng, namespace, page, function () {
+          pagesDone++;
+          if (pagesDone >= amountOfPages) namespaceSaved();
+        });
+        while (page.length === pageSize) {
+          page = missings.splice(0, pageSize);
+          if (page.length) {
+            this.writePage(lng, namespace, page, function () {
+              pagesDone++;
+              if (pagesDone >= amountOfPages) namespaceSaved();
+            });
           }
-        })();
+        }
       }
     }
   }, {

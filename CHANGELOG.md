@@ -1,3 +1,7 @@
+### 6.2.2
+
+- fix for types moduleResolution "node16"
+
 ### 6.2.1
 
 - exported some type definitions
