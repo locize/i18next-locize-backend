@@ -69,6 +69,11 @@ In case you want to use i18next-locize-backend on server side for a short runnin
 }
 ```
 
+**Not all languages are loaded**
+
+By default the supportedLngs are defined by having a minimum of 90% of done translations.
+You can set a threshold for languages to be added to supportedLngs by setting translatedPercentageThreshold in backend options (eg: 1 = 100% translated, 0.9 = 90% translated).
+
 # Getting started
 
 Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn`, `bower` or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
