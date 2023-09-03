@@ -1,3 +1,7 @@
+### 6.2.3
+
+- hack for debug mode in react-native
+
 ### 6.2.2
 
 - fix for types moduleResolution "node16"

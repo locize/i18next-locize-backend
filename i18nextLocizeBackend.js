@@ -715,11 +715,7 @@ var requestWithFetch = function requestWithFetch(options, url, payload, callback
   if (payload || options.setContentTypeJSON) {
     headers['Content-Type'] = 'application/json';
   }
-  fetchApi(url, {
-    method: payload ? 'POST' : 'GET',
-    body: payload ? JSON.stringify(payload) : undefined,
-    headers: headers
-  }).then(function (response) {
+  var resolver = function resolver(response) {
     var resourceNotExisting = response.headers && response.headers.get('x-cache') === 'Error from cloudfront';
     if (!response.ok) return callback(response.statusText || 'Error', {
       status: response.status,
@@ -732,7 +728,20 @@ var requestWithFetch = function requestWithFetch(options, url, payload, callback
         resourceNotExisting: resourceNotExisting
       });
     }).catch(callback);
-  }).catch(callback);
+  };
+  if (typeof fetch === 'function') {
+    fetch(url, {
+      method: payload ? 'POST' : 'GET',
+      body: payload ? JSON.stringify(payload) : undefined,
+      headers: headers
+    }).then(resolver).catch(callback);
+  } else {
+    fetchApi(url, {
+      method: payload ? 'POST' : 'GET',
+      body: payload ? JSON.stringify(payload) : undefined,
+      headers: headers
+    }).then(resolver).catch(callback);
+  }
 };
 var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url, payload, callback) {
   try {
