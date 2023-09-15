@@ -4,8 +4,8 @@
   "type": "commonjs",
   "dependencies": {
     "i18next": "23.5.1",
-    "i18next-chained-backend": "4.4.0",
-    "i18next-fs-backend": "2.1.5",
+    "i18next-chained-backend": "4.5.0",
+    "i18next-fs-backend": "2.2.0",
     "i18next-locize-backend": "6.2.3",
     "i18next-resources-to-backend": "1.1.4"
   }
