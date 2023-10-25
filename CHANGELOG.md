@@ -1,3 +1,7 @@
+### 6.3.0
+
+- update deps
+
 ### 6.2.3
 
 - hack for debug mode in react-native
