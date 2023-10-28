@@ -1,3 +1,7 @@
+### 6.3.1
+
+- fix for browser usage
+
 ### 6.3.0
 
 - update deps
