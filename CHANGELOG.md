@@ -1,4 +1,4 @@
-### 6.4.0
+### 6.4.1
 
 - fix: separate cjs and mjs typings
 
