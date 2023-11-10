@@ -1,3 +1,7 @@
+### 6.4.0
+
+- fix: separate cjs and mjs typings
+
 ### 6.3.1
 
 - fix for browser usage
