@@ -1,3 +1,7 @@
+### 6.4.2
+
+- fix: remove typeof window.document === 'undefined' check which deopt bundle optimization
+
 ### 6.4.1
 
 - fix: separate cjs and mjs typings
