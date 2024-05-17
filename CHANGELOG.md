@@ -1,3 +1,7 @@
+### 6.4.3
+
+- dereference timers in node.js so that the process may exit when finished
+
 ### 6.4.2
 
 - fix: remove typeof window.document === 'undefined' check which deopt bundle optimization
