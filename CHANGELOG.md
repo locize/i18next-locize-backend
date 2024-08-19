@@ -1,3 +1,7 @@
+### 6.5.0
+
+- optimize "Failed to fetch" retry case
+
 ### 6.4.3
 
 - dereference timers in node.js so that the process may exit when finished
