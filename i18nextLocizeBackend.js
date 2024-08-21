@@ -450,7 +450,7 @@ var I18NextLocizeBackend = function () {
             resourceNotExisting: resourceNotExisting
           });
         }
-        if (!res && err && err.message && (err.message.indexOf('Failed to fetch') > -1 || err.message.indexOf('failed') > -1 && err.message.indexOf('fetch') > -1)) return callback('failed loading ' + url + ': ' + err.message, true, {
+        if (!res && err && err.message && err.message.toLowerCase().indexOf('failed') > -1 && (err.message.indexOf('fetch') > -1 || err.message.toLowerCase().indexOf('network') > -1)) return callback('failed loading ' + url + ': ' + err.message, true, {
           resourceNotExisting: resourceNotExisting
         });
         if (err) return callback(err, false);

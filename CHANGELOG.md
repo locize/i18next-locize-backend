@@ -1,3 +1,7 @@
+### 6.5.1
+
+- optimize "Failed to fetch" retry case
+
 ### 6.5.0
 
 - optimize "Failed to fetch" retry case
