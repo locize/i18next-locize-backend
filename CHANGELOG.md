@@ -1,3 +1,7 @@
+### 6.5.2
+
+- improve network error detection across browsers
+
 ### 6.5.1
 
 - optimize "Failed to fetch" retry case

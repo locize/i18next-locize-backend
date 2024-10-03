@@ -450,9 +450,17 @@ var I18NextLocizeBackend = function () {
             resourceNotExisting: resourceNotExisting
           });
         }
-        if (!res && err && err.message && err.message.toLowerCase().indexOf('failed') > -1 && (err.message.indexOf('fetch') > -1 || err.message.toLowerCase().indexOf('network') > -1)) return callback('failed loading ' + url + ': ' + err.message, true, {
-          resourceNotExisting: resourceNotExisting
-        });
+        if (!res && err && err.message) {
+          var errorMessage = err.message.toLowerCase();
+          var isNetworkError = ['failed', 'fetch', 'network', 'load'].find(function (term) {
+            return errorMessage.indexOf(term) > -1;
+          });
+          if (isNetworkError) {
+            return callback('failed loading ' + url + ': ' + err.message, true, {
+              resourceNotExisting: resourceNotExisting
+            });
+          }
+        }
         if (err) return callback(err, false);
         var ret, parseErr;
         try {
