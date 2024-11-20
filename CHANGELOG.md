@@ -1,3 +1,7 @@
+### 6.6.0
+
+- fix for Deno 2 and removal of unnecessary .cjs file
+
 ### 6.5.2
 
 - improve network error detection across browsers
