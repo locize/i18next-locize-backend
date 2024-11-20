@@ -1,7 +1,7 @@
 ### 6.6.0
 
 - fix for Deno 2 and removal of unnecessary .cjs file
-- for esm build environments not supporting top-level await, you should import the `i18next-http-backend/cjs` export or stay at v6.5.2
+- for esm build environments not supporting top-level await, you should import the `i18next-locize-backend/cjs` export or stay at v6.5.2
 
 ### 6.5.2
 
