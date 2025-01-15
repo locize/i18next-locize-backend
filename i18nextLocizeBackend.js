@@ -337,7 +337,7 @@ var I18NextLocizeBackend = function () {
         callback(null, {
           fallbackLng: _this4.options.referenceLng,
           referenceLng: _this4.options.referenceLng,
-          supportedLngs: lngs,
+          supportedLngs: lngs.length === 0 && _this4.options.referenceLng ? [_this4.options.referenceLng] : lngs,
           load: hasRegion ? 'all' : 'languageOnly'
         }, data);
       });
