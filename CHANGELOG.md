@@ -11,6 +11,10 @@
 - fix for Deno 2 and removal of unnecessary .cjs file
 - for esm build environments not supporting top-level await, you should import the `i18next-locize-backend/cjs` export or stay at v6.5.2
 
+### 6.5.3
+
+- fix getOptions to return reference language in the supportedLngs if there are no languages found yet [backported]
+
 ### 6.5.2
 
 - improve network error detection across browsers
