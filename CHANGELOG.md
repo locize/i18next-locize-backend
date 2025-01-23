@@ -15,7 +15,7 @@
 - fix for Deno 2 and removal of unnecessary .cjs file
 - for esm build environments not supporting top-level await, you should import the `i18next-locize-backend/cjs` export or stay at v6.5.2
 
-### 6.5.4
+### 6.5.5
 
 - optimize fetchApi selector [backported]
 
