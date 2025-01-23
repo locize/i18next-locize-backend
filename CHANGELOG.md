@@ -1,4 +1,4 @@
-### 6.5.4
+### 6.5.5
 
 - optimize fetchApi selector [backported]
 
