@@ -1,3 +1,7 @@
+### 7.0.3
+
+- optimize fetchApi selector
+
 ### 7.0.2
 
 - fix getOptions to return reference language in the supportedLngs if there are no languages found yet
