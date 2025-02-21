@@ -162,7 +162,7 @@ var I18NextLocizeBackend = function () {
       this.isProjectNotExisting = false;
       this.storage = getStorage(this.options.storageExpiration);
       if (this.options.pull) {
-        console.warn('The pull API was removed use "private: true" option instead: https://docs.locize.com/integration/api#fetch-private-namespace-resources');
+        console.warn('The pull API was removed use "private: true" option instead: https://www.locize.com/docs/api#fetch-private-namespace-resources');
       }
       var hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
       if (hostname) {
@@ -171,7 +171,7 @@ var I18NextLocizeBackend = function () {
           if (!this.isAddOrUpdateAllowed) {
             services.logger.warn(typeof this.options.allowedAddOrUpdateHosts === 'function' ? "locize-backend: will not save or update missings because allowedAddOrUpdateHosts returned false for the host \"".concat(hostname, "\".") : "locize-backend: will not save or update missings because the host \"".concat(hostname, "\" was not in the list of allowedAddOrUpdateHosts: ").concat(this.options.allowedAddOrUpdateHosts.join(', '), " (matches need to be exact)."));
           } else if (hostname !== 'localhost') {
-            services.logger.warn("locize-backend: you are using the save or update missings feature from this host \"".concat(hostname, "\".\nMake sure you will not use it in production!\nhttps://docs.locize.com/guides-tips-and-tricks/going-production"));
+            services.logger.warn("locize-backend: you are using the save or update missings feature from this host \"".concat(hostname, "\".\nMake sure you will not use it in production!\nhttps://www.locize.com/docs/going-to-production"));
           }
         }
       } else {

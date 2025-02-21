@@ -17,8 +17,8 @@ i18next.t(key, { defaultValue, tDescription });
 To see i18next-locize-backend in a working app example, you may have a look at:
 
 - [this react-tutorial](https://github.com/locize/react-tutorial) starting from [Step 2](https://github.com/locize/react-tutorial#step-2---use-the-locize-cdn)
-- [this guide](https://locize.com/blog/how-to-internationalize-react-i18next) starting from the step of [replacing i18next-http-backend with i18next-locize-backend](https://locize.com/blog/how-to-internationalize-react-i18next/#how-look)
-- [this Angular blog post](https://locize.com/blog/unleash-the-full-power-of-angular-i18next) [introducing i18next-locize-backend](https://locize.com/blog/unleash-the-full-power-of-angular-i18next/#how-look)
+- [this guide](https://www.locize.com/blog/react-i18next) starting from the step of [replacing i18next-http-backend with i18next-locize-backend](https://www.locize.com/blog/react-i18next#how-look)
+- [this Angular blog post](https://locize.com/blog/angular-i18next) [introducing i18next-locize-backend](https://locize.com/blog/angular-i18next/#how-look)
 - [the code integration part](https://www.youtube.com/watch?v=TFV_vhJs5DY&t=294s) in this [YouTube video](https://www.youtube.com/watch?v=TFV_vhJs5DY)
 # Troubleshooting
 
@@ -28,14 +28,14 @@ Make sure you set the `debug` option of i18next to `true`. This will maybe log m
 
 Did you wait 5-10 seconds before refreshing the locize UI? It may take a couple of seconds until the missing keys are sent and saved.
 
-Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally [in production](https://docs.locize.com/guides-tips-and-tricks/going-production)). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
+Per default only `localhost` is allowed to send missing keys ([or update missing keys](https://www.i18next.com/overview/configuration-options#missing-keys)) (to avoid using this feature accidentally [in production](https://www.locize.com/docs/going-to-production)). If you're not using `localhost` during development you will have to set the `allowedAddOrUpdateHosts: ['your.domain.tld']` for the [backend options](https://github.com/locize/i18next-locize-backend#backend-options).
 
 It's also recommended to set the `fallbackLng` equal to the source language defined in locize. i.e. if your source language in locize is `de`, set the fallbackLng also to `de`.
 
 
 **Loading translations not working**
 
-Make sure the translations are published, either by having enabled auto publishing for your version or by [manually publishing](https://docs.locize.com/more/general-questions/how-to-manually-publish-a-specific-version) the version. Alternatively, you can publish via [CLI](https://github.com/locize/locize-cli#publish-version) or directly by consuming the [API](https://docs.locize.com/integration/api#publish-version).
+Make sure the translations are published, either by having enabled auto publishing for your version or by [manually publishing](https://www.locize.com/docs/how-to-manually-publish-a-specific-version) the version. Alternatively, you can publish via [CLI](https://github.com/locize/locize-cli#publish-version) or directly by consuming the [API](https://www.locize.com/docs/api#publish-version).
 
 In case you're using the private publish mode, make sure you're using the correct api key and are setting the `private` option to `true`.
 
@@ -349,7 +349,7 @@ export default i18n;
 
 Due to how serverless functions work, you cannot guarantee that a cached version of your data is available. Serverless functions are short-lived, and can shut down at any time, purging any in-memory or filesystem cache. This may be an acceptable trade-off, but sometimes it isn't acceptable.
 
-**Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://docs.locize.com/integration/api#list-all-namespace-resources)) and package them with your serverless function.**
+**Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://www.locize.com/docs/api#list-all-namespace-resources)) and package them with your serverless function.**
 
 ### For example with [i18next-fs-backend](https://github.com/i18next/i18next-fs-backend)
 
