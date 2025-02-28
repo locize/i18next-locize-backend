@@ -243,17 +243,23 @@ var I18NextLocizeBackend = function () {
         };
       }
       var isMissing = (0, _utils.isMissingOption)(this.options, ['projectId']);
-      if (isMissing) return callback(new Error(isMissing));
+      if (isMissing) {
+        callback(new Error(isMissing));
+        return deferred;
+      }
       var url = (0, _utils.interpolate)(this.options.getLanguagesPath, {
         projectId: this.options.projectId
       });
       if (!this.isProjectNotExisting && this.storage.isProjectNotExisting(this.options.projectId)) {
         this.isProjectNotExisting = true;
       }
-      if (this.isProjectNotExisting) return callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
+      if (this.isProjectNotExisting) {
+        callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
+        return deferred;
+      }
       this.getLanguagesCalls = this.getLanguagesCalls || [];
       this.getLanguagesCalls.push(callback);
-      if (this.getLanguagesCalls.length > 1) return;
+      if (this.getLanguagesCalls.length > 1) return deferred;
       this.loadUrl({}, url, function (err, ret, info) {
         if (!_this3.somethingLoaded && info && info.resourceNotExisting) {
           _this3.isProjectNotExisting = true;

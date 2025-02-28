@@ -1,3 +1,7 @@
+### 7.0.4
+
+- fix promise api for getLanguages
+
 ### 7.0.3
 
 - optimize fetchApi selector
