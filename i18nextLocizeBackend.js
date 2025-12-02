@@ -123,6 +123,12 @@ var handleCustomRequest = function handleCustomRequest(opt, info, cb) {
   }
   opt.request(info, cb);
 };
+function randomizeTimeout(base) {
+  var variance = base * 0.25;
+  var min = Math.max(0, base - variance);
+  var max = base + variance;
+  return Math.floor(min + Math.random() * (max - min));
+}
 var I18NextLocizeBackend = function () {
   function I18NextLocizeBackend(services) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -272,7 +278,8 @@ var I18NextLocizeBackend = function () {
           });
         }
         if (ret) {
-          var referenceLng = Object.keys(ret).reduce(function (mem, k) {
+          _this3.loadedLanguages = Object.keys(ret);
+          var referenceLng = _this3.loadedLanguages.reduce(function (mem, k) {
             var item = ret[k];
             if (item.isReferenceLanguage) mem = k;
             return mem;
@@ -343,7 +350,7 @@ var I18NextLocizeBackend = function () {
       if (this.alreadyRequestedCheckIfProjectExists) {
         setTimeout(function () {
           return _this5.checkIfProjectExists(callback);
-        }, this.options.checkForProjectTimeout);
+        }, randomizeTimeout(this.options.checkForProjectTimeout));
         return;
       }
       this.alreadyRequestedCheckIfProjectExists = true;
@@ -355,13 +362,31 @@ var I18NextLocizeBackend = function () {
       });
     }
   }, {
-    key: "read",
-    value: function read(language, namespace, callback) {
-      var _this6 = this;
+    key: "checkIfLanguagesLoaded",
+    value: function checkIfLanguagesLoaded(callback) {
       var _ref3 = this.services || {
           logger: console
         },
         logger = _ref3.logger;
+      if (this.loadedLanguages) {
+        if (callback) callback(null);
+        return;
+      }
+      this.getLanguages(function (err) {
+        if (err && err.message && err.message.indexOf('does not exist') > 0) {
+          if (logger) logger.error(err.message);
+        }
+        if (callback) callback(err);
+      });
+    }
+  }, {
+    key: "read",
+    value: function read(language, namespace, callback) {
+      var _this6 = this;
+      var _ref4 = this.services || {
+          logger: console
+        },
+        logger = _ref4.logger;
       var url;
       var options = {};
       if (this.options.private) {
@@ -395,12 +420,35 @@ var I18NextLocizeBackend = function () {
         if (callback) callback(err);
         return;
       }
+      if (this.warnedLanguages && this.warnedLanguages.indexOf(language) > -1) {
+        var _err = new Error("Will not continue to load language \"".concat(language, "\" since it is not available in locize project ").concat(this.options.projectId, "!"));
+        if (logger) logger.error(_err.message);
+        if (callback) callback(_err);
+        return;
+      }
       this.loadUrl(options, url, function (err, ret, info) {
+        var resourceNotExisting = info && info.resourceNotExisting;
+        if (!resourceNotExisting) {
+          _this6.hasResourcesForLng || (_this6.hasResourcesForLng = {});
+          _this6.hasResourcesForLng[language] = true;
+        }
+        if (resourceNotExisting && (!_this6.hasResourcesForLng || !_this6.hasResourcesForLng[language])) {
+          setTimeout(function () {
+            _this6.checkIfLanguagesLoaded(function () {
+              if (!_this6.loadedLanguages) return;
+              if (_this6.loadedLanguages.indexOf(language) > -1) return;
+              if (_this6.warnedLanguages && _this6.warnedLanguages.indexOf(language) > -1) return;
+              _this6.warnedLanguages || (_this6.warnedLanguages = []);
+              _this6.warnedLanguages.push(language);
+              if (logger) logger.warn("Language \"".concat(language, "\" is not available in locize project ").concat(_this6.options.projectId, "!"));
+            });
+          }, randomizeTimeout(_this6.options.checkForProjectTimeout));
+        }
         if (!_this6.somethingLoaded) {
-          if (info && info.resourceNotExisting) {
+          if (resourceNotExisting) {
             setTimeout(function () {
               return _this6.checkIfProjectExists();
-            }, _this6.options.checkForProjectTimeout);
+            }, randomizeTimeout(_this6.options.checkForProjectTimeout));
           } else {
             _this6.somethingLoaded = true;
           }
@@ -588,7 +636,7 @@ var I18NextLocizeBackend = function () {
   }, {
     key: "write",
     value: function write(lng, namespace) {
-      var _this10 = this;
+      var _this0 = this;
       var lock = (0, _utils.getPath)(this.queuedWrites, ['locks', lng, namespace]);
       if (lock) return;
       var missings = (0, _utils.getPath)(this.queuedWrites, [lng, namespace]);
@@ -602,12 +650,12 @@ var I18NextLocizeBackend = function () {
       if (missings.length) {
         (0, _utils.setPath)(this.queuedWrites, ['locks', lng, namespace], true);
         var namespaceSaved = function namespaceSaved() {
-          (0, _utils.setPath)(_this10.queuedWrites, ['locks', lng, namespace], false);
+          (0, _utils.setPath)(_this0.queuedWrites, ['locks', lng, namespace], false);
           clbs.forEach(function (clb) {
             return clb();
           });
-          if (_this10.options.onSaved) _this10.options.onSaved(lng, namespace);
-          _this10.debouncedProcess(lng, namespace);
+          if (_this0.options.onSaved) _this0.options.onSaved(lng, namespace);
+          _this0.debouncedProcess(lng, namespace);
         };
         var amountOfPages = missings.length / pageSize;
         var pagesDone = 0;
@@ -630,13 +678,13 @@ var I18NextLocizeBackend = function () {
   }, {
     key: "process",
     value: function process() {
-      var _this11 = this;
+      var _this1 = this;
       Object.keys(this.queuedWrites).forEach(function (lng) {
         if (lng === 'locks') return;
-        Object.keys(_this11.queuedWrites[lng]).forEach(function (ns) {
-          var todo = _this11.queuedWrites[lng][ns];
+        Object.keys(_this1.queuedWrites[lng]).forEach(function (ns) {
+          var todo = _this1.queuedWrites[lng][ns];
           if (todo.length) {
-            _this11.write(lng, ns);
+            _this1.write(lng, ns);
           }
         });
       });
@@ -665,8 +713,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != _typeof(e) && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function _interopRequireWildcard(e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != _typeof(e) && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (var _t in e) "default" !== _t && {}.hasOwnProperty.call(e, _t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, _t)) && (i.get || i.set) ? o(f, _t, i) : f[_t] = e[_t]); return f; })(e, t); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 var fetchApi = typeof fetch === 'function' ? fetch : undefined;
 if (typeof global !== 'undefined' && global.fetch) {

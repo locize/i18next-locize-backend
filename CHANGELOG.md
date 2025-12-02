@@ -1,3 +1,7 @@
+### 7.1.0
+
+- Verify if locize project offers requested language and warn if that's not the case.
+
 ### 7.0.4
 
 - fix promise api for getLanguages
