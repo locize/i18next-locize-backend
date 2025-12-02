@@ -1,3 +1,7 @@
+### 7.1.1
+
+- if locize project does not offer the requested language it logs an error
+
 ### 7.1.0
 
 - Verify if locize project offers requested language and warn if that's not the case.

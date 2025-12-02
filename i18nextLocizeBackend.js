@@ -440,7 +440,7 @@ var I18NextLocizeBackend = function () {
               if (_this6.warnedLanguages && _this6.warnedLanguages.indexOf(language) > -1) return;
               _this6.warnedLanguages || (_this6.warnedLanguages = []);
               _this6.warnedLanguages.push(language);
-              if (logger) logger.warn("Language \"".concat(language, "\" is not available in locize project ").concat(_this6.options.projectId, "!"));
+              if (logger) logger.error("Language \"".concat(language, "\" is not available in locize project ").concat(_this6.options.projectId, "!"));
             });
           }, randomizeTimeout(_this6.options.checkForProjectTimeout));
         }
