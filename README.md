@@ -50,7 +50,9 @@ i18next.use(Locize).init({
     version: "[VERSION]",
     private: true,
     referenceLng: "en"
-  }
+  },
+  fallbackLng: 'en', // typically your reference language in locize
+  supportedLngs: ['en', 'de'] // should match your available languages in locize
 });
 ```
 
@@ -111,6 +113,7 @@ i18next.use(Backend).init(i18nextOptions);
 
 - As with all modules you can either pass the constructor function (class) to the i18next.use or a concrete instance.
 - If you don't use a module loader it will be added to `window.i18nextLocizeBackend`
+- **IMPORTANT**: If you do not use the `new Locize(options, callback)` constructor or the `getOptions` function (see below) in combination with a language detector, you should define the `supportedLngs` option yourself in the i18next init options. Otherwise, i18next might try to load languages that do not exist in your project, resulting in unnecessary requests.
 
 ## Backend Options
 
@@ -176,7 +179,9 @@ import i18next from "i18next";
 import Locize from "i18next-locize-backend";
 
 i18next.use(Locize).init({
-  backend: options
+  backend: options,
+  fallbackLng: 'en', // typically your reference language in locize
+  supportedLngs: ['en', 'de'] // should match your available languages in locize
 });
 ```
 
@@ -315,6 +320,8 @@ const backendOptions = {
 
 const yourOptions = {
   debug: true,
+  fallbackLng: 'en', // typically your source language in locize
+  supportedLngs: ['en', 'de'], // should match your available languages in locize
   interpolation: {
     escapeValue: false
   },
