@@ -14,15 +14,20 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var getDefaults = function getDefaults(cdnType) {
+var getApiPaths = function getApiPaths(cdnType) {
   if (!cdnType) cdnType = 'pro';
   return {
-    cdnType: cdnType,
     loadPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
     privatePath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
     getLanguagesPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/languages/{{projectId}}"),
     addPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
-    updatePath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
+    updatePath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}")
+  };
+};
+var getDefaults = function getDefaults(cdnType) {
+  if (!cdnType) cdnType = 'pro';
+  return (0, _utils.defaults)({
+    cdnType: cdnType,
     noCache: false,
     referenceLng: 'en',
     crossDomain: true,
@@ -37,7 +42,7 @@ var getDefaults = function getDefaults(cdnType) {
     checkForProjectTimeout: 3 * 1000,
     storageExpiration: 60 * 60 * 1000,
     writeDebounce: 5 * 1000
-  };
+  }, getApiPaths(cdnType));
 };
 var hasLocalStorageSupport;
 try {
@@ -158,11 +163,10 @@ var I18NextLocizeBackend = function () {
       if (!options.referenceLng && allOptions.fallbackLng && Array.isArray(allOptions.fallbackLng) && allOptions.fallbackLng[0] !== 'dev') {
         options.referenceLng = allOptions.fallbackLng[0];
       }
-      var cdnType = options.cdnType || (this.options || {}).cdnType;
-      var noCache = options.noCache || (this.options || {}).noCache;
       this.services = services;
-      var defOpt = getDefaults(cdnType);
+      var orgPassedOptions = (0, _utils.defaults)({}, options);
       var passedOpt = (0, _utils.defaults)(options, this.options || {});
+      var defOpt = getDefaults(passedOpt.cdnType);
       if (passedOpt.reloadInterval && passedOpt.reloadInterval < 5 * 60 * 1000) {
         console.warn('Your configured reloadInterval option is to low.');
         passedOpt.reloadInterval = defOpt.reloadInterval;
@@ -172,10 +176,14 @@ var I18NextLocizeBackend = function () {
       this.somethingLoaded = false;
       this.isProjectNotExisting = false;
       this.storage = getStorage(this.options.storageExpiration);
+      var apiPaths = getApiPaths(this.options.cdnType);
+      Object.keys(apiPaths).forEach(function (ap) {
+        if (!orgPassedOptions[ap]) _this.options[ap] = apiPaths[ap];
+      });
       if (this.options.pull) {
         console.warn('The pull API was removed use "private: true" option instead: https://www.locize.com/docs/api#fetch-private-namespace-resources');
       }
-      if (allOptions.debug && noCache === undefined && this.options.cdnType !== 'standard') {
+      if (allOptions.debug && orgPassedOptions.noCache === undefined && this.options.cdnType !== 'standard') {
         this.options.noCache = true;
       }
       if (this.options.noCache && this.options.cdnType !== 'standard') {
