@@ -17,7 +17,24 @@ const server = (done) => {
   js.get('/locales/en/empty', (req, res) => {
     res.jsonp({})
   })
+  js.get('/locales/en/nonexistingempty', (req, res) => {
+    res.setHeader('x-cache', 'Error from cloudfront')
+    res.jsonp({})
+  })
+  js.get('/locales/en/nonexisting404', (req, res) => {
+    res.sendStatus(404)
+  })
   js.get('/locales/en/test', (req, res) => {
+    res.jsonp({
+      key: 'passing'
+    })
+  })
+  js.get('/locales/en/testwithcache', (req, res) => {
+    if (req.query.cache === 'no') {
+      res.setHeader('Cache-Control', 'public, stale-while-revalidate=1, max-age=0, s-maxage=3')
+    } else {
+      res.setHeader('Cache-Control', 'public, stale-while-revalidate=360, max-age=3600, s-maxage=3060')
+    }
     res.jsonp({
       key: 'passing'
     })

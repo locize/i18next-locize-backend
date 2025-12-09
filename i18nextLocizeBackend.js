@@ -14,13 +14,16 @@ function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = 
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-var getDefaults = function getDefaults() {
+var getDefaults = function getDefaults(cdnType) {
+  if (!cdnType) cdnType = 'pro';
   return {
-    loadPath: 'https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    privatePath: 'https://api.locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    getLanguagesPath: 'https://api.locize.app/languages/{{projectId}}',
-    addPath: 'https://api.locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
-    updatePath: 'https://api.locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+    cdnType: cdnType,
+    loadPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
+    privatePath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/private/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
+    getLanguagesPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/languages/{{projectId}}"),
+    addPath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
+    updatePath: "https://api".concat(cdnType === 'standard' ? '.lite' : '', ".locize.app/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}"),
+    noCache: false,
     referenceLng: 'en',
     crossDomain: true,
     setContentTypeJSON: false,
@@ -155,8 +158,10 @@ var I18NextLocizeBackend = function () {
       if (!options.referenceLng && allOptions.fallbackLng && Array.isArray(allOptions.fallbackLng) && allOptions.fallbackLng[0] !== 'dev') {
         options.referenceLng = allOptions.fallbackLng[0];
       }
+      var cdnType = options.cdnType || (this.options || {}).cdnType;
+      var noCache = options.noCache || (this.options || {}).noCache;
       this.services = services;
-      var defOpt = getDefaults();
+      var defOpt = getDefaults(cdnType);
       var passedOpt = (0, _utils.defaults)(options, this.options || {});
       if (passedOpt.reloadInterval && passedOpt.reloadInterval < 5 * 60 * 1000) {
         console.warn('Your configured reloadInterval option is to low.');
@@ -169,6 +174,12 @@ var I18NextLocizeBackend = function () {
       this.storage = getStorage(this.options.storageExpiration);
       if (this.options.pull) {
         console.warn('The pull API was removed use "private: true" option instead: https://www.locize.com/docs/api#fetch-private-namespace-resources');
+      }
+      if (allOptions.debug && noCache === undefined && this.options.cdnType !== 'standard') {
+        this.options.noCache = true;
+      }
+      if (this.options.noCache && this.options.cdnType !== 'standard') {
+        console.warn("The 'noCache' option is not available for 'cdnType' '".concat(this.options.cdnType, "'!"));
       }
       var hostname = typeof window !== 'undefined' && window.location && window.location.hostname;
       if (hostname) {
@@ -756,6 +767,14 @@ var requestWithFetch = function requestWithFetch(options, url, payload, callback
   }
   var resolver = function resolver(response) {
     var resourceNotExisting = response.headers && response.headers.get('x-cache') === 'Error from cloudfront';
+    if (options.cdnType === 'standard' && response.status === 404 && (!response.headers || !response.headers.get('x-cache'))) {
+      resourceNotExisting = true;
+      return callback(null, {
+        status: 200,
+        data: '{}',
+        resourceNotExisting: resourceNotExisting
+      });
+    }
     if (!response.ok) return callback(response.statusText || 'Error', {
       status: response.status,
       resourceNotExisting: resourceNotExisting
@@ -797,6 +816,14 @@ var requestWithXmlHttpRequest = function requestWithXmlHttpRequest(options, url,
     }
     x.onreadystatechange = function () {
       var resourceNotExisting = x.getResponseHeader('x-cache') === 'Error from cloudfront';
+      if (options.cdnType === 'standard' && x.status === 404 && !x.getResponseHeader('x-cache')) {
+        resourceNotExisting = true;
+        return x.readyState > 3 && callback(null, {
+          status: 200,
+          data: '{}',
+          resourceNotExisting: resourceNotExisting
+        });
+      }
       x.readyState > 3 && callback(x.status >= 400 ? x.statusText : null, {
         status: x.status,
         data: x.responseText,

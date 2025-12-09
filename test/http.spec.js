@@ -56,5 +56,73 @@ describe(`http backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRe
         done()
       })
     })
+
+    describe('cdnType: pro', () => {
+      let backendTwo
+
+      before(() => {
+        backendTwo = new Http(
+          {
+            interpolator: i18next.services.interpolator
+          },
+          {
+            loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
+            projectId: 'test',
+            cdnType: 'pro'
+          }
+        )
+      })
+
+      it('should return correctly on not existing empty file', (done) => {
+        backendTwo.read('en', 'nonexistingempty', (err, data) => {
+          expect(err).not.to.be.ok()
+          expect(data).to.eql({})
+          done()
+        })
+      })
+
+      it('should return correctly on not existing empty file (loadUrl)', (done) => {
+        backendTwo.loadUrl({}, 'http://localhost:6001/locales/en/nonexistingempty', (err, ret, info) => {
+          expect(err).not.to.be.ok()
+          expect(ret).to.eql({})
+          expect(info).to.eql({ resourceNotExisting: true })
+          done()
+        })
+      })
+    })
+
+    describe('cdnType: standard', () => {
+      let backendTwo
+
+      before(() => {
+        backendTwo = new Http(
+          {
+            interpolator: i18next.services.interpolator
+          },
+          {
+            loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
+            projectId: 'test',
+            cdnType: 'standard'
+          }
+        )
+      })
+
+      it('should return correctly on not existing empty file', (done) => {
+        backendTwo.read('en', 'nonexisting404', (err, data) => {
+          expect(err).not.to.be.ok()
+          expect(data).to.eql({})
+          done()
+        })
+      })
+
+      it('should return correctly on not existing empty file (loadUrl)', (done) => {
+        backendTwo.loadUrl({}, 'http://localhost:6001/locales/en/nonexisting404', (err, ret, info) => {
+          expect(err).not.to.be.ok()
+          expect(ret).to.eql({})
+          expect(info).to.eql({ resourceNotExisting: true })
+          done()
+        })
+      })
+    })
   })
 })

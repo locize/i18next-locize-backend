@@ -68,6 +68,18 @@ export interface LocizeBackendOptions {
    * threshold to accept languages from locize in to supportedLngs
    */
   translatedPercentageThreshold?: number;
+  /**
+   * configures the cdn endpoint that should be used (depends on which cdn type you've in your locize project)
+   * @default 'pro'
+   */
+  cdnType?: 'standard' | 'pro'
+  /**
+   * During development this option can be set to true, to get uncached translations.
+   * If not set, it will be default true, if the i18next debug option is true.
+   * Do NOT set this to true on production!
+   * @default false
+   */
+  noCache?: boolean
 }
 
 type LoadCallback = (error: any, result: any) => void;

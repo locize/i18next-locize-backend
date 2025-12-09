@@ -1,3 +1,8 @@
+### 7.2.0
+
+- Added `cdnType` option: Configures which CDN endpoint to use, depending on your locize project’s CDN type. Defaults to `'pro'`.
+- Added `noCache` option: When set to `true`, always loads uncached translations (useful during development). If not set, it defaults to `true` when the i18next `debug` option is enabled.
+
 ### 7.1.1
 
 - if locize project does not offer the requested language it logs an error

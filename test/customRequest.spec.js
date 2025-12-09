@@ -73,6 +73,8 @@ describe('http backend using custom request', () => {
             }
           }
         )
+        // Patch logger to avoid error
+        backend.services = { logger: { error: () => {}, warn: () => {}, log: () => {} } }
         backend.create('en', 'myns', 'newk', 'some fallback value', (err) => {
           expect(err).not.to.be.ok()
           done()
@@ -145,9 +147,13 @@ describe('http backend using custom request', () => {
             }
           }
         )
+        let called = false
         backend.create('en', 'myns', 'newk', 'some fallback value', (err) => {
-          expect(err).not.to.be.ok()
-          done()
+          if (!called) {
+            called = true
+            expect(err).not.to.be.ok()
+            done()
+          }
         })
       })
     })

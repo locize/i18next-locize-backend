@@ -133,6 +133,9 @@ i18next.use(Backend).init(i18nextOptions);
   // version - defaults to latest
   version: '[VERSION]',
 
+  // configures the cdn endpoint that should be used (depends on which cdn type you've in your locize project) - defaults to 'pro'
+  cdnType: 'standard',
+
   // private - set to true if you version on locize is set to use private publish
   private: false,
 
@@ -165,6 +168,14 @@ i18next.use(Backend).init(i18nextOptions);
   request: function (info, callback) {},
   // or async / promise
   //request: async (info) {},
+
+  /**
+   * During development this option can be set to true, to get uncached translations.
+   * If not set, it will be default true, if the i18next debug option is true.
+   * Do NOT set this to true on production!
+   * @default false
+   */
+  noCache: false,
 }
 ```
 
