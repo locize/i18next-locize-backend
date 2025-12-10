@@ -183,7 +183,7 @@ var I18NextLocizeBackend = function () {
       if (this.options.pull) {
         console.warn('The pull API was removed use "private: true" option instead: https://www.locize.com/docs/api#fetch-private-namespace-resources');
       }
-      if (allOptions.debug && orgPassedOptions.noCache === undefined && this.options.cdnType !== 'standard') {
+      if (allOptions.debug && orgPassedOptions.noCache === undefined && this.options.cdnType === 'standard') {
         this.options.noCache = true;
       }
       if (this.options.noCache && this.options.cdnType !== 'standard') {

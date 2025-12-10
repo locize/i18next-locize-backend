@@ -39,13 +39,22 @@ describe('cdnType and noCache option behavior', () => {
     expect(warned).not.to.be.ok()
   })
 
-  it('should set noCache to true if debug is enabled and cdnType is not standard', () => {
+  it('should set noCache to true if debug is enabled and cdnType is standard', () => {
+    const backend = new Http(
+      {},
+      { projectId: 'test', cdnType: 'standard' },
+      { debug: true }
+    )
+    expect(backend.options.noCache).to.eql(true)
+  })
+
+  it('should not set noCache to true if debug is enabled and cdnType is not standard', () => {
     const backend = new Http(
       {},
       { projectId: 'test', cdnType: 'pro' },
       { debug: true }
     )
-    expect(backend.options.noCache).to.eql(true)
+    expect(backend.options.noCache).to.eql(false)
   })
 
   it('should not override noCache if explicitly set', () => {
@@ -55,14 +64,5 @@ describe('cdnType and noCache option behavior', () => {
       { debug: true }
     )
     expect(backend.options.noCache).to.eql(false)
-  })
-
-  it('should not set noCache to true if cdnType is standard, even if debug is true', () => {
-    const backend = new Http(
-      {},
-      { projectId: 'test', cdnType: 'standard' },
-      { debug: true }
-    )
-    expect(backend.options.noCache).not.to.eql(true)
   })
 })

@@ -1,3 +1,7 @@
+### 7.2.1
+
+- fix noCache log output when set automatically based on debug: true
+
 ### 7.2.0
 
 - Added `cdnType` option: Configures which CDN endpoint to use, depending on your locize project’s CDN type. Defaults to `'pro'`.
