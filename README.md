@@ -49,7 +49,8 @@ i18next.use(Locize).init({
     apiKey: "[APIKEY]",
     version: "[VERSION]",
     private: true,
-    referenceLng: "en"
+    referenceLng: "en",
+    cdnType: "standard"
   },
   fallbackLng: 'en', // typically your reference language in locize
   supportedLngs: ['en', 'de'] // should match your available languages in locize
@@ -67,6 +68,7 @@ In case you want to use i18next-locize-backend on server side for a short runnin
   projectId: "[PROJECTID]",
   version: 'latest',
   referenceLng: 'en',
+  cdnType: 'standard'
 }
 ```
 
