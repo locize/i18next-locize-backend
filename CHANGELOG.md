@@ -1,3 +1,7 @@
+### 8.0.0
+
+- log/error is shown if cdnType is not defined, because of changing default to 'standard' instead of 'pro'
+
 ### 7.2.1
 
 - fix noCache log output when set automatically based on debug: true

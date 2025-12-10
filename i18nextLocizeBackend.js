@@ -180,6 +180,9 @@ var I18NextLocizeBackend = function () {
       Object.keys(apiPaths).forEach(function (ap) {
         if (!orgPassedOptions[ap]) _this.options[ap] = apiPaths[ap];
       });
+      if (!orgPassedOptions.cdnType) {
+        console.error('[i18next-locize-backend] In the next major version, the default \'cdnType\' will be \'standard\'. Please set \'cdnType\' explicitly in your options to avoid missing translations.');
+      }
       if (this.options.pull) {
         console.warn('The pull API was removed use "private: true" option instead: https://www.locize.com/docs/api#fetch-private-namespace-resources');
       }
