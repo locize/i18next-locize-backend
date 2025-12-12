@@ -1,3 +1,7 @@
+### 8.1.0
+
+- Add `useCacheLayer` option — in-memory Cache-Control-aware cache for runtimes without a native HTTP cache (Node.js, Deno, React Native). Parses `Cache-Control: max-age`, caches full responses for GET requests until expiry, defaults to enabled in non-browser environments and can be disabled per-instance. Note: process-local and unbounded.
+
 ### 8.0.0
 
 - log/error is shown if cdnType is not defined, because of changing default to 'standard' instead of 'pro'

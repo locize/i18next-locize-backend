@@ -80,6 +80,25 @@ export interface LocizeBackendOptions {
    * @default false
    */
   noCache?: boolean
+  /**
+   * ...
+   * Enable an in-memory Cache-Control-aware cache layer for environments that
+   * don't have a native HTTP cache (e.g. Node.js, Deno, React Native).
+   *
+   * Behavior:
+   * - Only affects GET requests (POST requests are never cached).
+   * - Parses the "Cache-Control" header (max-age) from responses and stores the
+   *   full response object in memory until expiry.
+   * - If unspecified the default is true for non-browser environments and false for browsers.
+   *
+   * Considerations:
+   * - This cache is process-local and unbounded; long-running processes that fetch
+   *   many dynamic URLs may see increased memory usage. Disable if needed.
+   * - Browsers provide their own HTTP caching; enabling this in browser is usually unnecessary.
+   *
+   * @default true (for non-browser environments)
+   */
+  useCacheLayer?: boolean
 }
 
 type LoadCallback = (error: any, result: any) => void;

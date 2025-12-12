@@ -173,11 +173,23 @@ i18next.use(Backend).init(i18nextOptions);
 
   /**
    * During development this option can be set to true, to get uncached translations.
-   * If not set, it will be default true, if the i18next debug option is true.
+   * If not set, it will be default true, if the i18next debug option is true, else default false.
    * Do NOT set this to true on production!
-   * @default false
    */
   noCache: false,
+
+  /**
+   * Enable a small in-memory Cache-Control-aware cache for runtimes that
+   * don't have a native HTTP cache (Node.js, Deno, React Native, etc).
+   *
+   * - Only affects GET requests (POST never cached).
+   * - Parses "Cache-Control: max-age" and stores the full response until expiry.
+   * - Default: true for non-browser environments, false for browsers.
+   *
+   * Note: cache is process-local and unbounded — disable for long-running apps
+   * that fetch many dynamic URLs.
+   */
+  useCacheLayer: true,
 }
 ```
 
