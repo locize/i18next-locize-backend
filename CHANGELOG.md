@@ -1,3 +1,7 @@
+### 8.1.2
+
+- hint in error if using the wrong cdnType
+
 ### 8.1.1
 
 - fix `noCache` option

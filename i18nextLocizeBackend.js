@@ -283,7 +283,7 @@ var I18NextLocizeBackend = function () {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        callback(new Error("locize project ".concat(this.options.projectId, " does not exist!")));
+        callback(new Error(this.isProjectNotExistingErrorMessage));
         return deferred;
       }
       this.getLanguagesCalls = this.getLanguagesCalls || [];
@@ -293,12 +293,26 @@ var I18NextLocizeBackend = function () {
         if (!_this3.somethingLoaded && info && info.resourceNotExisting) {
           _this3.isProjectNotExisting = true;
           _this3.storage.setProjectNotExisting(_this3.options.projectId);
-          var e = new Error("locize project ".concat(_this3.options.projectId, " does not exist!"));
-          var _clbs = _this3.getLanguagesCalls;
-          _this3.getLanguagesCalls = [];
-          return _clbs.forEach(function (clb) {
-            return clb(e);
+          var errMsg = "locize project ".concat(_this3.options.projectId, " does not exist!");
+          _this3.isProjectNotExistingErrorMessage = errMsg;
+          var cdnTypeAlt = _this3.options.cdnType === 'standard' ? 'pro' : 'standard';
+          var otherEndpointApiPaths = getApiPaths(cdnTypeAlt);
+          var urlAlt = (0, _utils.interpolate)(otherEndpointApiPaths.getLanguagesPath, {
+            projectId: _this3.options.projectId
           });
+          _this3.loadUrl({}, urlAlt, function (errAlt, retAlt, infoAlt) {
+            if (!errAlt && retAlt && (!infoAlt || !infoAlt.resourceNotExisting)) {
+              errMsg += " It seems you're using the wrong cdnType. Your locize project is configured to use \"".concat(cdnTypeAlt, "\" but here you've configured \"").concat(_this3.options.cdnType, "\".");
+              _this3.isProjectNotExistingErrorMessage = errMsg;
+            }
+            var e = new Error(errMsg);
+            var clbs = _this3.getLanguagesCalls;
+            _this3.getLanguagesCalls = [];
+            clbs.forEach(function (clb) {
+              return clb(e);
+            });
+          });
+          return;
         }
         if (ret) {
           _this3.loadedLanguages = Object.keys(ret);
@@ -438,7 +452,7 @@ var I18NextLocizeBackend = function () {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        var err = new Error("locize project ".concat(this.options.projectId, " does not exist!"));
+        var err = new Error(this.isProjectNotExistingErrorMessage);
         if (logger) logger.error(err.message);
         if (callback) callback(err);
         return;
