@@ -864,7 +864,7 @@ var request = function request(options, url, payload, callback) {
   }
   callback = callback || function () {};
   var useCacheLayer = typeof window === 'undefined' && options.useCacheLayer;
-  if (useCacheLayer && !payload && storage[url] && storage[url].expires > Date.now()) {
+  if (useCacheLayer && !payload && !options.noCache && storage[url] && storage[url].expires > Date.now()) {
     return callback(null, storage[url].data);
   }
   var originalCallback = callback;
@@ -880,6 +880,9 @@ var request = function request(options, url, payload, callback) {
     }
     originalCallback(err, res);
   };
+  if (!payload && options.noCache && options.cdnType === 'standard') {
+    url += (url.indexOf('?') >= 0 ? '&' : '?') + 'cache=no';
+  }
   if (fetchApi) {
     return requestWithFetch(options, url, payload, callback);
   }

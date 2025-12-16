@@ -39,6 +39,9 @@ const server = (done) => {
       key: 'passing'
     })
   })
+  js.get('/locales/en/echoqs', (req, res) => {
+    res.jsonp(req.query)
+  })
   js.get('/locales/en/nonjson', (req, res) => {
     res.send('<div>sorry no json file</div>')
   })

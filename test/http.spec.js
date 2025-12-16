@@ -123,6 +123,44 @@ describe(`http backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRe
           done()
         })
       })
+
+      it('should add cache=no if noCache is true', (done) => {
+        const backendThree = new Http(
+          {
+            interpolator: i18next.services.interpolator
+          },
+          {
+            loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
+            projectId: 'test',
+            cdnType: 'standard',
+            noCache: true
+          }
+        )
+        backendThree.read('en', 'echoqs', (err, data) => {
+          expect(err).not.to.be.ok()
+          expect(data).to.eql({ cache: 'no' })
+          done()
+        })
+      })
+
+      it('should not add cache=no if noCache is false', (done) => {
+        const backendThree = new Http(
+          {
+            interpolator: i18next.services.interpolator
+          },
+          {
+            loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
+            projectId: 'test',
+            cdnType: 'standard',
+            noCache: false
+          }
+        )
+        backendThree.read('en', 'echoqs', (err, data) => {
+          expect(err).not.to.be.ok()
+          expect(data).to.eql({})
+          done()
+        })
+      })
     })
   })
 })
