@@ -61,7 +61,7 @@ describe('http backend using custom request', () => {
             writeDebounce: 100,
             request: (info, callback) => {
               expect(info.method).to.eql('POST')
-              expect(info.url).to.eql('https://api.locize.app/missing/test/latest/en/myns')
+              expect(info.url).to.eql('https://api.lite.locize.app/missing/test/latest/en/myns')
               expect(info.headers).to.eql({
                 Authorization: 'fakeapi-key',
                 'Content-Type': 'application/json'

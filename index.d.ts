@@ -70,9 +70,9 @@ export interface LocizeBackendOptions {
   translatedPercentageThreshold?: number;
   /**
    * configures the cdn endpoint that should be used (depends on which cdn type you've in your locize project)
-   * @default 'pro'
+   * @default 'standard'
    */
-  cdnType?: 'standard' | 'pro' // TODO: change to 'standard' on next major version
+  cdnType?: 'standard' | 'pro'
   /**
    * During development this option can be set to true, to get uncached translations.
    * If not set, it will be default true, if the i18next debug option is true.

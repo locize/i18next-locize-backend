@@ -19,7 +19,8 @@ describe(`http backend using ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRe
         {
           loadPath: 'http://localhost:6001/locales/{{lng}}/{{ns}}',
           projectId: 'test',
-          failLoadingOnEmptyJSON: true
+          failLoadingOnEmptyJSON: true,
+          cdnType: 'pro'
         }
       )
     })

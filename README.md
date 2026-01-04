@@ -135,8 +135,8 @@ i18next.use(Backend).init(i18nextOptions);
   // version - defaults to latest
   version: '[VERSION]',
 
-  // configures the cdn endpoint that should be used (depends on which cdn type you've in your locize project) - defaults to 'pro'
-  cdnType: 'standard',
+  // configures the cdn endpoint that should be used (depends on which cdn type you've in your locize project) - defaults to 'standard'
+  cdnType: 'pro',
 
   // private - set to true if you version on locize is set to use private publish
   private: false,

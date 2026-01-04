@@ -2,17 +2,17 @@ import expect from 'expect.js'
 import Http from '../index.js'
 
 describe('cdnType and noCache option behavior', () => {
-  it('should use pro CDN by default', () => {
+  it('should use standard CDN by default', () => {
     const backend = new Http({ projectId: 'test' })
+    expect(backend.options.cdnType).to.eql('standard')
+    expect(backend.options.loadPath).to.contain('api.lite.locize.app')
+  })
+
+  it('should use pro CDN when cdnType is set', () => {
+    const backend = new Http({ projectId: 'test', cdnType: 'pro' })
     expect(backend.options.cdnType).to.eql('pro')
     expect(backend.options.loadPath).to.contain('api.locize.app')
     expect(backend.options.loadPath).not.to.contain('.lite')
-  })
-
-  it('should use standard CDN when cdnType is set', () => {
-    const backend = new Http({ projectId: 'test', cdnType: 'standard' })
-    expect(backend.options.cdnType).to.eql('standard')
-    expect(backend.options.loadPath).to.contain('api.lite.locize.app')
   })
 
   it('should warn if noCache is set with cdnType=pro', () => {
