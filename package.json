@@ -1,6 +1,6 @@
 {
   "name": "i18next-locize-backend",
-  "version": "8.1.2",
+  "version": "9.0.0",
   "description": "i18next-locize-backend is a backend layer for i18next to use locize service which can be used in node.js, in the browser and for deno.",
   "keywords": [
     "i18next",
