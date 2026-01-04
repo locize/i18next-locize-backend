@@ -1,6 +1,6 @@
 ### 9.0.0
 
-- changed default cdnType to `'standard'` instead of `'prod'`
+- changed default cdnType to `standard` instead of `prod`
 
 ### 8.1.2
 
