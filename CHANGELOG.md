@@ -1,3 +1,7 @@
+### 9.0.1
+
+- improve handling for inexisting projects
+
 ### 9.0.0
 
 - changed default cdnType to "standard" instead of "prod"
