@@ -277,7 +277,7 @@ var I18NextLocizeBackend = function () {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        callback(new Error(this.isProjectNotExistingErrorMessage));
+        callback(new Error(this.isProjectNotExistingErrorMessage || "locize project ".concat(this.options.projectId, " does not exist!")));
         return deferred;
       }
       this.getLanguagesCalls = this.getLanguagesCalls || [];
@@ -448,7 +448,7 @@ var I18NextLocizeBackend = function () {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        var err = new Error(this.isProjectNotExistingErrorMessage);
+        var err = new Error(this.isProjectNotExistingErrorMessage || "locize project ".concat(this.options.projectId, " does not exist!"));
         if (logger) logger.error(err.message);
         if (callback) callback(err);
         return;
