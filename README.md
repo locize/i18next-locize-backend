@@ -381,7 +381,7 @@ export default i18n;
 
 Due to how serverless functions work, you cannot guarantee that a cached version of your data is available. Serverless functions are short-lived, and can shut down at any time, purging any in-memory or filesystem cache. This may be an acceptable trade-off, but sometimes it isn't acceptable.
 
-**Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://www.locize.com/docs/api#list-all-namespace-resources)) and package them with your serverless function.**
+**Because of this we suggest to download the translations in your CI/CD pipeline (via [cli](https://github.com/locize/locize-cli#download-current-published-files) or via [api](https://www.locize.com/docs/integration/api/#fetch-namespace-resources)) and package them with your serverless function.**
 
 ### For example with [i18next-fs-backend](https://github.com/i18next/i18next-fs-backend)
 
