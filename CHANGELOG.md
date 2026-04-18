@@ -1,3 +1,13 @@
+### 9.0.2
+
+Security release — all issues found via an internal audit. GHSA advisory filed after release.
+
+- security: refuse to build request URLs when `lng`, `ns`, `projectId`, or `version` values contain path-traversal (`..`), path separators (`/`, `\`), URL-structure characters (`?`, `#`, `%`, `@`, whitespace), control characters, prototype keys (`__proto__`, `constructor`, `prototype`), or exceed 128 chars. Prevents path traversal / URL injection via attacker-controlled option values (same class of fix as `i18next-http-backend@3.0.5`) (GHSA-TBD)
+- security: guard `interpolate` against prototype-chain lookups — a polluted `Object.prototype.__proto__` no longer leaks into URL substitution
+- security: replace `for...in` iteration over the `defaults` source with `Object.keys()` + explicit prototype-key guard
+- chore: remove unused `.coveralls.yml`
+- chore: ignore `.env*` and `*.pem`/`*.key` files in `.gitignore`
+
 ### 9.0.1
 
 - improve handling for inexisting projects

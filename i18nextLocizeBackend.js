@@ -270,14 +270,18 @@ var I18NextLocizeBackend = function () {
         callback(new Error(isMissing));
         return deferred;
       }
-      var url = (0, _utils.interpolate)(this.options.getLanguagesPath, {
+      var url = (0, _utils.interpolateUrl)(this.options.getLanguagesPath, {
         projectId: this.options.projectId
       });
+      if (url == null) {
+        callback(new Error('i18next-locize-backend: unsafe projectId — refusing to build request URL for projectId=' + (0, _utils.sanitizeLogValue)(String(this.options.projectId))));
+        return deferred;
+      }
       if (!this.isProjectNotExisting && this.storage.isProjectNotExisting(this.options.projectId)) {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        callback(new Error(this.isProjectNotExistingErrorMessage || "locize project ".concat(this.options.projectId, " does not exist!")));
+        callback(new Error(this.isProjectNotExistingErrorMessage || "Locize project ".concat(this.options.projectId, " does not exist!")));
         return deferred;
       }
       this.getLanguagesCalls = this.getLanguagesCalls || [];
@@ -286,16 +290,17 @@ var I18NextLocizeBackend = function () {
       this.loadUrl({}, url, function (err, ret, info) {
         if (!_this3.somethingLoaded && info && info.resourceNotExisting) {
           _this3.isProjectNotExisting = true;
-          var errMsg = "locize project ".concat(_this3.options.projectId, " does not exist!");
+          var errMsg = "Locize project ".concat(_this3.options.projectId, " does not exist!");
           _this3.isProjectNotExistingErrorMessage = errMsg;
           var cdnTypeAlt = _this3.options.cdnType === 'standard' ? 'pro' : 'standard';
           var otherEndpointApiPaths = getApiPaths(cdnTypeAlt);
-          var urlAlt = (0, _utils.interpolate)(otherEndpointApiPaths.getLanguagesPath, {
+          var urlAlt = (0, _utils.interpolateUrl)(otherEndpointApiPaths.getLanguagesPath, {
             projectId: _this3.options.projectId
           });
+          if (urlAlt == null) return;
           _this3.loadUrl({}, urlAlt, function (errAlt, retAlt, infoAlt) {
             if (!errAlt && retAlt && (!infoAlt || !infoAlt.resourceNotExisting)) {
-              errMsg += " It seems you're using the wrong cdnType. Your locize project is configured to use \"".concat(cdnTypeAlt, "\" but here you've configured \"").concat(_this3.options.cdnType, "\".");
+              errMsg += " It seems you're using the wrong cdnType. Your Locize project is configured to use \"".concat(cdnTypeAlt, "\" but here you've configured \"").concat(_this3.options.cdnType, "\".");
               _this3.isProjectNotExistingErrorMessage = errMsg;
             } else if (!_this3.somethingLoaded && infoAlt && infoAlt.resourceNotExisting) {
               _this3.isProjectNotExisting = true;
@@ -425,7 +430,7 @@ var I18NextLocizeBackend = function () {
       if (this.options.private) {
         var isMissing = (0, _utils.isMissingOption)(this.options, ['projectId', 'version', 'apiKey']);
         if (isMissing) return callback(new Error(isMissing), false);
-        url = (0, _utils.interpolate)(this.options.privatePath, {
+        url = (0, _utils.interpolateUrl)(this.options.privatePath, {
           lng: language,
           ns: namespace,
           projectId: this.options.projectId,
@@ -437,24 +442,27 @@ var I18NextLocizeBackend = function () {
       } else {
         var _isMissing = (0, _utils.isMissingOption)(this.options, ['projectId', 'version']);
         if (_isMissing) return callback(new Error(_isMissing), false);
-        url = (0, _utils.interpolate)(this.options.loadPath, {
+        url = (0, _utils.interpolateUrl)(this.options.loadPath, {
           lng: language,
           ns: namespace,
           projectId: this.options.projectId,
           version: this.options.version
         });
       }
+      if (url == null) {
+        return callback(new Error('i18next-locize-backend: unsafe lng/ns/projectId/version — refusing to build request URL for lng=' + (0, _utils.sanitizeLogValue)(String(language)) + ' ns=' + (0, _utils.sanitizeLogValue)(String(namespace))), false);
+      }
       if (!this.isProjectNotExisting && this.storage.isProjectNotExisting(this.options.projectId)) {
         this.isProjectNotExisting = true;
       }
       if (this.isProjectNotExisting) {
-        var err = new Error(this.isProjectNotExistingErrorMessage || "locize project ".concat(this.options.projectId, " does not exist!"));
+        var err = new Error(this.isProjectNotExistingErrorMessage || "Locize project ".concat(this.options.projectId, " does not exist!"));
         if (logger) logger.error(err.message);
         if (callback) callback(err);
         return;
       }
       if (this.warnedLanguages && this.warnedLanguages.indexOf(language) > -1) {
-        var _err = new Error("Will not continue to load language \"".concat(language, "\" since it is not available in locize project ").concat(this.options.projectId, "!"));
+        var _err = new Error("Will not continue to load language \"".concat(language, "\" since it is not available in Locize project ").concat(this.options.projectId, "!"));
         if (logger) logger.error(_err.message);
         if (callback) callback(_err);
         return;
@@ -473,7 +481,7 @@ var I18NextLocizeBackend = function () {
               if (_this6.warnedLanguages && _this6.warnedLanguages.indexOf(language) > -1) return;
               _this6.warnedLanguages || (_this6.warnedLanguages = []);
               _this6.warnedLanguages.push(language);
-              if (logger) logger.error("Language \"".concat(language, "\" is not available in locize project ").concat(_this6.options.projectId, "!"));
+              if (logger) logger.error("Language \"".concat(language, "\" is not available in Locize project ").concat(_this6.options.projectId, "!"));
             });
           }, randomizeTimeout(_this6.options.checkForProjectTimeout));
         }
@@ -602,18 +610,24 @@ var I18NextLocizeBackend = function () {
   }, {
     key: "writePage",
     value: function writePage(lng, namespace, missings, callback) {
-      var missingUrl = (0, _utils.interpolate)(this.options.addPath, {
+      var missingUrl = (0, _utils.interpolateUrl)(this.options.addPath, {
         lng: lng,
         ns: namespace,
         projectId: this.options.projectId,
         version: this.options.version
       });
-      var updatesUrl = (0, _utils.interpolate)(this.options.updatePath, {
+      var updatesUrl = (0, _utils.interpolateUrl)(this.options.updatePath, {
         lng: lng,
         ns: namespace,
         projectId: this.options.projectId,
         version: this.options.version
       });
+      if (missingUrl == null || updatesUrl == null) {
+        if (typeof callback === 'function') {
+          callback(new Error('i18next-locize-backend: unsafe lng/ns/projectId/version — refusing to persist missing keys for lng=' + (0, _utils.sanitizeLogValue)(String(lng)) + ' ns=' + (0, _utils.sanitizeLogValue)(String(namespace))));
+        }
+        return;
+      }
       var hasMissing = false;
       var hasUpdates = false;
       var payloadMissing = {};
@@ -910,27 +924,66 @@ module.exports = exports.default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.UNSAFE_KEYS = void 0;
 exports.debounce = debounce;
 exports.defaults = defaults;
 exports.defer = defer;
 exports.getPath = getPath;
 exports.interpolate = interpolate;
+exports.interpolateUrl = interpolateUrl;
 exports.isMissingOption = isMissingOption;
+exports.isSafeUrlSegment = isSafeUrlSegment;
 exports.optionExist = optionExist;
 exports.pushPath = pushPath;
+exports.redactUrlCredentials = redactUrlCredentials;
+exports.sanitizeLogValue = sanitizeLogValue;
 exports.setPath = setPath;
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 var arr = [];
 var each = arr.forEach;
 var slice = arr.slice;
+var UNSAFE_KEYS = exports.UNSAFE_KEYS = ['__proto__', 'constructor', 'prototype'];
 function defaults(obj) {
   each.call(slice.call(arguments, 1), function (source) {
     if (source) {
-      for (var prop in source) {
+      for (var _i = 0, _Object$keys = Object.keys(source); _i < _Object$keys.length; _i++) {
+        var prop = _Object$keys[_i];
+        if (UNSAFE_KEYS.indexOf(prop) > -1) continue;
         if (obj[prop] === undefined) obj[prop] = source[prop];
       }
     }
   });
   return obj;
+}
+function isSafeUrlSegment(v) {
+  if (typeof v !== 'string') return false;
+  if (v.length === 0 || v.length > 128) return false;
+  if (UNSAFE_KEYS.indexOf(v) > -1) return false;
+  if (v.indexOf('..') > -1) return false;
+  if (v.indexOf('/') > -1 || v.indexOf('\\') > -1) return false;
+  if (/[?#%\s@]/.test(v)) return false;
+  if (/[\x00-\x1F\x7F]/.test(v)) return false;
+  return true;
+}
+function sanitizeLogValue(v) {
+  if (typeof v !== 'string') return v;
+  return v.replace(/[\r\n\x00-\x1F\x7F]/g, ' ');
+}
+function redactUrlCredentials(u) {
+  if (typeof u !== 'string' || u.length === 0) return u;
+  try {
+    var parsed = new URL(u);
+    if (parsed.username || parsed.password) {
+      parsed.username = '';
+      parsed.password = '';
+      return parsed.toString();
+    }
+    return u;
+  } catch (e) {
+    return u.replace(/(\/\/)[^/@\s]+@/g, '$1');
+  }
 }
 function debounce(func, wait, immediate) {
   var timeout;
@@ -1001,10 +1054,53 @@ function interpolate(str, data, lng) {
     if (typeof value !== 'string') value = makeString(value);
     if (!value) value = '';
     value = regexSafe(value);
-    str = str.replace(match[0], data[value] || value);
+    var subst = UNSAFE_KEYS.indexOf(value) > -1 ? value : data[value] || value;
+    str = str.replace(match[0], subst);
     regexp.lastIndex = 0;
   }
   return str;
+}
+function interpolateUrl(str, data) {
+  var match;
+  var unsafe = false;
+  while (match = regexp.exec(str)) {
+    var key = match[1].trim();
+    if (UNSAFE_KEYS.indexOf(key) > -1) {
+      regexp.lastIndex = 0;
+      continue;
+    }
+    var raw = data[key];
+    if (raw == null) {
+      regexp.lastIndex = 0;
+      continue;
+    }
+    var value = makeString(raw);
+    var segments = value.split('+');
+    var segmentsOk = true;
+    var _iterator = _createForOfIteratorHelper(segments),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var seg = _step.value;
+        if (!isSafeUrlSegment(seg)) {
+          segmentsOk = false;
+          break;
+        }
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
+    }
+    if (!segmentsOk) {
+      unsafe = true;
+      break;
+    }
+    str = str.replace(match[0], segments.join('+'));
+    regexp.lastIndex = 0;
+  }
+  regexp.lastIndex = 0;
+  return unsafe ? null : str;
 }
 function isMissingOption(obj, props) {
   return props.reduce(function (mem, p) {

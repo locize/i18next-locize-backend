@@ -22,3 +22,10 @@ bin/**/*
 package-lock.json
 cjs
 esm
+
+# Secrets & credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key

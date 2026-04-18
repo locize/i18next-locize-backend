@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "dom"],
+    "target": "es2017",
+    "lib": ["es2017", "dom"],
     "jsx": "react",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noEmit": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": { "i18next-locize-backend": ["./index.d.mts"] },
 
