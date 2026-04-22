@@ -5,6 +5,6 @@
   "dependencies": {
     "i18next": "22.4.12",
     "i18next-chained-backend": "4.2.0",
-    "i18next-locize-backend": "6.2.1"
+    "i18next-locize-backend": "9.0.2"
   }
 }
