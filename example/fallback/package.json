@@ -5,7 +5,7 @@
   "dependencies": {
     "i18next": "23.5.1",
     "i18next-chained-backend": "4.4.0",
-    "i18next-locize-backend": "6.2.3",
+    "i18next-locize-backend": "9.0.2",
     "i18next-resources-to-backend": "1.1.4"
   }
 }
