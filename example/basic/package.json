@@ -6,7 +6,7 @@
   "type": "commonjs",
   "dependencies": {
     "i18next": "22.4.12",
-    "i18next-locize-backend": "6.2.1"
+    "i18next-locize-backend": "9.0.2"
   },
   "devDependencies": {},
   "scripts": {},
