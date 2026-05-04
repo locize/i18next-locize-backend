@@ -79,7 +79,7 @@ You can set a threshold for languages to be added to supportedLngs by setting tr
 
 # Getting started
 
-Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn`, `bower` or [downloaded](https://cdn.rawgit.com/locize/i18next-locize-backend/master/i18nextLocizeBackend.min.js) from this repo.
+Source can be loaded via [npm](https://www.npmjs.com/package/i18next-locize-backend), `yarn`, or [downloaded](https://cdn.jsdelivr.net/npm/i18next-locize-backend@10/i18nextLocizeBackend.min.js) from this repo.
 
 ```bash
 # npm package
@@ -87,10 +87,9 @@ $ npm install i18next-locize-backend
 
 # yarn
 $ yarn add i18next-locize-backend
-
-# bower
-$ bower install i18next-locize-backend
 ```
+
+> **v10 requires native `fetch`.** Node ≥ 18, all modern browsers, Deno, and Bun ship `fetch` by default — no extra setup needed. v10 dropped the bundled `cross-fetch` fallback that v9 used. For runtimes without native `fetch`, install a ponyfill yourself before loading this backend, or stay on v9.
 
 Wiring up:
 

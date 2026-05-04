@@ -1,3 +1,14 @@
+### 10.0.0
+
+- BREAKING: drop `cross-fetch` dependency. `i18next-locize-backend` now requires a host-provided `fetch`. This is available in Node ≥ 18 (stable since Node 21), all modern browsers, Deno, and Bun. For runtimes without native `fetch`, install a ponyfill yourself before loading this backend, or stay on v9.x.
+- BREAKING: minimum Node version is now 18 (`engines.node = ">=18"`).
+- chore: simplified environment detection in `lib/request.js` — uses `globalThis` (with `global` / `window` fallbacks for legacy embedded runtimes) instead of separate `global.*` / `window.*` branches per API. XHR / ActiveXObject are still picked up if the host provides them, but no longer polyfilled.
+- chore: declared `"sideEffects": false` for better tree-shaking by downstream bundlers.
+- build: replaced babel + browserify + uglify-js with [`tsdown`](https://tsdown.dev) (rolldown + oxc). One config produces ESM, CJS, and the IIFE browser bundles. Drops `@babel/cli`, `@babel/core`, `@babel/preset-env`, `babel-plugin-add-module-exports`, `browserify`, `uglify-js`, the `fixcjs` rewrite hack, and the `--ignore cross-fetch` browserify flag. Side benefit: minified browser bundle shrinks from ~25 KB to ~19 KB (oxc minifier + no babel runtime helpers).
+- build: ESM and CJS outputs are now bundled into a single `index.js` per format (previously one file per `lib/*.js` module). The package's `exports` map is unchanged, so this is invisible to consumers using documented entry points.
+- lint: removed deprecated `tslint` and `dtslint`. `test:typescript` now runs `tsc --noEmit` plus `tsd`. ESLint 9 + neostandard config (already in place since v9) untouched.
+- docs: bumped CDN download link in README from the dead `cdn.rawgit.com` (shut down in 2019) to a current `cdn.jsdelivr.net` URL pinned to `@10`. Removed the `bower` install instruction (bower is unmaintained since 2017).
+
 ### 9.0.2
 
 Security release — all issues found via an internal audit. See published advisory [GHSA-mgcp-mfp8-3q45](https://github.com/locize/i18next-locize-backend/security/advisories/GHSA-mgcp-mfp8-3q45).
