@@ -4,7 +4,10 @@ import {
   interpolateUrl,
   isSafeUrlSegment,
   sanitizeLogValue,
-  redactUrlCredentials
+  redactUrlCredentials,
+  setPath,
+  pushPath,
+  getPath
 } from '../lib/utils.js'
 
 // Security tests for the 9.0.2 hardening.
@@ -117,6 +120,58 @@ describe('security', () => {
         .to.equal('https://api.locize.app/p/v/en/x')
       expect(redactUrlCredentials('https://api.locize.app/p/v/en/x'))
         .to.equal('https://api.locize.app/p/v/en/x')
+    })
+  })
+
+  describe('setPath / pushPath prototype-pollution guard', () => {
+    // getLastOfPath() is the shared object walker used by the missing-key
+    // persistence path (queue() -> pushPath, write() -> getPath/setPath). It
+    // splits a dotted path and walks it; without a guard an unsafe segment
+    // such as __proto__ walks straight into Object.prototype. Same walker /
+    // same fix as i18next-fs-backend 2.6.6 (GHSA-2933-q333-qg83).
+
+    afterEach(() => {
+      delete Object.prototype.polluted
+      delete Object.prototype.isAdmin
+    })
+
+    it('setPath drops a write whose path traverses __proto__ (string path)', () => {
+      const data = {}
+      setPath(data, '__proto__.polluted', 'PWNED')
+      expect(({}).polluted).to.be(undefined)
+      expect(Object.prototype.polluted).to.be(undefined)
+      expect(data).to.eql({})
+    })
+
+    it('setPath drops a write whose path traverses __proto__ / constructor / prototype (array path)', () => {
+      setPath({}, ['__proto__', 'polluted'], 'PWNED')
+      setPath({}, ['constructor', 'prototype', 'polluted'], 'PWNED')
+      setPath({}, ['prototype', 'polluted'], 'PWNED')
+      expect(({}).polluted).to.be(undefined)
+      expect(Object.prototype.polluted).to.be(undefined)
+    })
+
+    it('setPath drops a write whose final segment is an unsafe key', () => {
+      setPath({}, ['en', 'translation', '__proto__'], { isAdmin: true })
+      expect(({}).isAdmin).to.be(undefined)
+      expect(Object.prototype.isAdmin).to.be(undefined)
+    })
+
+    it('pushPath drops a write whose path traverses an unsafe key', () => {
+      pushPath({}, ['__proto__', 'polluted'], 'PWNED')
+      expect(({}).polluted).to.be(undefined)
+      expect(Object.prototype.polluted).to.be(undefined)
+    })
+
+    it('still writes and reads legitimate nested paths', () => {
+      const data = {}
+      setPath(data, ['en', 'translation', 'greeting'], 'hello')
+      expect(data.en.translation.greeting).to.equal('hello')
+      expect(getPath(data, ['en', 'translation', 'greeting'])).to.equal('hello')
+
+      const queue = {}
+      pushPath(queue, ['en', 'common'], { key: 'title' })
+      expect(queue.en.common).to.eql([{ key: 'title' }])
     })
   })
 })
