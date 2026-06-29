@@ -1,3 +1,7 @@
+### 10.0.1
+
+- security (defence-in-depth): extend the `UNSAFE_KEYS` guard to the `getLastOfPath` object walker, so `setPath` / `pushPath` refuse to traverse or write through `__proto__`, `constructor` or `prototype` segments and drop the write silently instead of walking into `Object.prototype`. Same walker / same fix as `i18next-fs-backend@2.6.6` ([GHSA-2933-q333-qg83](https://github.com/i18next/i18next-fs-backend/security/advisories/GHSA-2933-q333-qg83)). Note: this is a parity / hardening fix, not a like-for-like vulnerability — unlike fs-backend, the missing key here is stored as a value and POSTed (not split and walked), and the walker is only reached via the dev-only `saveMissing` / `updateMissing` path, so practical real-world impact is low. Thanks [@greymoth-jp](https://github.com/greymoth-jp) ([#360](https://github.com/locize/i18next-locize-backend/pull/360))
+
 ### 10.0.0
 
 - BREAKING: drop `cross-fetch` dependency. `i18next-locize-backend` now requires a host-provided `fetch`. This is available in Node ≥ 18 (stable since Node 21), all modern browsers, Deno, and Bun. For runtimes without native `fetch`, install a ponyfill yourself before loading this backend, or stay on v9.x.

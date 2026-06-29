@@ -54,21 +54,26 @@ var i18nextLocizeBackend = (function() {
 		while (stack.length > 1) {
 			if (!object) return {};
 			const key = cleanKey(stack.shift());
+			if (UNSAFE_KEYS.indexOf(key) > -1) return {};
 			if (!object[key] && Empty) object[key] = new Empty();
 			object = object[key];
 		}
 		if (!object) return {};
+		const k = cleanKey(stack.shift());
+		if (UNSAFE_KEYS.indexOf(k) > -1) return {};
 		return {
 			obj: object,
-			k: cleanKey(stack.shift())
+			k
 		};
 	}
 	function setPath(object, path, newValue) {
 		const { obj, k } = getLastOfPath(object, path, Object);
+		if (obj === void 0) return;
 		obj[k] = newValue;
 	}
 	function pushPath(object, path, newValue, concat) {
 		const { obj, k } = getLastOfPath(object, path, Object);
+		if (obj === void 0) return;
 		obj[k] = obj[k] || [];
 		if (concat) obj[k] = obj[k].concat(newValue);
 		if (!concat) obj[k].push(newValue);
