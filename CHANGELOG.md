@@ -1,3 +1,7 @@
+### 10.0.2
+
+- security: actually apply `redactUrlCredentials` / `sanitizeLogValue` to the URLs in `loadUrl`'s error callbacks. Both helpers were added in 9.0.2 and unit-tested but never wired into `lib/index.js`, so the raw URL was still concatenated into the `failed loading` / `failed parsing` / `loaded result empty for` messages. Since `loadPath` / `privatePath` are user-configurable (self-hosted or proxied locize), any `user:password` embedded there reached i18next's logger and anything attached to it, such as error reporting. The network-error branch additionally passed `err.message` through unsanitised. The request itself is unchanged and still uses the untouched URL.
+
 ### 10.0.1
 
 - security (defence-in-depth): extend the `UNSAFE_KEYS` guard to the `getLastOfPath` object walker, so `setPath` / `pushPath` refuse to traverse or write through `__proto__`, `constructor` or `prototype` segments and drop the write silently instead of walking into `Object.prototype`. Same walker / same fix as `i18next-fs-backend@2.6.6` ([GHSA-2933-q333-qg83](https://github.com/i18next/i18next-fs-backend/security/advisories/GHSA-2933-q333-qg83)). Note: this is a parity / hardening fix, not a like-for-like vulnerability — unlike fs-backend, the missing key here is stored as a value and POSTed (not split and walked), and the walker is only reached via the dev-only `saveMissing` / `updateMissing` path, so practical real-world impact is low. Thanks [@greymoth-jp](https://github.com/greymoth-jp) ([#360](https://github.com/locize/i18next-locize-backend/pull/360))

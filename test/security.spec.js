@@ -9,6 +9,7 @@ import {
   pushPath,
   getPath
 } from '../lib/utils.js'
+import Backend from '../lib/index.js'
 
 // Security tests for the 9.0.2 hardening.
 
@@ -172,6 +173,45 @@ describe('security', () => {
       const queue = {}
       pushPath(queue, ['en', 'common'], { key: 'title' })
       expect(queue.en.common).to.eql([{ key: 'title' }])
+    })
+  })
+
+  describe('loadUrl error strings', () => {
+    const loadUrlWith = (url, requestImpl) => new Promise((resolve) => {
+      const backend = new Backend(null, {
+        projectId: 'abc',
+        referenceLng: 'en',
+        request: requestImpl
+      })
+      backend.loadUrl({}, url, undefined, (err) => resolve(String(err)))
+    })
+
+    const credentialUrl = 'https://user:hunter2@proxy.example.com/abc/latest/en/translation'
+
+    it('redacts credentials from a failed-load message', async () => {
+      const err = await loadUrlWith(credentialUrl, (info, cb) => cb(null, { status: 500 }))
+      expect(err).to.contain('proxy.example.com')
+      expect(err).not.to.contain('hunter2')
+      expect(err).not.to.contain('user:')
+    })
+
+    it('redacts credentials from a network-error message and sanitises the error text', async () => {
+      const err = await loadUrlWith(credentialUrl, (info, cb) => cb(new Error('Failed to fetch\r\nX-Injected: yes'), null))
+      expect(err).not.to.contain('hunter2')
+      expect(err.indexOf('\r')).to.be(-1)
+      expect(err.indexOf('\n')).to.be(-1)
+    })
+
+    it('redacts credentials from a parse-failure message', async () => {
+      const err = await loadUrlWith(credentialUrl, (info, cb) => cb(null, { status: 200, data: 'not json{' }))
+      expect(err).to.contain('failed parsing')
+      expect(err).not.to.contain('hunter2')
+    })
+
+    it('leaves a credential-free url intact', async () => {
+      const url = 'https://api.locize.app/abc/latest/en/translation'
+      const err = await loadUrlWith(url, (info, cb) => cb(null, { status: 500 }))
+      expect(err).to.contain(url)
     })
   })
 })
