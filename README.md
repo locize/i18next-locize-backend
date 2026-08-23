@@ -72,6 +72,22 @@ In case you want to use i18next-locize-backend on server side for a short runnin
 }
 ```
 
+**On server side: downloads keep growing**
+
+On the server `reloadInterval` defaults to 1 hour, and the timer that drives it keeps the i18next instance alive for as long as the process runs. That is what you want for a long-lived singleton, and it is a trap for anything short-lived: if you create a **new i18next instance per request or per render** (a per-request instance, an SSR pass of a component that initializes i18next, a job that runs on a schedule), every one of them leaves a live timer behind and keeps refetching your namespaces forever. Nothing errors and the process still exits normally, because the timer is `unref`ed. The only symptom is your download count climbing between restarts.
+
+So: create the instance **once** per process and reuse it, or set `reloadInterval: false` on instances that are not the singleton.
+
+```javascript
+{
+  reloadInterval: false, // this instance is not a long-lived singleton
+  projectId: "[PROJECTID]",
+  version: 'latest'
+}
+```
+
+If you are unsure whether this is happening to you, check the *Downloads by Browser* chart on your locize project's metrics page: server-side requests show up as `i18next-locize-backend`, and a per-instance leak looks like a floor that ratchets up between deploys instead of following your traffic.
+
 **Not all languages are loaded**
 
 By default the supportedLngs are defined by having a minimum of 90% of done translations.
