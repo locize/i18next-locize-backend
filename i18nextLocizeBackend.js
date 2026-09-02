@@ -102,35 +102,23 @@ var i18nextLocizeBackend = (function() {
 		if (object == null) return "";
 		return "" + object;
 	}
+	const NO_COLON_KEYS = ["lng", "ns"];
 	function interpolateUrl(str, data) {
-		let match;
 		let unsafe = false;
-		while (match = regexp.exec(str)) {
-			const key = match[1].trim();
-			if (UNSAFE_KEYS.indexOf(key) > -1) {
-				regexp.lastIndex = 0;
-				continue;
-			}
-			const raw = data[key];
-			if (raw == null) {
-				regexp.lastIndex = 0;
-				continue;
-			}
+		const out = str.replace(regexp, (match, key) => {
+			const k = key.trim();
+			if (UNSAFE_KEYS.indexOf(k) > -1) return match;
+			const raw = data[k];
+			if (raw == null) return match;
 			const segments = makeString(raw).split("+");
-			let segmentsOk = true;
-			for (const seg of segments) if (!isSafeUrlSegment(seg)) {
-				segmentsOk = false;
-				break;
-			}
-			if (!segmentsOk) {
+			const noColon = NO_COLON_KEYS.indexOf(k) > -1;
+			for (const seg of segments) if (!isSafeUrlSegment(seg) || noColon && seg.indexOf(":") > -1) {
 				unsafe = true;
-				break;
+				return match;
 			}
-			str = str.replace(match[0], segments.join("+"));
-			regexp.lastIndex = 0;
-		}
-		regexp.lastIndex = 0;
-		return unsafe ? null : str;
+			return segments.join("+");
+		});
+		return unsafe ? null : out;
 	}
 	function isMissingOption(obj, props) {
 		return props.reduce((mem, p) => {

@@ -96,6 +96,26 @@ describe('security', () => {
       })).to.equal(null)
     })
 
+    // i18next-http-backend GHSA-xvq9-wjp8-hwqf: a leading-placeholder custom
+    // template plus a `scheme:` value became an absolute URL. Only `lng` / `ns`
+    // are colon-restricted — version names may legitimately contain one.
+    it('returns null for a scheme-injecting lng / ns, but still allows a colon in version', () => {
+      expect(interpolateUrl('{{lng}}/{{ns}}', { lng: 'http:127.0.0.1:8080', ns: 'common' })).to.equal(null)
+      expect(interpolateUrl('{{ns}}/{{lng}}', { lng: 'en', ns: 'http:127.0.0.1:8080' })).to.equal(null)
+      expect(interpolateUrl('{{lng}}/{{ns}}', { lng: 'en+http:127.0.0.1:8080', ns: 'common' })).to.equal(null)
+      expect(interpolateUrl('https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}', { projectId: 'p', version: 'v1:beta', lng: 'en', ns: 'common' }))
+        .to.equal('https://api.locize.app/p/v1:beta/en/common')
+    })
+
+    it('does not loop forever when a value contains its own placeholder', () => {
+      // Pre-fix this hung the process: `{{lng}}` was substituted with itself
+      // and re-scanned indefinitely. Mocha's timeout is the guard here.
+      expect(interpolateUrl('https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}', { projectId: 'p', version: 'latest', lng: '{{lng}}', ns: 'common' }))
+        .to.equal('https://api.locize.app/p/latest/{{lng}}/common')
+      expect(interpolateUrl('https://api.locize.app/{{projectId}}/{{version}}/{{lng}}/{{ns}}', { projectId: 'p', version: 'latest', lng: '{{ns}}', ns: '{{lng}}' }))
+        .to.equal('https://api.locize.app/p/latest/{{ns}}/{{lng}}')
+    })
+
     it('returns null when any + segment is unsafe', () => {
       expect(interpolateUrl(template, {
         projectId: 'p', version: 'v', lng: 'en+../etc/passwd', ns: 'x'

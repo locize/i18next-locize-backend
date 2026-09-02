@@ -1,3 +1,8 @@
+### 10.0.3
+
+- security: `interpolateUrl` is now a single pass — substituted text is no longer re-scanned. Previously a `lng` / `ns` value that contained its own placeholder (literally `{{lng}}`) passed the URL-segment check, was substituted with itself, and the loop never terminated: one request with an attacker-controlled language (query parameter, cookie, `Accept-Language`) blocked the Node event loop indefinitely. This worked with the default `loadPath`.
+- security: reject `:` in `lng` / `ns` values. With a custom `loadPath` / `privatePath` / `addPath` / `updatePath` that starts directly with the placeholder (e.g. `{{lng}}/{{ns}}`), a value like `http:127.0.0.1:8080` turned the whole URL absolute and the request left the intended origin — the same issue as i18next-http-backend [GHSA-xvq9-wjp8-hwqf](https://github.com/i18next/i18next-http-backend/security/advisories/GHSA-xvq9-wjp8-hwqf). The default locize paths are not affected. `projectId` / `version` are not colon-restricted: version names may contain one, and both always sit behind a fixed origin.
+
 ### 10.0.2
 
 - security: actually apply `redactUrlCredentials` / `sanitizeLogValue` to the URLs in `loadUrl`'s error callbacks. Both helpers were added in 9.0.2 and unit-tested but never wired into `lib/index.js`, so the raw URL was still concatenated into the `failed loading` / `failed parsing` / `loaded result empty for` messages. Since `loadPath` / `privatePath` are user-configurable (self-hosted or proxied locize), any `user:password` embedded there reached i18next's logger and anything attached to it, such as error reporting. The network-error branch additionally passed `err.message` through unsanitised. The request itself is unchanged and still uses the untouched URL.
