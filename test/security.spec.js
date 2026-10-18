@@ -107,6 +107,16 @@ describe('security', () => {
         .to.equal('https://api.locize.app/p/v1:beta/en/common')
     })
 
+    // i18next-http-backend GHSA-3cmx-xjww-583x: a custom query-shaped template
+    // plus `&` / `=` / `;` in lng / ns added or overrode query parameters.
+    it('returns null for query-parameter injection in lng / ns, but keeps + joins', () => {
+      const t = 'https://proxy.example/locize?p={{projectId}}&lng={{lng}}&ns={{ns}}'
+      expect(interpolateUrl(t, { projectId: 'p', lng: 'de&ns=private', ns: 'common' })).to.equal(null)
+      expect(interpolateUrl(t, { projectId: 'p', lng: 'de', ns: 'common;x=1' })).to.equal(null)
+      expect(interpolateUrl(t, { projectId: 'p', lng: 'de+en', ns: 'a+b' }))
+        .to.equal('https://proxy.example/locize?p=p&lng=de+en&ns=a+b')
+    })
+
     it('does not loop forever when a value contains its own placeholder', () => {
       // Pre-fix this hung the process: `{{lng}}` was substituted with itself
       // and re-scanned indefinitely. Mocha's timeout is the guard here.

@@ -1,3 +1,7 @@
+### 10.0.4
+
+- security: also reject `&`, `=` and `;` in `lng` / `ns` values. With a custom query-shaped `loadPath` / `privatePath` / `addPath` / `updatePath` (e.g. `https://proxy.example/locize?lng={{lng}}&ns={{ns}}`), a value like `de&ns=private` added or overrode query parameters on the request — the same issue as i18next-http-backend [GHSA-3cmx-xjww-583x](https://github.com/i18next/i18next-http-backend/security/advisories/GHSA-3cmx-xjww-583x). The default locize paths are not affected. `+`-joined values such as `de+en` keep working.
+
 ### 10.0.3
 
 - security: `interpolateUrl` is now a single pass — substituted text is no longer re-scanned. Previously a `lng` / `ns` value that contained its own placeholder (literally `{{lng}}`) passed the URL-segment check, was substituted with itself, and the loop never terminated: one request with an attacker-controlled language (query parameter, cookie, `Accept-Language`) blocked the Node event loop indefinitely. This worked with the default `loadPath`.
