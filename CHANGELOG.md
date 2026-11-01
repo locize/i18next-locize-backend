@@ -1,3 +1,8 @@
+### 10.0.5
+
+- fix: i18next 26.7.0 deprecates guessing the calling convention of a backend from the number of parameters of its methods; the backend now declares it with `callbackApi`, so i18next calls `read` and `create` with a callback (and passes `create` its options), and debug mode no longer logs the deprecation notice. Older i18next versions ignore it.
+- `reloadInterval` reloads through `services.utils.reloadResources` with i18next 26.7.0 or later (with i18next's retries and the `loaded` event) instead of calling i18next's internal backend connector. It reloads the same languages as before: the fallback and `preload` languages. With older i18next nothing changes.
+
 ### 10.0.4
 
 - security: also reject `&`, `=` and `;` in `lng` / `ns` values. With a custom query-shaped `loadPath` / `privatePath` / `addPath` / `updatePath` (e.g. `https://proxy.example/locize?lng={{lng}}&ns={{ns}}`), a value like `de&ns=private` added or overrode query parameters on the request — the same issue as i18next-http-backend [GHSA-3cmx-xjww-583x](https://github.com/i18next/i18next-http-backend/security/advisories/GHSA-3cmx-xjww-583x). The default locize paths are not affected. `+`-joined values such as `de+en` keep working.
