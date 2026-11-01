@@ -420,6 +420,7 @@ var i18nextLocizeBackend = (function() {
 		}
 		reload() {
 			const { backendConnector, languageUtils, logger, utils } = this.services || { logger: console };
+			if (utils && utils.reloadResources) return utils.reloadResources();
 			if (!backendConnector) return;
 			const currentLanguage = backendConnector.language;
 			if (currentLanguage && currentLanguage.toLowerCase() === "cimode") return;
@@ -431,7 +432,6 @@ var i18nextLocizeBackend = (function() {
 			};
 			append(currentLanguage);
 			if (this.allOptions.preload) this.allOptions.preload.forEach((l) => append(l));
-			if (utils && utils.reloadResources) return utils.reloadResources(toLoad, this.allOptions.ns);
 			toLoad.forEach((lng) => {
 				this.allOptions.ns.forEach((ns) => {
 					backendConnector.read(lng, ns, "read", null, null, (err, data) => {
