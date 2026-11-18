@@ -157,7 +157,13 @@ var i18nextLocizeBackend = (function() {
 		const matches = headerString.match(/max-age=([0-9]+)/);
 		return matches ? parseInt(matches[1], 10) : 0;
 	};
-	const requestWithFetch = (options, url, payload, callback) => {
+	const requestWithFetch = (options, url, payload, cb) => {
+		let completed = false;
+		const callback = (err, res) => {
+			if (completed) throw err;
+			completed = true;
+			cb(err, res);
+		};
 		const headers = {};
 		if (typeof window === "undefined" && typeof global !== "undefined" && typeof global.process !== "undefined" && global.process.versions && global.process.versions.node) headers["User-Agent"] = `i18next-locize-backend (node/${global.process.version}; ${global.process.platform} ${global.process.arch})`;
 		if (options.authorize && options.apiKey) headers.Authorization = options.apiKey;
@@ -350,13 +356,14 @@ var i18nextLocizeBackend = (function() {
 	};
 	const handleCustomRequest = (opt, info, cb) => {
 		if (opt.request.length === 1) {
+			let r;
 			try {
-				const r = opt.request(info);
-				if (r && typeof r.then === "function") r.then((data) => cb(null, data)).catch(cb);
-				else cb(null, r);
+				r = opt.request(info);
 			} catch (err) {
-				cb(err);
+				return cb(err);
 			}
+			if (r && typeof r.then === "function") r.then((data) => cb(null, data), cb);
+			else cb(null, r);
 			return;
 		}
 		opt.request(info, cb);
