@@ -1,3 +1,7 @@
+### 10.1.0
+
+- fix: the i18next callback is called only once. When it threw (for example from a `loaded` listener or the callback of `init` or `loadNamespaces`), the fetch path and a custom `request` without a callback called it a second time with that error: i18next marked the namespace that had just loaded as failed, and since the message often looked like a network error, it read the namespace again. The error now reaches your app: thrown from the call that started the load for a custom `request` that returns a value, otherwise an unhandled rejection, which ends a Node.js process unless you handle `unhandledRejection`. An error thrown while reading the response still goes to the callback. i18next 27.2.0 made the same change in its backend connector.
+
 ### 10.0.6
 
 - fix: with i18next 26.7.1 or later, `reloadInterval` reloads everything i18next loaded or tried to load through the backend: the current languages and the languages loaded for clones (one per request on a server), and it retries the bundles that failed. 10.0.5 passed the fallback and `preload` languages to i18next's `reloadResources()`, which skipped a bundle that had failed to load, so a language missing after an outage at startup stayed missing (the backend's own reload before 10.0.5 read it again). With older i18next nothing changes.
