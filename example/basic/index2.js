@@ -3,7 +3,8 @@ const LocizeBackend = require('i18next-locize-backend')
 // const LocizeBackend = require('../../cjs/index.js')
 
 const backendOptions = {
-  projectId: '3d0aa5aa-4660-4154-b6d9-907dbef10bb2'
+  projectId: '3d0aa5aa-4660-4154-b6d9-907dbef10bb2',
+  cdnType: 'pro'
   // apiKey: '3dc91839-ca3e-440d-a1a3-ce52ebfd12e3'
   // version: 'staging',
   // referenceLng -> not needed as will be loaded from API

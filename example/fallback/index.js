@@ -31,7 +31,8 @@ i18next
       backendOptions: [
         {
           referenceLng: 'en',
-          projectId: '3d0aa5aa-4660-4154-b6d9-907dbef10bb2'
+          projectId: '3d0aa5aa-4660-4154-b6d9-907dbef10bb2',
+          cdnType: 'pro'
         }
       ]
     }
