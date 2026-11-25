@@ -5,6 +5,7 @@
 - fix: on cdnType `standard`, a write answered with a 404 (a wrong `addPath`, for example) counted as saved: the 404 that means "this namespace is not on the CDN yet, use it empty" applied to writes too. It applies to reads only now.
 - fix: with XMLHttpRequest, an exception while sending was only logged and the request never ended: a read was never answered, and a write kept its namespace locked, so no missing key of that namespace was saved again. It now ends with that error, once.
 - fix: with `reloadInterval` (on by default on a server), the timer kept its backend and the i18next instance behind it in memory for good, so a server creating an i18next instance per request (instead of one instance and clones) kept every one of them, and reloaded all of them every hour. The timer now holds the backend through a `WeakRef` and stops at its first tick after the instance is gone.
+- chore: tests run against i18next 27.2.9; CI also on Node 26.
 
 ### 10.1.0
 
