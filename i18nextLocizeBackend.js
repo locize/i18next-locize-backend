@@ -170,7 +170,7 @@ var i18nextLocizeBackend = (function() {
 		if (payload || options.setContentTypeJSON) headers["Content-Type"] = "application/json";
 		const resolver = (response) => {
 			let resourceNotExisting = response.headers && response.headers.get("x-cache") === "Error from cloudfront";
-			if (options.cdnType === "standard" && response.status === 404 && (!response.headers || !response.headers.get("x-cache"))) {
+			if (options.cdnType === "standard" && !payload && response.status === 404 && (!response.headers || !response.headers.get("x-cache"))) {
 				resourceNotExisting = true;
 				return callback(null, {
 					status: 200,
@@ -180,7 +180,8 @@ var i18nextLocizeBackend = (function() {
 			}
 			if (!response.ok) return callback(response.statusText || "Error", {
 				status: response.status,
-				resourceNotExisting
+				resourceNotExisting,
+				retryAfter: response.headers && response.headers.get("retry-after")
 			});
 			const cacheControl = response.headers && response.headers.get("cache-control");
 			response.text().then((data) => {
@@ -203,7 +204,13 @@ var i18nextLocizeBackend = (function() {
 			headers
 		}).then(resolver).catch(callback);
 	};
-	const requestWithXmlHttpRequest = (options, url, payload, callback) => {
+	const requestWithXmlHttpRequest = (options, url, payload, cb) => {
+		let completed = false;
+		const callback = (err, res) => {
+			if (completed) return;
+			completed = true;
+			cb(err, res);
+		};
 		try {
 			const x = XmlHttpRequestApi ? new XmlHttpRequestApi() : new ActiveXObjectApi("MSXML2.XMLHTTP.3.0");
 			x.open(payload ? "POST" : "GET", url, 1);
@@ -212,7 +219,7 @@ var i18nextLocizeBackend = (function() {
 			if (payload || options.setContentTypeJSON) x.setRequestHeader("Content-Type", "application/json");
 			x.onreadystatechange = () => {
 				let resourceNotExisting = x.getResponseHeader("x-cache") === "Error from cloudfront";
-				if (options.cdnType === "standard" && x.status === 404 && !x.getResponseHeader("x-cache")) {
+				if (options.cdnType === "standard" && !payload && x.status === 404 && !x.getResponseHeader("x-cache")) {
 					resourceNotExisting = true;
 					return x.readyState > 3 && callback(null, {
 						status: 200,
@@ -225,12 +232,13 @@ var i18nextLocizeBackend = (function() {
 					status: x.status,
 					data: x.responseText,
 					resourceNotExisting,
-					cacheControl
+					cacheControl,
+					retryAfter: x.getResponseHeader("Retry-After")
 				});
 			};
 			x.send(JSON.stringify(payload));
 		} catch (e) {
-			console && console.log(e);
+			callback(e);
 		}
 	};
 	const request = (options, url, payload, callback) => {
@@ -374,6 +382,19 @@ var i18nextLocizeBackend = (function() {
 		const max = base + variance;
 		return Math.floor(min + Math.random() * (max - min));
 	}
+	function startReloadTimer(ref, ms) {
+		const interval = setInterval(() => {
+			const backend = ref.deref();
+			if (backend) backend.reload();
+			else clearInterval(interval);
+		}, ms);
+		if (typeof interval === "object" && typeof interval.unref === "function") interval.unref();
+		return interval;
+	}
+	function warnAndCallBack(backend, callback, message) {
+		(backend.services && backend.services.logger || console).warn(message);
+		if (typeof callback === "function") callback(new Error(message));
+	}
 	var I18NextLocizeBackend = class {
 		constructor(services, options = {}, allOptions = {}, callback) {
 			this.services = services;
@@ -420,10 +441,7 @@ var i18nextLocizeBackend = (function() {
 			this.queuedWrites = { pending: {} };
 			this.debouncedProcess = debounce(this.process, this.options.writeDebounce);
 			if (this.interval) clearInterval(this.interval);
-			if (this.options.reloadInterval && this.options.projectId) {
-				this.interval = setInterval(() => this.reload(), this.options.reloadInterval);
-				if (typeof this.interval === "object" && typeof this.interval.unref === "function") this.interval.unref();
-			}
+			if (this.options.reloadInterval && this.options.projectId) this.interval = startReloadTimer(typeof WeakRef === "function" ? new WeakRef(this) : { deref: () => this }, this.options.reloadInterval);
 		}
 		reload() {
 			const { backendConnector, languageUtils, logger, utils } = this.services || { logger: console };
@@ -729,10 +747,7 @@ var i18nextLocizeBackend = (function() {
 				projectId: this.options.projectId,
 				version: this.options.version
 			});
-			if (missingUrl == null || updatesUrl == null) {
-				if (typeof callback === "function") callback(/* @__PURE__ */ new Error("i18next-locize-backend: unsafe lng/ns/projectId/version — refusing to persist missing keys for lng=" + sanitizeLogValue(String(lng)) + " ns=" + sanitizeLogValue(String(namespace))));
-				return;
-			}
+			if (missingUrl == null || updatesUrl == null) return warnAndCallBack(this, callback, "i18next-locize-backend: unsafe lng/ns/projectId/version — refusing to persist missing keys for lng=" + sanitizeLogValue(String(lng)) + " ns=" + sanitizeLogValue(String(namespace)));
 			let hasMissing = false;
 			let hasUpdates = false;
 			const payloadMissing = {};
@@ -750,24 +765,34 @@ var i18nextLocizeBackend = (function() {
 					payloadMissing[item.key] = value;
 				}
 			});
-			let todo = 0;
-			if (hasMissing) todo++;
-			if (hasUpdates) todo++;
-			const doneOne = (err) => {
-				todo--;
-				if (!todo) callback(err);
+			const requests = [];
+			if (hasMissing) requests.push([missingUrl, payloadMissing]);
+			if (hasUpdates) requests.push([updatesUrl, payloadUpdate]);
+			let firstError;
+			const next = (err) => {
+				if (err && !firstError) firstError = err;
+				const [url, payload] = requests.shift() || [];
+				if (!url) return callback(firstError);
+				this.post(url, payload, next);
 			};
-			if (!todo) doneOne();
-			if (hasMissing) if (!this.options.request) request(defaults({ authorize: true }, this.options), missingUrl, payloadMissing, doneOne);
-			else {
-				const info = getCustomRequestInfo(missingUrl, defaults({ authorize: true }, this.options), payloadMissing);
-				handleCustomRequest(this.options, info, doneOne);
-			}
-			if (hasUpdates) if (!this.options.request) request(defaults({ authorize: true }, this.options), updatesUrl, payloadUpdate, doneOne);
-			else {
-				const info = getCustomRequestInfo(updatesUrl, defaults({ authorize: true }, this.options), payloadUpdate);
-				handleCustomRequest(this.options, info, doneOne);
-			}
+			next();
+		}
+		post(url, payload, callback, attempt = 1) {
+			const done = (err, res) => {
+				const status = res && res.status;
+				const noAnswer = !status && (!!err || status === 0);
+				const failed = noAnswer || status >= 400 && status !== 412;
+				if ((noAnswer || status === 429 || status >= 500) && attempt < 3) {
+					const retryAfter = Math.min(parseInt(res && res.retryAfter, 10) || 0, 60);
+					const delay = retryAfter > 0 ? retryAfter * 1e3 : status === 429 ? 6e3 : attempt * 1e3;
+					return setTimeout(() => this.post(url, payload, callback, attempt + 1), delay);
+				}
+				if (!failed) return callback();
+				warnAndCallBack(this, callback, `i18next-locize-backend: saving keys to ${sanitizeLogValue(redactUrlCredentials(url))} failed: ${status || sanitizeLogValue(String(err && err.message || err))}`);
+			};
+			const options = defaults({ authorize: true }, this.options);
+			if (!this.options.request) return request(options, url, payload, done);
+			handleCustomRequest(this.options, getCustomRequestInfo(url, options, payload), done);
 		}
 		write(lng, namespace) {
 			if (getPath(this.queuedWrites, [
@@ -785,30 +810,24 @@ var i18nextLocizeBackend = (function() {
 					lng,
 					namespace
 				], true);
-				const namespaceSaved = () => {
+				const namespaceSaved = (err) => {
 					setPath(this.queuedWrites, [
 						"locks",
 						lng,
 						namespace
 					], false);
-					clbs.forEach((clb) => clb());
-					if (this.options.onSaved) this.options.onSaved(lng, namespace);
+					clbs.forEach((clb) => clb(err));
+					if (this.options.onSaved && !err) this.options.onSaved(lng, namespace);
 					this.debouncedProcess(lng, namespace);
 				};
-				const amountOfPages = missings.length / pageSize;
-				let pagesDone = 0;
-				let page = missings.splice(0, pageSize);
-				this.writePage(lng, namespace, page, () => {
-					pagesDone++;
-					if (pagesDone >= amountOfPages) namespaceSaved();
-				});
-				while (page.length === pageSize) {
-					page = missings.splice(0, pageSize);
-					if (page.length) this.writePage(lng, namespace, page, () => {
-						pagesDone++;
-						if (pagesDone >= amountOfPages) namespaceSaved();
-					});
-				}
+				let firstError;
+				const writeNextPage = (err) => {
+					if (err && !firstError) firstError = err;
+					const page = missings.splice(0, pageSize);
+					if (!page.length) return namespaceSaved(firstError);
+					this.writePage(lng, namespace, page, writeNextPage);
+				};
+				writeNextPage();
 			}
 		}
 		process() {

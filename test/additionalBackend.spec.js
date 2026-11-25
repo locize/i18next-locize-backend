@@ -1,5 +1,6 @@
 import expect from 'expect.js'
 import Http from '../index.js'
+import server from './fixtures/server.js'
 
 describe('Additional backend coverage', () => {
   let backend
@@ -125,5 +126,125 @@ describe('Additional backend coverage', () => {
       expect(warned).to.be.ok()
       done()
     }, 10)
+  })
+})
+
+describe('saving missing keys', function () {
+  this.timeout(10000)
+  const make = (respond) => {
+    const calls = []
+    let inFlight = 0
+    let maxInFlight = 0
+    const backend = new Http({
+      projectId: 'test',
+      version: 'latest',
+      apiKey: 'fake',
+      referenceLng: 'en',
+      addPath: 'http://localhost:6001/add/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      updatePath: 'http://localhost:6001/update/{{projectId}}/{{version}}/{{lng}}/{{ns}}',
+      request: (info, cb) => {
+        inFlight++
+        maxInFlight = Math.max(maxInFlight, inFlight)
+        const res = respond(info, calls.length)
+        calls.push({ url: info.url, keys: Object.keys(info.body).length })
+        setTimeout(() => { inFlight--; cb(null, res) }, 20)
+      }
+    })
+    backend.services = { logger: { warn: (msg) => calls.push({ warned: msg }) } }
+    return { backend, calls, maxInFlight: () => maxInFlight }
+  }
+
+  it('sends the pages and the updates of a namespace one after the other', (done) => {
+    const { backend, calls, maxInFlight } = make(() => ({ status: 200, data: '{}' }))
+    const missings = []
+    for (let i = 0; i < 2500; i++) missings.push({ key: `k${i}`, fallbackValue: 'v' })
+    missings.push({ key: 'u', fallbackValue: 'v', options: { isUpdate: true } })
+    backend.queuedWrites = { en: { translation: missings } }
+    backend.write('en', 'translation')
+    backend.queuedWrites.en.translation.push({ key: 'x', fallbackValue: 'v', callback: () => {} }) // queued meanwhile, not part of this write
+    const check = setInterval(() => {
+      if (calls.length < 4) return
+      clearInterval(check)
+      expect(maxInFlight()).to.be(1)
+      expect(calls.map((c) => [c.url.split('/')[3], c.keys])).to.eql([['add', 1000], ['add', 1000], ['add', 500], ['update', 1]])
+      done()
+    }, 20)
+  })
+
+  it('tries a 429 again after its Retry-After, and a 5xx after a second', (done) => {
+    const { backend, calls } = make((info, n) => [{ status: 429, retryAfter: '1' }, { status: 503 }, { status: 200 }][n])
+    const started = Date.now()
+    backend.writePage('en', 'translation', [{ key: 'k', fallbackValue: 'v' }], (err) => {
+      expect(err).not.to.be.ok()
+      expect(calls.length).to.be(3)
+      expect(Date.now() - started).to.be.above(2900) // 1 s Retry-After + 2 s
+      done()
+    })
+  })
+
+  it('waits 6 s after a 429 whose Retry-After it cannot read (a browser)', (done) => {
+    const { backend, calls } = make((info, n) => [{ status: 429 }, { status: 200 }][n])
+    const started = Date.now()
+    backend.writePage('en', 'translation', [{ key: 'k', fallbackValue: 'v' }], (err) => {
+      expect(err).not.to.be.ok()
+      expect(calls.length).to.be(2)
+      expect(Date.now() - started).to.be.above(5900)
+      done()
+    })
+  })
+
+  describe(`over ${typeof XMLHttpRequest === 'function' ? 'XMLHttpRequest' : 'fetch'}`, () => {
+    before((done) => server(done))
+    const real = (addPath) => {
+      const backend = new Http({ projectId: 'test', version: 'latest', apiKey: 'fake', referenceLng: 'en', addPath, updatePath: addPath })
+      const warnings = []
+      backend.services = { logger: { warn: (msg) => warnings.push(msg) } }
+      return { backend, warnings }
+    }
+
+    it('tries a refused connection again, then reports it', (done) => {
+      // XMLHttpRequest answers no connection with status 0 and no error
+      const { backend, warnings } = real('http://127.0.0.1:1/missing/{{projectId}}/{{version}}/{{lng}}/{{ns}}')
+      const started = Date.now()
+      backend.writePage('en', 'translation', [{ key: 'k', fallbackValue: 'v' }], (err) => {
+        expect(err).to.be.ok()
+        expect(warnings.length).to.be(1)
+        expect(Date.now() - started).to.be.above(2900) // 1 s + 2 s
+        done()
+      })
+    })
+
+    it('does not count a write answered 404 as saved', (done) => {
+      const { backend, warnings } = real('http://localhost:6001/no-such-route/{{projectId}}/{{version}}/{{lng}}/{{ns}}')
+      backend.writePage('en', 'translation', [{ key: 'k', fallbackValue: 'v' }], (err) => {
+        expect(err.message).to.contain('404')
+        expect(warnings.length).to.be(1)
+        done()
+      })
+    })
+  })
+
+  it('reports and logs what still fails, but not a 412', (done) => {
+    const { backend, calls } = make((info) => ({ status: info.url.includes('/add/') ? 412 : 400 }))
+    backend.writePage('en', 'translation', [
+      { key: 'a', fallbackValue: 'v' },
+      { key: 'b', fallbackValue: 'v', options: { isUpdate: true } }
+    ], (err) => {
+      expect(err.message).to.contain('/update/test/latest/en/translation failed: 400')
+      expect(calls.filter((c) => c.warned).length).to.be(1)
+      done()
+    })
+  })
+
+  it('hands the error to the callbacks of the keys and skips onSaved', (done) => {
+    const { backend } = make(() => ({ status: 400 }))
+    let saved = false
+    backend.options.onSaved = () => { saved = true }
+    const callback = (err) => {
+      expect(err).to.be.ok()
+      setTimeout(() => { expect(saved).to.be(false); done() }, 10)
+    }
+    backend.queuedWrites = { en: { translation: [{ key: 'a', fallbackValue: 'v', callback }] } }
+    backend.write('en', 'translation')
   })
 })

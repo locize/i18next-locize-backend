@@ -74,9 +74,9 @@ In case you want to use i18next-locize-backend on server side for a short runnin
 
 **On server side: downloads keep growing**
 
-On the server `reloadInterval` defaults to 1 hour, and the timer that drives it keeps the i18next instance alive for as long as the process runs. That is what you want for a long-lived singleton, and it is a trap for anything short-lived: if you create a **new i18next instance per request or per render** (a per-request instance, an SSR pass of a component that initializes i18next, a job that runs on a schedule), every one of them leaves a live timer behind and keeps refetching your namespaces forever. Nothing errors and the process still exits normally, because the timer is `unref`ed. The only symptom is your download count climbing between restarts.
+On the server `reloadInterval` defaults to 1 hour. If you create a **new i18next instance per request or per render** (a per-request instance, an SSR pass of a component that initializes i18next, a job that runs on a schedule), every one of them loads your namespaces on its own first, so your download count grows with your traffic. Since 10.2.0 the reload timer no longer keeps such an instance alive: it stops once the instance is gone (on runtimes with `WeakRef`, which every current one has). Before, each instance stayed in memory and kept refetching its namespaces every hour for as long as the process ran.
 
-So: create the instance **once** per process and reuse it, or set `reloadInterval: false` on instances that are not the singleton.
+So: create the instance **once** per process and reuse it (with `cloneInstance()` per request if you need a request-specific language), or set `reloadInterval: false` on instances that are not the singleton.
 
 ```javascript
 {
@@ -161,7 +161,7 @@ i18next.use(Backend).init(i18nextOptions);
   // can be array of allowed hosts or a function (hostname) => { return true; // or false if not allowed }
   allowedAddOrUpdateHosts: ['localhost'],
 
-  // optional event triggered on saved to backend
+  // optional event triggered on saved to backend (not when saving failed: that is logged as a warning)
   onSaved: (lng, ns) => { ... },
 
   // can be used to reload resources in a specific interval (useful in server environments)
