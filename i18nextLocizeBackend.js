@@ -21,10 +21,9 @@ var i18nextLocizeBackend = (function() {
 		if (typeof v !== "string") return false;
 		if (v.length === 0 || v.length > 128) return false;
 		if (UNSAFE_KEYS.indexOf(v) > -1) return false;
-		if (v.indexOf("..") > -1) return false;
+		if (v === "." || v.indexOf("..") > -1) return false;
 		if (v.indexOf("/") > -1 || v.indexOf("\\") > -1) return false;
-		if (/[?#%\s@]/.test(v)) return false;
-		if (/[\x00-\x1F\x7F]/.test(v)) return false;
+		if (/[\x00-\x1F\x7F\u0085\u2028\u2029]/.test(v)) return false;
 		return true;
 	}
 	function sanitizeLogValue(v) {
@@ -102,8 +101,6 @@ var i18nextLocizeBackend = (function() {
 		if (object == null) return "";
 		return "" + object;
 	}
-	const LNG_NS_KEYS = ["lng", "ns"];
-	const LNG_NS_UNSAFE = /[:&=;]/;
 	function interpolateUrl(str, data) {
 		let unsafe = false;
 		const out = str.replace(regexp, (match, key) => {
@@ -112,12 +109,11 @@ var i18nextLocizeBackend = (function() {
 			const raw = data[k];
 			if (raw == null) return match;
 			const segments = makeString(raw).split("+");
-			const isLngOrNs = LNG_NS_KEYS.indexOf(k) > -1;
-			for (const seg of segments) if (!isSafeUrlSegment(seg) || isLngOrNs && LNG_NS_UNSAFE.test(seg)) {
-				unsafe = true;
-				return match;
-			}
-			return segments.join("+");
+			try {
+				if (segments.every(isSafeUrlSegment)) return segments.map(encodeURIComponent).join("+");
+			} catch (e) {}
+			unsafe = true;
+			return match;
 		});
 		return unsafe ? null : out;
 	}
